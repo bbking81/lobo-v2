@@ -64,7 +64,7 @@ export default async function PartidoPage({ params }: Props) {
   const tienePlanilla = planillaGec.length > 0 || planillaRival.length > 0
 
   return (
-    <main className="min-h-screen bg-gray-100">
+    <main className="min-h-screen">
       <ScoreHeader partido={partido} resultado={resultado} escudoGec={escudoGec} escudoRival={escudoRival} />
 
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">

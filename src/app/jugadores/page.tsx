@@ -44,18 +44,7 @@ export default async function JugadoresPage() {
   const escudoGec = '/api/escudo-gec'
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <header className="bg-[#1e3a5f] text-white px-4 py-4 flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={escudoGec} alt="GEC" className="h-10 w-10 object-contain" />
-        <div>
-          <Link href="/" className="font-black text-lg leading-tight hover:text-blue-200 transition-colors">
-            Lobo Entrerriano
-          </Link>
-          <p className="text-blue-200 text-xs">Plantel</p>
-        </div>
-      </header>
-
+    <main className="min-h-screen">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-5">
         {Array.from(grupos.entries()).map(([posicion, jugadoresPosicion]) => (
           <section key={posicion}>

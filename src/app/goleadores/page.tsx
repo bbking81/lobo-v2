@@ -35,18 +35,7 @@ export default async function GoleadoresPage() {
     .slice(0, 6)
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <header className="bg-[#1e3a5f] text-white px-4 py-4 flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/api/escudo-gec" alt="GEC" className="h-10 w-10 object-contain" />
-        <div>
-          <Link href="/" className="font-black text-lg leading-tight hover:text-blue-200 transition-colors">
-            Lobo Entrerriano
-          </Link>
-          <p className="text-blue-200 text-xs">Goleadores</p>
-        </div>
-      </header>
-
+    <main className="min-h-screen">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
 
         {/* Tabla histórica */}
