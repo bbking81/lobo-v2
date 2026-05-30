@@ -78,7 +78,7 @@ export interface ApiData {
   partidos: Partido[]
   jugadores: Jugador[]
   equipos: Record<string, unknown>[]
-  competencias: Record<string, unknown>[]
+  competencias: { id: number; nombre: string; tablaPosiciones?: { nombre: string; filas: { equipo: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; pts: number }[] }[] }[]
   config: ApiConfig
   proximoPartido?: Partido
 }

@@ -89,7 +89,7 @@ function JugadorNode({ jugador, x, y, kitColor, invertido = false }: JugadorNode
       {fotoUrl ? (
         <>
           <defs>
-            <clipPath id={`clip-${jugador.id ?? x}-${y}`}>
+            <clipPath id={`clip-${jugador.jugador_id ?? x}-${y}`}>
               <rect
                 x={x - halfImg}
                 y={y - halfImg}
@@ -105,7 +105,7 @@ function JugadorNode({ jugador, x, y, kitColor, invertido = false }: JugadorNode
             y={y - halfImg}
             width={imgSize}
             height={imgSize}
-            clipPath={`url(#clip-${jugador.id ?? x}-${y})`}
+            clipPath={`url(#clip-${jugador.jugador_id ?? x}-${y})`}
             preserveAspectRatio="xMidYMid slice"
           />
         </>
