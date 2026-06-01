@@ -19,39 +19,35 @@ export default function Navbar() {
   }
 
   return (
-    <header className="bg-[#1e3a5f] text-white shadow-lg sticky top-0 z-50">
-      {/* Franja superior: logo + nombre */}
-      <div className="max-w-2xl mx-auto px-3 py-3 flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-3 flex-1 min-w-0">
+    <header className="bg-[#162d4a] text-white shadow-md sticky top-0 z-50">
+      <div className="max-w-2xl mx-auto flex items-stretch">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 px-3 py-2.5 shrink-0 border-r border-blue-900">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/api/escudo-gec" alt="GEC" className="h-9 w-9 object-contain shrink-0" />
-          <div className="min-w-0">
-            <p className="font-black text-base leading-tight tracking-tight">Lobo Entrerriano</p>
-            <p className="text-blue-300 text-[10px] uppercase tracking-widest leading-tight">
-              Gimnasia y Esgrima · CdU
-            </p>
+          <img src="/api/escudo-gec" alt="GEC" className="h-8 w-8 object-contain" />
+          <div className="hidden sm:block">
+            <p className="font-black text-sm leading-tight">Lobo Entrerriano</p>
+            <p className="text-blue-400 text-[9px] uppercase tracking-widest leading-tight">GEC · Estadísticas</p>
           </div>
         </Link>
-      </div>
 
-      {/* Barra de navegación */}
-      <nav className="border-t border-blue-800">
-        <div className="max-w-2xl mx-auto px-1 flex overflow-x-auto scrollbar-none">
+        {/* Nav links */}
+        <nav className="flex-1 flex overflow-x-auto scrollbar-none">
           {NAV_LINKS.map(link => (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 ${
+              className={`px-4 flex items-center text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all border-b-2 ${
                 isActive(link.href)
-                  ? 'text-white border-white'
-                  : 'text-blue-300 border-transparent hover:text-white hover:border-blue-400'
+                  ? 'text-white border-[#e8b84b]'
+                  : 'text-blue-300 border-transparent hover:text-white hover:border-blue-500'
               }`}
             >
               {link.label}
             </Link>
           ))}
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
   )
 }
