@@ -36,7 +36,7 @@ export default async function GoleadoresPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
+      <div className="px-4 py-4 space-y-4">
 
         {/* Banner */}
         <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>

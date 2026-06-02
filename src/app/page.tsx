@@ -29,7 +29,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#f0f2f5]">
-      <div className="max-w-2xl mx-auto px-3 py-3 space-y-3">
+      <div className="px-4 py-4 space-y-3">
 
         {/* Banner próximo partido */}
         {proximo && <BannerProximo proximo={proximo} />}

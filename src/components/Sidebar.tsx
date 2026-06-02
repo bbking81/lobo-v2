@@ -62,7 +62,7 @@ export default function Sidebar() {
             onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
           />
           <div>
-            <p className="font-black text-[#1e293b] text-base leading-tight">Lobo Entrerriano</p>
+            <p className="font-black text-[#1e293b] text-sm leading-tight whitespace-nowrap">Lobo Entrerriano</p>
             <p className="text-gray-400 text-[10px] uppercase tracking-widest font-semibold">· Estadísticas ·</p>
           </div>
         </Link>

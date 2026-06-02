@@ -36,7 +36,7 @@ export default async function HistorialesPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-3 py-4 space-y-3">
+      <div className="px-4 py-4 space-y-3">
         {/* Banner */}
         <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
           <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
