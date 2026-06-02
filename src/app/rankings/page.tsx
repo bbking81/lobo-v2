@@ -27,6 +27,15 @@ export default async function RankingsPage({ searchParams }: Props) {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-3">
 
+        {/* Banner */}
+        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
+          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <div>
+            <h1 className="text-white text-2xl font-black leading-tight">Rankings</h1>
+            <p className="text-blue-300 text-sm mt-0.5 font-medium">Goleadores, partidos jugados, tarjetas</p>
+          </div>
+        </div>
+
         {/* Tabs de categoría */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">

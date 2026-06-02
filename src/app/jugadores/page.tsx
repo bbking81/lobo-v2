@@ -46,6 +46,14 @@ export default async function JugadoresPage() {
   return (
     <main className="min-h-screen">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-5">
+        {/* Banner */}
+        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
+          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div>
+            <h1 className="text-white text-2xl font-black leading-tight">Jugadores de Gimnasia y Esgrima</h1>
+            <p className="text-blue-300 text-sm mt-0.5 font-medium">{jugadores.length} jugadores en la historia del club</p>
+          </div>
+        </div>
         {Array.from(grupos.entries()).map(([posicion, jugadoresPosicion]) => (
           <section key={posicion}>
             <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">

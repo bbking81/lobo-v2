@@ -68,11 +68,19 @@ export default async function PartidosPage({ searchParams }: Props) {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-3 py-4 space-y-3">
 
+        {/* Banner */}
+        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
+          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div>
+            <h1 className="text-white text-2xl font-black leading-tight">Partidos</h1>
+            <p className="text-blue-300 text-sm mt-0.5 font-medium">Todos los partidos oficiales de Gimnasia y Esgrima</p>
+          </div>
+        </div>
+
         {/* Filtros */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a] border-b border-gray-100">
-            <span className="text-xs font-black text-white uppercase tracking-widest">Partidos</span>
-            <span className="ml-auto text-xs text-blue-300">{pj} partidos</span>
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+            <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Filtros</span>
           </div>
 
           {/* Filtro año */}
@@ -110,21 +118,21 @@ export default async function PartidosPage({ searchParams }: Props) {
           </div>
         </div>
 
-        {/* Stats del filtro */}
+        {/* Stats coloreadas */}
         {pj > 0 && (
-          <div className="grid grid-cols-5 gap-2">
-            {[
-              { l: 'PJ', v: pj,   c: 'text-gray-700' },
-              { l: 'G',  v: pg,   c: 'text-green-600' },
-              { l: 'E',  v: pe,   c: 'text-orange-500' },
-              { l: 'P',  v: pp,   c: 'text-red-600' },
-              { l: 'GF-GC', v: `${gf}-${gc}`, c: 'text-gray-600' },
-            ].map(s => (
-              <div key={s.l} className="bg-white rounded-xl border border-gray-100 shadow-sm py-3 flex flex-col items-center gap-0.5">
-                <span className={`text-xl font-black ${s.c}`}>{s.v}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">{s.l}</span>
-              </div>
-            ))}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#166534'}}>
+              <span className="text-3xl font-black text-green-400">{pg}</span>
+              <span className="text-xs font-bold text-green-200">Ganados {pj>0?((pg/pj)*100).toFixed(1):'0'}%</span>
+            </div>
+            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#78350f'}}>
+              <span className="text-3xl font-black text-orange-400">{pe}</span>
+              <span className="text-xs font-bold text-orange-200">Empatados {pj>0?((pe/pj)*100).toFixed(1):'0'}%</span>
+            </div>
+            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#7f1d1d'}}>
+              <span className="text-3xl font-black text-red-400">{pp}</span>
+              <span className="text-xs font-bold text-red-200">Perdidos {pj>0?((pp/pj)*100).toFixed(1):'0'}%</span>
+            </div>
           </div>
         )}
 

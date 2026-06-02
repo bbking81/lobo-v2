@@ -38,6 +38,15 @@ export default async function GoleadoresPage() {
     <main className="min-h-screen">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
 
+        {/* Banner */}
+        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
+          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          <div>
+            <h1 className="text-white text-2xl font-black leading-tight">Goleadores</h1>
+            <p className="text-blue-300 text-sm mt-0.5 font-medium">Ranking histórico de goles en Gimnasia y Esgrima</p>
+          </div>
+        </div>
+
         {/* Tabla histórica */}
         <section>
           <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">

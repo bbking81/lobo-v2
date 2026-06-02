@@ -40,7 +40,15 @@ export default async function CompetenciasPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-3 py-4">
+      <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
+        {/* Banner */}
+        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
+          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          <div>
+            <h1 className="text-white text-2xl font-black leading-tight">Competencias</h1>
+            <p className="text-blue-300 text-sm mt-0.5 font-medium">Torneos y competencias oficiales</p>
+          </div>
+        </div>
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           {/* Cabecera tabla */}
           <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-x-3 px-4 py-2 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wide">
