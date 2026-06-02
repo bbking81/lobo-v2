@@ -42,7 +42,7 @@ export default async function HomePage() {
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-sm">📋</span>
             <span className="text-xs font-black text-white uppercase tracking-widest">Resultados recientes</span>
-            <Link href="/competencias" className="ml-auto text-xs text-blue-300 hover:text-white font-semibold">
+            <Link href="/partidos" className="ml-auto text-xs text-blue-300 hover:text-white font-semibold">
               Ver todos →
             </Link>
           </div>
