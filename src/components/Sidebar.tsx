@@ -51,22 +51,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 min-h-screen sticky top-0 h-screen overflow-y-auto">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://loboentrerriano.com/static/logo.png"
-            alt="Lobo Entrerriano"
-            className="h-[78px] w-[78px] object-contain shrink-0"
-            onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
-          />
-          <div style={{ lineHeight: 1.2 }}>
-            <p className="font-bold text-[#1e293b] text-[1.45rem] leading-tight whitespace-nowrap" style={{ fontFamily: "'Inter', system-ui, sans-serif", letterSpacing: '-0.01em' }}>Lobo Entrerriano</p>
-            <p className="text-[0.58rem] font-semibold uppercase mt-1 whitespace-nowrap" style={{ color: '#2e5cda', letterSpacing: '0.22em', fontFamily: "'Inter', system-ui, sans-serif" }}>· Estadísticas ·</p>
-          </div>
-        </Link>
-
+      <aside className="hidden md:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 sticky top-[90px] h-[calc(100vh-90px)] overflow-y-auto">
         {/* Nav principal */}
         <nav className="flex flex-col px-3 pt-4 gap-0.5">
           {NAV_MAIN.map(link => (

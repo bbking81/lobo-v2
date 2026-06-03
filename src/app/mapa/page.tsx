@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 
 export default async function MapaPage() {
   const data = await getApiData()
@@ -11,6 +12,11 @@ export default async function MapaPage() {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-3">
 
+        <SecBanner
+          title="Mapa Global"
+          subtitle="Todos los estadios donde jugó Gimnasia y Esgrima"
+          icon={<><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#93c5fd" stroke="none"/></>}
+        />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">Mapa de Estadios</span>

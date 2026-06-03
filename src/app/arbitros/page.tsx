@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 
 export default async function ArbitrosPage() {
   const data = await getApiData()
@@ -9,6 +10,11 @@ export default async function ArbitrosPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4">
+        <SecBanner
+          title="Árbitros"
+          subtitle="Todos los árbitros que dirigieron partidos de Gimnasia y Esgrima"
+          icon={<><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/><line x1="9" y1="12" x2="15" y2="12"/></>}
+        />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">Árbitros</span>

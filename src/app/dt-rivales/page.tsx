@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 
 export default async function DTRivalesPage() {
   const data = await getApiData()
@@ -9,6 +10,11 @@ export default async function DTRivalesPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4">
+        <SecBanner
+          title="DT Rivales"
+          subtitle="Directores técnicos de equipos rivales"
+          icon={<><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></>}
+        />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">DT Rivales</span>

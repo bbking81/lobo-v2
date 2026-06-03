@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 
 const ORDEN: Record<string, number> = { Arquero: 1, Defensor: 2, Lateral: 3, Mediocampista: 4, Volante: 5, Extremo: 6, Delantero: 7 }
 function ordenPos(pos: string | null) {
@@ -23,6 +24,11 @@ export default async function JugadoresRivalesPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4 space-y-3">
+        <SecBanner
+          title="Jugadores Rivales"
+          subtitle="Jugadores de equipos rivales"
+          icon={<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}
+        />
         {Array.from(grupos.entries()).map(([pos, lista]) => (
           <div key={pos} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-4 py-2 bg-[#1a2e4a]">

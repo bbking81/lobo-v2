@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 
 export default async function EstadiosPage() {
   const data = await getApiData()
@@ -9,6 +10,11 @@ export default async function EstadiosPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-3 py-4">
+        <SecBanner
+          title="Estadios"
+          subtitle="Canchas y estadios donde jugó Gimnasia y Esgrima"
+          icon={<><path d="M2 19 L2 12 Q2 5 12 5 Q22 5 22 12 L22 19"/><line x1="2" y1="19" x2="22" y2="19"/><path d="M5 19 L5 13 Q5 9 12 9 Q19 9 19 13 L19 19"/><rect x="9" y="16" width="6" height="3" rx="0.4"/></>}
+        />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">Estadios</span>

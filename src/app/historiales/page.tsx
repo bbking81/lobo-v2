@@ -1,5 +1,6 @@
 import { getApiData } from '@/lib/api'
 import Link from 'next/link'
+import SecBanner from '@/components/SecBanner'
 
 function esGecLocal(local: string) {
   const l = local.toLowerCase()
@@ -37,14 +38,11 @@ export default async function HistorialesPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="px-4 py-4 space-y-3">
-        {/* Banner */}
-        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
-          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <div>
-            <h1 className="text-white text-2xl font-black leading-tight">Historiales</h1>
-            <p className="text-blue-300 text-sm mt-0.5 font-medium">{rivales.length} rivales · historial de enfrentamientos</p>
-          </div>
-        </div>
+        <SecBanner
+          title="Historiales de Gimnasia y Esgrima"
+          subtitle={`${rivales.length} rivales en el historial`}
+          icon={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>}
+        />
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">Historiales</span>

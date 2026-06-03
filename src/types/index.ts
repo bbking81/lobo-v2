@@ -47,6 +47,14 @@ export interface Partido {
   escudoRival?: string
   publicado: boolean
   arbitro?: string
+  dtGimnasia?: string
+  dtRival?: string
+  mediaFotos?: MediaFoto[]
+}
+
+export interface MediaFoto {
+  src: string
+  leyenda?: string
 }
 
 export interface Jugador {
@@ -67,6 +75,7 @@ export interface Jugador {
   provincia: string | null
   pais: string | null
   notas: string | null
+  mediaFotos?: MediaFoto[]
 }
 
 export interface ApiConfig {
