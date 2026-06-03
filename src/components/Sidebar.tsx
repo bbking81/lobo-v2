@@ -53,17 +53,17 @@ export default function Sidebar() {
       {/* Sidebar desktop */}
       <aside className="hidden md:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 min-h-screen sticky top-0 h-screen overflow-y-auto">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+        <Link href="/" className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://loboentrerriano.com/static/logo.png"
             alt="Lobo Entrerriano"
-            className="h-12 w-12 object-contain shrink-0"
+            className="h-[78px] w-[78px] object-contain shrink-0"
             onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
           />
-          <div>
-            <p className="font-black text-[#1e293b] text-sm leading-tight whitespace-nowrap">Lobo Entrerriano</p>
-            <p className="text-gray-400 text-[10px] uppercase tracking-widest font-semibold">· Estadísticas ·</p>
+          <div style={{ lineHeight: 1.2 }}>
+            <p className="font-bold text-[#1e293b] text-[1.45rem] leading-tight whitespace-nowrap" style={{ fontFamily: "'Inter', system-ui, sans-serif", letterSpacing: '-0.01em' }}>Lobo Entrerriano</p>
+            <p className="text-[0.58rem] font-semibold uppercase mt-1 whitespace-nowrap" style={{ color: '#2e5cda', letterSpacing: '0.22em', fontFamily: "'Inter', system-ui, sans-serif" }}>· Estadísticas ·</p>
           </div>
         </Link>
 
@@ -102,7 +102,7 @@ export default function Sidebar() {
             key={link.href}
             href={link.href}
             className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold transition-colors ${
-              isActive(link.href) ? 'text-[#1e3a5f]' : 'text-gray-400'
+              isActive(link.href) ? 'text-[#2563eb]' : 'text-gray-400'
             }`}
           >
             <span className="leading-none">{link.icon}</span>
@@ -118,13 +118,13 @@ function NavItem({ link, active }: { link: { href: string; icon: React.ReactNode
   return (
     <Link
       href={link.href}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[1rem] font-normal transition-all ${
         active
-          ? 'bg-[#1e3a5f] text-white shadow-sm'
-          : 'text-gray-500 hover:bg-[#1e3a5f]/8 hover:text-[#1e3a5f]'
+          ? 'bg-[#2563eb] text-white font-semibold shadow-sm'
+          : 'text-[#1e293b] hover:bg-[#2563eb]/8 hover:text-[#1d4ed8]'
       }`}
     >
-      <span className={`w-5 flex items-center justify-center shrink-0 ${active ? 'text-white' : 'text-gray-400'}`}>{link.icon}</span>
+      <span className={`w-5 flex items-center justify-center shrink-0 ${active ? 'text-white' : 'text-[#64748b]'}`}>{link.icon}</span>
       <span>{link.label}</span>
     </Link>
   )
