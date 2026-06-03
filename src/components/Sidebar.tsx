@@ -102,7 +102,7 @@ export default function Sidebar() {
             key={link.href}
             href={link.href}
             className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold transition-colors ${
-              isActive(link.href) ? 'text-blue-600' : 'text-gray-400'
+              isActive(link.href) ? 'text-[#1e3a5f]' : 'text-gray-400'
             }`}
           >
             <span className="leading-none">{link.icon}</span>
@@ -118,13 +118,13 @@ function NavItem({ link, active }: { link: { href: string; icon: React.ReactNode
   return (
     <Link
       href={link.href}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
         active
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+          ? 'bg-[#1e3a5f] text-white shadow-sm'
+          : 'text-gray-500 hover:bg-[#1e3a5f]/8 hover:text-[#1e3a5f]'
       }`}
     >
-      <span className="w-5 flex items-center justify-center shrink-0">{link.icon}</span>
+      <span className={`w-5 flex items-center justify-center shrink-0 ${active ? 'text-white' : 'text-gray-400'}`}>{link.icon}</span>
       <span>{link.label}</span>
     </Link>
   )

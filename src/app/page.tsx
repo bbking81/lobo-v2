@@ -112,7 +112,7 @@ function UltimoPartido({ partido: p }: { partido: Partido }) {
   const res = calcularResultado(p.gecGF, p.gecGC)
 
   const resLabel = res === 'V' ? 'Victoria' : res === 'E' ? 'Empate' : 'Derrota'
-  const resBg = res === 'V' ? 'bg-green-500' : res === 'E' ? 'bg-orange-400' : 'bg-red-500'
+  const resBg = res === 'V' ? 'bg-green-600' : res === 'E' ? 'bg-gray-500' : 'bg-red-600'
 
   const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
