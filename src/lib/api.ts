@@ -10,8 +10,11 @@ export async function getApiData(): Promise<ApiData> {
 
 export function fotoUrl(foto: string | null | undefined): string | null {
   if (!foto) return null
+  // Solo fotos con URL absoluta (static/uploads/..._nobg.png) están disponibles.
+  // Las rutas relativas legacy (images/Caritas/...) ya no existen en el servidor (404),
+  // así que las tratamos como "sin foto" para caer al placeholder.
   if (foto.startsWith('http')) return foto
-  return `https://loboentrerriano.com/${foto}`
+  return null
 }
 
 export function torneoToSlug(torneo: string): string {

@@ -3,6 +3,7 @@ import { getApiData, fotoUrl } from '@/lib/api'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import type { Partido } from '@/types'
+import { PlayerHeroPhoto } from '@/components/PlayerAvatar'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -43,18 +44,7 @@ export default async function JugadorPage({ params }: Props) {
         <div className="bg-[#1e3a5f] rounded-lg overflow-hidden flex">
           {/* Foto */}
           <div className="w-36 shrink-0 flex items-end justify-center bg-[#162e4d] overflow-hidden">
-            {foto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={foto}
-                alt={jugador.nombre}
-                className={`w-full ${esNueva ? 'h-48 object-contain object-bottom' : 'h-36 object-cover object-top'}`}
-              />
-            ) : (
-              <div className="w-full h-36 flex items-center justify-center">
-                <span className="text-6xl font-black text-white/20">{jugador.apellido.charAt(0)}</span>
-              </div>
-            )}
+            <PlayerHeroPhoto src={foto} apellido={jugador.apellido} esNueva={!!esNueva} />
           </div>
 
           {/* Info */}
