@@ -6,7 +6,7 @@ interface Props {
   searchParams: Promise<{ torneo?: string; año?: string }>
 }
 
-function calcRes(gecGF: number, gecGC: number) {
+function calcRes(gecGF: number, gecGC: number): 'V' | 'E' | 'D' {
   if (gecGF > gecGC) return 'V'
   if (gecGF === gecGC) return 'E'
   return 'D'
@@ -17,35 +17,29 @@ function esGecLocal(local: string) {
   return l.includes('gimnasia') && !l.includes('chivilcoy') && !l.includes('gualeguay') && !l.includes('jujuy') && !l.includes('mendoza')
 }
 
-const RES = {
-  V: { label: 'V', bg: 'bg-green-500',  badge: 'bg-green-50 border-green-200 text-green-700',  dot: 'bg-green-500',  border: 'border-l-green-500'  },
-  E: { label: 'E', bg: 'bg-orange-400', badge: 'bg-orange-50 border-orange-200 text-orange-700', dot: 'bg-orange-400', border: 'border-l-orange-400' },
-  D: { label: 'D', bg: 'bg-red-500',    badge: 'bg-red-50 border-red-200 text-red-700',          dot: 'bg-red-500',    border: 'border-l-red-500'    },
+const RES_SOLID = {
+  V: { bg: '#16a34a', border: 'border-l-[#16a34a]' },
+  E: { bg: '#64748b', border: 'border-l-[#ca8a04]' },
+  D: { bg: '#dc2626', border: 'border-l-[#dc2626]' },
 }
 
 export default async function PartidosPage({ searchParams }: Props) {
   const { torneo: torneoFiltro, año: añoFiltro } = await searchParams
   const data = await getApiData()
 
-  // Listas para filtros
   const publicados = data.partidos.filter(p => p.publicado)
   const torneos = [...new Set(publicados.map(p => p.torneo?.trim()).filter(Boolean))] as string[]
   const años = [...new Set(publicados.map(p => p.fecha?.slice(0, 4)).filter(Boolean))].sort().reverse() as string[]
 
-  // Filtrar
   let filtrados = publicados
   if (torneoFiltro) filtrados = filtrados.filter(p => p.torneo?.trim() === torneoFiltro)
   if (añoFiltro)    filtrados = filtrados.filter(p => p.fecha?.startsWith(añoFiltro))
 
-  // Estadísticas del filtro actual
   const pj = filtrados.length
   const pg = filtrados.filter(p => p.gecGF > p.gecGC).length
   const pe = filtrados.filter(p => p.gecGF === p.gecGC).length
   const pp = filtrados.filter(p => p.gecGF < p.gecGC).length
-  const gf = filtrados.reduce((s, p) => s + p.gecGF, 0)
-  const gc = filtrados.reduce((s, p) => s + p.gecGC, 0)
 
-  // Agrupar por año
   const grupos = new Map<string, Partido[]>()
   for (const p of filtrados) {
     const año = p.fecha?.slice(0, 4) ?? 'Sin fecha'
@@ -53,7 +47,6 @@ export default async function PartidosPage({ searchParams }: Props) {
     grupos.get(año)!.push(p)
   }
 
-  // URL helper para filtros
   const makeUrl = (newTorneo?: string | null, newAño?: string | null) => {
     const params = new URLSearchParams()
     const t = newTorneo === undefined ? torneoFiltro : (newTorneo ?? undefined)
@@ -65,90 +58,77 @@ export default async function PartidosPage({ searchParams }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="px-4 py-4 space-y-3">
+    <main className="min-h-screen bg-[#f8fafc]">
+      <div className="px-5 py-5">
 
         {/* Banner */}
-        <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%)' }}>
-          <svg className="text-blue-300 shrink-0" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div className="rounded-xl px-7 py-6 mb-4 flex items-center gap-4" style={{ background: '#1e3a5f' }}>
+          <svg width="36" height="36" fill="none" stroke="#93c5fd" strokeWidth="1.8" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
           <div>
-            <h1 className="text-white text-2xl font-black leading-tight">Partidos</h1>
-            <p className="text-blue-300 text-sm mt-0.5 font-medium">Todos los partidos oficiales de Gimnasia y Esgrima</p>
+            <p className="text-white font-bold mb-1" style={{ fontSize: '1.8rem' }}>Partidos</p>
+            <p style={{ fontSize: '0.88rem', color: '#93c5fd' }}>Todos los partidos oficiales de Gimnasia y Esgrima</p>
           </div>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-            <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Filtros</span>
-          </div>
-
-          {/* Filtro año */}
-          <div className="px-3 pt-3 pb-1">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Temporada</p>
-            <div className="flex flex-wrap gap-1.5">
-              <Link href={makeUrl(undefined, null)}
-                className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${!añoFiltro ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
-                Todos
-              </Link>
-              {años.map(a => (
-                <Link key={a} href={makeUrl(undefined, a)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${añoFiltro === a ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
-                  {a}
+        <div className="bg-white border border-[#e2e8f0] rounded-xl mb-4 p-5">
+          <div className="flex flex-wrap gap-4">
+            {/* Temporada */}
+            <div>
+              <p className="text-[0.7rem] text-[#64748b] font-medium mb-1.5">Temporada</p>
+              <div className="flex flex-wrap gap-1.5">
+                <Link href={makeUrl(undefined, null)}
+                  className="px-3 py-1 rounded-full text-xs font-semibold border transition-colors"
+                  style={!añoFiltro ? { background: '#2563eb', color: '#fff', borderColor: '#2563eb' } : { color: '#64748b', borderColor: '#e2e8f0' }}>
+                  Todos
                 </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Filtro torneo */}
-          <div className="px-3 pt-2 pb-3">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Torneo</p>
-            <div className="flex flex-wrap gap-1.5">
-              <Link href={makeUrl(null, undefined)}
-                className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${!torneoFiltro ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
-                Todos
-              </Link>
-              {torneos.slice(0, 10).map(t => (
-                <Link key={t} href={makeUrl(t, undefined)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${torneoFiltro === t ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-500 border-gray-200 hover:border-gray-400'}`}>
-                  {t}
-                </Link>
-              ))}
+                {años.map(a => (
+                  <Link key={a} href={makeUrl(undefined, a)}
+                    className="px-3 py-1 rounded-full text-xs font-semibold border transition-colors"
+                    style={añoFiltro === a ? { background: '#2563eb', color: '#fff', borderColor: '#2563eb' } : { color: '#64748b', borderColor: '#e2e8f0' }}>
+                    {a}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Stats coloreadas */}
+        {/* Stats */}
         {pj > 0 && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#166534'}}>
-              <span className="text-3xl font-black text-green-400">{pg}</span>
-              <span className="text-xs font-bold text-green-200">Ganados {pj>0?((pg/pj)*100).toFixed(1):'0'}%</span>
-            </div>
-            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#78350f'}}>
-              <span className="text-3xl font-black text-orange-400">{pe}</span>
-              <span className="text-xs font-bold text-orange-200">Empatados {pj>0?((pe/pj)*100).toFixed(1):'0'}%</span>
-            </div>
-            <div className="rounded-xl p-4 flex flex-col items-center gap-1" style={{background:'#7f1d1d'}}>
-              <span className="text-3xl font-black text-red-400">{pp}</span>
-              <span className="text-xs font-bold text-red-200">Perdidos {pj>0?((pp/pj)*100).toFixed(1):'0'}%</span>
-            </div>
+          <div className="grid grid-cols-4 gap-3 mb-4">
+            {[
+              { num: pj, label: 'Jugados', color: '#2563eb', bg: '#dbeafe' },
+              { num: pg, label: `Ganados ${((pg/pj)*100).toFixed(0)}%`, color: '#16a34a', bg: '#dcfce7' },
+              { num: pe, label: `Empatados ${((pe/pj)*100).toFixed(0)}%`, color: '#ca8a04', bg: '#fef9c3' },
+              { num: pp, label: `Perdidos ${((pp/pj)*100).toFixed(0)}%`, color: '#dc2626', bg: '#fee2e2' },
+            ].map(s => (
+              <div key={s.label} className="rounded-xl p-4 text-center border" style={{ background: s.bg, borderColor: 'transparent' }}>
+                <p className="text-2xl font-black" style={{ color: s.color }}>{s.num}</p>
+                <p className="text-[0.72rem] font-semibold mt-0.5" style={{ color: s.color }}>{s.label}</p>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Lista de partidos agrupados por año */}
+        {/* Lista */}
         {pj === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-12 text-center text-gray-400 text-sm">
+          <div className="bg-white rounded-xl border border-[#e2e8f0] py-12 text-center text-[#94a3b8] text-sm">
             No hay partidos con estos filtros
           </div>
         ) : (
           Array.from(grupos.entries()).map(([año, partidos]) => (
-            <div key={año} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-xs font-black text-gray-500 uppercase tracking-widest">{año}</span>
-                <span className="text-[10px] text-gray-400">{partidos.length} partidos</span>
+            <div key={año} className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden mb-4">
+              {/* Header — bg #162032 igual al original */}
+              <div className="px-5 py-3 flex items-center justify-between" style={{ background: '#162032' }}>
+                <span className="text-sm font-bold text-[#f1f5f9]">{año}</span>
+                <span className="text-xs text-[#64748b]">{partidos.length} partidos</span>
               </div>
-              <div className="divide-y divide-gray-50">
+
+              {/* Filas — .partido-row: grid 110px 1fr 200px */}
+              <div className="divide-y divide-[#f1f5f9]">
                 {partidos.map(p => <PartidoFila key={p.id} partido={p} />)}
               </div>
             </div>
@@ -165,33 +145,46 @@ function PartidoFila({ partido: p }: { partido: Partido }) {
   const rival = gecLocal ? p.visitante : p.local
   const golesGec = gecLocal ? p.gl : p.gv
   const golesRival = gecLocal ? p.gv : p.gl
-  const res = calcRes(p.gecGF, p.gecGC) as 'V' | 'E' | 'D'
-  const s = RES[res]
+  const res = calcRes(p.gecGF, p.gecGC)
+  const s = RES_SOLID[res]
 
   const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', {
-    day: 'numeric', month: 'short',
+    day: 'numeric', month: 'short', year: 'numeric',
   })
 
   return (
     <Link
       href={`/partido/partido-${p.id}`}
-      className={`flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50/40 transition-colors border-l-[3px] ${s.border}`}
+      className={`grid items-center px-4 py-3 hover:bg-[#f8fafc] transition-colors border-l-[3px] ${s.border}`}
+      style={{ gridTemplateColumns: '110px 1fr 180px' }}
     >
-      <div className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
+      {/* Fecha */}
+      <div>
+        <p className="text-[0.7rem] text-[#475569] font-medium whitespace-nowrap">{fecha}</p>
+        <p className="text-[0.65rem] text-[#94a3b8] mt-0.5">{gecLocal ? 'Local' : 'Visitante'}</p>
+      </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-gray-800 truncate leading-tight">vs {rival}</p>
-        <p className="text-[11px] text-gray-400 leading-tight mt-0.5">
-          {p.torneo?.trim()} · {gecLocal ? 'Local' : 'Visitante'} · {fecha}
+      {/* Equipos centrados */}
+      <div className="flex items-center justify-center gap-2 min-w-0">
+        <p className="text-[0.87rem] font-medium text-[#151e22] text-right truncate flex-1 max-w-[140px]">
+          {gecLocal ? 'Gimnasia y Esgrima' : rival}
+        </p>
+        <div className="flex items-center gap-1.5 shrink-0 px-2">
+          <span className="text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesGec}</span>
+          <span className="text-[#94a3b8] text-sm">-</span>
+          <span className="text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesRival}</span>
+        </div>
+        <p className="text-[0.87rem] font-medium text-[#151e22] truncate flex-1 max-w-[140px]">
+          {gecLocal ? rival : 'Gimnasia y Esgrima'}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="text-base font-black tabular-nums text-gray-800 tracking-tight">
-          {golesGec}<span className="text-gray-300 mx-0.5">-</span>{golesRival}
-        </span>
-        <span className={`text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-md border ${s.badge}`}>
-          {s.label}
+      {/* Resultado + torneo */}
+      <div className="flex items-center justify-end gap-2">
+        <p className="text-[0.72rem] text-[#94a3b8] truncate text-right max-w-[120px]">{p.torneo?.trim()}</p>
+        <span className="text-[0.62rem] font-black text-white px-2 py-0.5 rounded shrink-0"
+          style={{ background: s.bg }}>
+          {res}
         </span>
       </div>
     </Link>
