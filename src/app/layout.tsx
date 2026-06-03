@@ -24,7 +24,7 @@ export default function RootLayout({
         <div className="flex min-h-screen">
           <Sidebar />
           {/* Contenido principal */}
-          <div className="flex-1 min-w-0 pb-16 md:pb-0">
+          <div className="flex-1 min-w-0 pb-16 md:pb-0 bg-[#f8fafc]">
             {children}
           </div>
         </div>
