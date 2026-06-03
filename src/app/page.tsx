@@ -112,7 +112,7 @@ function UltimoPartido({ partido: p }: { partido: Partido }) {
   const res = calcularResultado(p.gecGF, p.gecGC)
 
   const resLabel = res === 'V' ? 'Victoria' : res === 'E' ? 'Empate' : 'Derrota'
-  const resBg = res === 'V' ? 'bg-green-600' : res === 'E' ? 'bg-gray-500' : 'bg-red-600'
+  const resBg = res === 'V' ? 'bg-[#dcfce7] text-[#16a34a]' : res === 'E' ? 'bg-[#fef9c3] text-[#ca8a04]' : 'bg-[#fee2e2] text-[#dc2626]'
 
   const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -148,7 +148,7 @@ function UltimoPartido({ partido: p }: { partido: Partido }) {
               <span className="text-2xl text-gray-300 font-light">—</span>
               <span className="text-5xl font-black text-gray-900 tabular-nums">{golesRival}</span>
             </div>
-            <span className={`text-xs font-black text-white px-4 py-1 rounded-full ${resBg}`}>
+            <span className={`text-xs font-bold px-4 py-1 rounded-full ${resBg}`}>
               {resLabel}
             </span>
           </div>
@@ -185,9 +185,9 @@ function UltimoPartido({ partido: p }: { partido: Partido }) {
 }
 
 const RES_STYLE = {
-  V: { dot: 'bg-green-500', badge: 'bg-green-50 border-green-200 text-green-700', border: 'border-l-green-500' },
-  E: { dot: 'bg-orange-400', badge: 'bg-orange-50 border-orange-200 text-orange-700', border: 'border-l-orange-400' },
-  D: { dot: 'bg-red-500', badge: 'bg-red-50 border-red-200 text-red-700', border: 'border-l-red-500' },
+  V: { dot: 'bg-[#16a34a]', badge: 'bg-[#dcfce7] text-[#16a34a]', border: 'border-l-[#16a34a]' },
+  E: { dot: 'bg-[#ca8a04]', badge: 'bg-[#fef9c3] text-[#ca8a04]', border: 'border-l-[#ca8a04]' },
+  D: { dot: 'bg-[#dc2626]', badge: 'bg-[#fee2e2] text-[#dc2626]', border: 'border-l-[#dc2626]' },
 }
 
 function ResultadoFila({ partido: p }: { partido: Partido }) {
@@ -218,7 +218,7 @@ function ResultadoFila({ partido: p }: { partido: Partido }) {
         <span className="text-base font-black tabular-nums text-gray-800 tracking-tight">
           {golesGec}<span className="text-gray-300 mx-0.5">-</span>{golesRival}
         </span>
-        <span className={`text-[11px] font-black w-6 h-6 flex items-center justify-center rounded-md border ${s.badge}`}>
+        <span className={`text-[11px] font-bold w-6 h-6 flex items-center justify-center rounded-md ${s.badge}`}>
           {res}
         </span>
       </div>
