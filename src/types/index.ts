@@ -50,11 +50,16 @@ export interface Partido {
   dtGimnasia?: string
   dtRival?: string
   mediaFotos?: MediaFoto[]
+  mediaVideos?: MediaFoto[]
+  mediaAudios?: MediaFoto[]
 }
 
 export interface MediaFoto {
   src: string
   leyenda?: string
+  nombre?: string
+  mime?: string
+  tipo?: string
 }
 
 export interface Jugador {

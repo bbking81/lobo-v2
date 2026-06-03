@@ -4,6 +4,7 @@ import ScoreHeader from '@/components/ScoreHeader'
 import Timeline from '@/components/Timeline'
 import Formacion from '@/components/Formacion'
 import Planilla from '@/components/Planilla'
+import MediaPartido from '@/components/MediaPartido'
 import type { Metadata } from 'next'
 import type { JugadorPlanilla } from '@/types'
 
@@ -95,6 +96,12 @@ export default async function PartidoPage({ params }: Props) {
             <Planilla jugadores={planillaRival} titulo={partido.visitante} kit={partido.kitRival} />
           </div>
         )}
+
+        <MediaPartido
+          fotos={partido.mediaFotos ?? []}
+          videos={partido.mediaVideos ?? []}
+          audios={partido.mediaAudios ?? []}
+        />
 
         {partido.arbitro && (
           <p className="text-xs text-gray-400 text-center pb-4">
