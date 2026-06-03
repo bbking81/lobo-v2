@@ -6,60 +6,110 @@ interface Props {
   visitante: string
 }
 
-const iconos: Record<string, string> = {
-  'gol': '⚽',
-  'tarjeta-amarilla': '🟨',
-  'tarjeta-roja': '🟥',
-  'cambio': '🔄',
+/* Iconos CSS puros igual al original (.ev-icon-amarilla / roja / cambio) */
+function IconGol() {
+  return <span style={{ fontSize: 16, lineHeight: 1 }}>⚽</span>
+}
+function IconAmarilla() {
+  return (
+    <span style={{ width: 22, height: 22, background: '#fff', border: '1px solid #cbd5e1', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ display: 'block', width: 10, height: 13, background: '#eab308', borderRadius: 2 }} />
+    </span>
+  )
+}
+function IconRoja() {
+  return (
+    <span style={{ width: 22, height: 22, background: '#fff', border: '1px solid #cbd5e1', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ display: 'block', width: 10, height: 13, background: '#ef4444', borderRadius: 2 }} />
+    </span>
+  )
+}
+function IconCambio() {
+  return <span style={{ fontSize: 15, lineHeight: 1 }}>🔄</span>
 }
 
-export default function Timeline({ eventos, local, visitante }: Props) {
+function evIcon(tipo: string) {
+  if (tipo === 'gol') return <IconGol />
+  if (tipo === 'tarjeta-amarilla') return <IconAmarilla />
+  if (tipo === 'tarjeta-roja') return <IconRoja />
+  if (tipo === 'cambio') return <IconCambio />
+  return <span style={{ fontSize: 14 }}>•</span>
+}
+
+export default function Timeline({ eventos }: Props) {
   if (!eventos || eventos.length === 0) return null
 
   const sorted = [...eventos].sort((a, b) => a.min - b.min)
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <h2 className="text-sm font-bold text-gray-700 px-4 py-3 border-b border-gray-100 uppercase tracking-wide">
-        Eventos
-      </h2>
+    <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+      {/* Header con gradiente igual al original */}
+      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ background: 'linear-gradient(to right, #0f1e35, #1e4a8a)' }}>
+        <svg width="16" height="16" fill="none" stroke="#60a5fa" strokeWidth="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span className="text-xs font-bold text-white uppercase tracking-widest">Eventos del Partido</span>
+      </div>
 
-      <div className="divide-y divide-gray-50">
+      {/* Filas — grid 1fr 48px 1fr igual al .tl-row del original */}
+      <div>
         {sorted.map((ev, i) => {
           const esLocal = ev.equipo === 'local'
-          const icono = iconos[ev.tipo] ?? '•'
 
           return (
-            <div key={i} className="flex items-center px-4 py-2.5 gap-3 text-sm">
-              {/* Minuto */}
-              <span className="text-xs font-bold text-gray-400 w-8 shrink-0 text-right">
-                {ev.min}&apos;
-              </span>
-
-              {/* Lado local */}
-              <div className="flex-1 text-right">
+            <div key={i}
+              className="hover:bg-[#f8fafc] transition-colors"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 48px 1fr',
+                minHeight: 40,
+                borderTop: i > 0 ? '1px solid #f8fafc' : 'none',
+              }}
+            >
+              {/* Celda izquierda (local) */}
+              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 10px 8px 16px', justifyContent: 'flex-end' }}>
                 {esLocal && (
-                  <span className="text-gray-800">
-                    <span className="font-semibold">{ev.jugador}</span>
-                    {ev.tipo === 'cambio' && ev.jugador2 && (
-                      <span className="text-gray-400 text-xs"> ↑{ev.jugador2}</span>
-                    )}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ minWidth: 0, textAlign: 'right' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                        {ev.jugador}
+                      </span>
+                      {ev.tipo === 'cambio' && ev.jugador2 && (
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ {ev.jugador2}</span>
+                      )}
+                      {ev.detalle && ev.tipo !== 'cambio' && (
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>{ev.detalle}</span>
+                      )}
+                    </div>
+                    {evIcon(ev.tipo)}
+                  </div>
                 )}
               </div>
 
-              {/* Icono central */}
-              <span className="text-base shrink-0">{icono}</span>
+              {/* Celda central — minuto */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#475569', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                  {ev.min}&apos;
+                </span>
+              </div>
 
-              {/* Lado visitante */}
-              <div className="flex-1 text-left">
+              {/* Celda derecha (visitante) */}
+              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px 8px 10px' }}>
                 {!esLocal && (
-                  <span className="text-gray-800">
-                    <span className="font-semibold">{ev.jugador}</span>
-                    {ev.tipo === 'cambio' && ev.jugador2 && (
-                      <span className="text-gray-400 text-xs"> ↑{ev.jugador2}</span>
-                    )}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {evIcon(ev.tipo)}
+                    <div style={{ minWidth: 0 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
+                        {ev.jugador}
+                      </span>
+                      {ev.tipo === 'cambio' && ev.jugador2 && (
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ {ev.jugador2}</span>
+                      )}
+                      {ev.detalle && ev.tipo !== 'cambio' && (
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>{ev.detalle}</span>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

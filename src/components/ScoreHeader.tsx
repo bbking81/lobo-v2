@@ -7,10 +7,10 @@ interface Props {
   escudoRival?: string
 }
 
-const resultadoColor: Record<string, string> = {
-  Victoria: 'bg-green-600',
-  Empate: 'bg-yellow-500',
-  Derrota: 'bg-red-600',
+const RES_STYLE: Record<string, { bg: string; color: string }> = {
+  Victoria: { bg: '#dcfce7', color: '#16a34a' },
+  Empate:   { bg: '#fef9c3', color: '#854d0e' },
+  Derrota:  { bg: '#fee2e2', color: '#dc2626' },
 }
 
 export default function ScoreHeader({ partido, resultado, escudoGec, escudoRival }: Props) {
@@ -20,52 +20,56 @@ export default function ScoreHeader({ partido, resultado, escudoGec, escudoRival
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 
+  const resBadge = RES_STYLE[resultado] ?? { bg: '#f1f5f9', color: '#475569' }
+
   return (
-    <div className="bg-[#1e3a5f] text-white">
-      {/* Torneo */}
-      <div className="text-center py-2 text-xs text-blue-200 uppercase tracking-widest border-b border-blue-800">
-        {torneo}
+    <div className="bg-white border-b border-[#e2e8f0]" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+
+      {/* Torneo — banda superior navy */}
+      <div style={{ background: 'linear-gradient(to right, #0f1e35, #1e4a8a)' }} className="text-center py-2 px-4">
+        <span className="text-[0.72rem] font-bold text-white uppercase tracking-widest opacity-80">{torneo}</span>
       </div>
 
-      {/* Score */}
-      <div className="flex items-center justify-between max-w-2xl mx-auto px-4 py-6 gap-4">
+      {/* Score principal */}
+      <div className="flex items-center justify-between max-w-2xl mx-auto px-6 py-6 gap-4">
+
         {/* Local */}
-        <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
-          {escudoGec && (
+        <div className="flex flex-col items-center gap-2.5 flex-1 min-w-0">
+          {escudoGec
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={escudoGec} alt={local} className="h-16 w-16 object-contain" />
-          )}
-          <span className="font-bold text-sm text-center leading-tight">{local}</span>
+            ? <img src={escudoGec} alt={local} className="h-20 w-20 object-contain" />
+            : <div className="h-20 w-20 rounded-xl bg-[#e2e8f0] flex items-center justify-center text-2xl font-black text-[#64748b]">{local.charAt(0)}</div>
+          }
+          <span className="font-bold text-[0.87rem] text-[#1e293b] text-center leading-tight">{local}</span>
         </div>
 
-        {/* Marcador */}
-        <div className="flex flex-col items-center gap-1 shrink-0">
+        {/* Marcador central */}
+        <div className="flex flex-col items-center gap-2 shrink-0">
           <div className="flex items-center gap-3">
-            <span className="text-5xl font-black tabular-nums">{gl}</span>
-            <span className="text-3xl text-blue-300 font-light">-</span>
-            <span className="text-5xl font-black tabular-nums">{gv}</span>
+            <span className="font-black tabular-nums text-[#0f172a]" style={{ fontSize: '3.5rem', lineHeight: 1 }}>{gl}</span>
+            <span className="text-[#94a3b8] font-light" style={{ fontSize: '1.8rem' }}>—</span>
+            <span className="font-black tabular-nums text-[#0f172a]" style={{ fontSize: '3.5rem', lineHeight: 1 }}>{gv}</span>
           </div>
           {resultado && (
-            <span className={`text-xs font-bold px-3 py-0.5 rounded-full ${resultadoColor[resultado] ?? 'bg-gray-600'}`}>
+            <span className="text-xs font-bold px-4 py-1 rounded-full" style={{ background: resBadge.bg, color: resBadge.color }}>
               {resultado}
             </span>
           )}
+          <div className="text-center mt-1">
+            <p className="text-[0.72rem] text-[#475569] capitalize">{fechaFormateada}{hora ? ` · ${hora} hs` : ''}</p>
+            {estadio && <p className="text-[0.68rem] text-[#94a3b8] mt-0.5">{estadio}</p>}
+          </div>
         </div>
 
         {/* Visitante */}
-        <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
-          {escudoRival && (
+        <div className="flex flex-col items-center gap-2.5 flex-1 min-w-0">
+          {escudoRival
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={escudoRival} alt={visitante} className="h-16 w-16 object-contain" />
-          )}
-          <span className="font-bold text-sm text-center leading-tight">{visitante}</span>
+            ? <img src={escudoRival} alt={visitante} className="h-20 w-20 object-contain" />
+            : <div className="h-20 w-20 rounded-xl bg-[#e2e8f0] flex items-center justify-center text-2xl font-black text-[#64748b]">{visitante.charAt(0)}</div>
+          }
+          <span className="font-bold text-[0.87rem] text-[#1e293b] text-center leading-tight">{visitante}</span>
         </div>
-      </div>
-
-      {/* Info */}
-      <div className="text-center pb-4 text-xs text-blue-200 space-y-0.5">
-        <p className="capitalize">{fechaFormateada}{hora ? ` — ${hora}` : ''}</p>
-        {estadio && <p>{estadio}</p>}
       </div>
     </div>
   )
