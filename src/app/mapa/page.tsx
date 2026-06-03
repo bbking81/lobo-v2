@@ -1,12 +1,17 @@
 import { getApiData } from '@/lib/api'
 import SecBanner from '@/components/SecBanner'
+import MapaEstadios, { type EstadioMapa } from '@/components/MapaEstadios'
 
 export default async function MapaPage() {
   const data = await getApiData()
   const estadios = data.estadios.filter(e => e.nombre && e.pj > 0).sort((a, b) => b.pj - a.pj)
 
   const conCoordenadas = estadios.filter(e => e.lat && e.lng)
-  const sinCoordenadas = estadios.filter(e => !e.lat || !e.lng)
+
+  const estadiosMapa: EstadioMapa[] = conCoordenadas.map(e => ({
+    id: e.id, nombre: e.nombre, ciudad: e.ciudad, provincia: e.provincia, pais: e.pais,
+    pj: e.pj, lat: e.lat as number, lng: e.lng as number, fotoUrl: e.fotoUrl,
+  }))
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -20,19 +25,17 @@ export default async function MapaPage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
             <span className="text-xs font-black text-white uppercase tracking-widest">Mapa de Estadios</span>
-            <span className="ml-auto text-xs text-blue-300">{estadios.length} estadios</span>
+            <span className="ml-auto text-xs text-blue-300">{conCoordenadas.length} de {estadios.length} ubicados</span>
           </div>
 
-          {conCoordenadas.length === 0 ? (
+          {estadiosMapa.length === 0 ? (
             <div className="py-12 text-center text-gray-400">
               <p className="text-4xl mb-3">🗺️</p>
-              <p className="text-sm font-semibold">Mapa interactivo próximamente</p>
-              <p className="text-xs mt-1">Las coordenadas de los estadios están siendo cargadas</p>
+              <p className="text-sm font-semibold">Sin estadios ubicados todavía</p>
+              <p className="text-xs mt-1">Las coordenadas se cargan desde el admin</p>
             </div>
           ) : (
-            <div className="p-4 text-sm text-gray-600">
-              {conCoordenadas.length} estadios con coordenadas cargadas
-            </div>
+            <MapaEstadios estadios={estadiosMapa} />
           )}
         </div>
 
