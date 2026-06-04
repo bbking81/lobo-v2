@@ -1,16 +1,5 @@
 import { getApiData, torneoToSlug } from '@/lib/api'
-import Link from 'next/link'
-
-const TIPO_STYLES: Record<string, { bg: string; color: string }> = {
-  Liga:     { bg: '#dbeafe', color: '#1d4ed8' },
-  Copa:     { bg: '#fce7f3', color: '#9d174d' },
-  Regional: { bg: '#d1fae5', color: '#065f46' },
-  Torneo:   { bg: '#fef3c7', color: '#92400e' },
-  Reducido: { bg: '#ede9fe', color: '#5b21b6' },
-  Playoff:  { bg: '#ffedd5', color: '#c2410c' },
-  Amistoso: { bg: '#f1f5f9', color: '#475569' },
-  Otro:     { bg: '#f1f5f9', color: '#475569' },
-}
+import ListaCompetencias, { type TorneoResumen } from '@/components/ListaCompetencias'
 
 function inferirTipo(nombre: string): string {
   const n = nombre.toLowerCase()
@@ -22,12 +11,6 @@ function inferirTipo(nombre: string): string {
   if (n.includes('amistoso')) return 'Amistoso'
   if (n.includes('federal') || n.includes('argentino') || n.includes('torneo') || n.includes('primera') || n.includes('nacional')) return 'Torneo'
   return 'Otro'
-}
-
-interface TorneoResumen {
-  nombre: string; slug: string; tipo: string
-  pj: number; pg: number; pe: number; pp: number
-  gf: number; gc: number; ultimaFecha: string
 }
 
 export default async function CompetenciasPage() {
@@ -49,13 +32,10 @@ export default async function CompetenciasPage() {
   }
 
   const torneos = Array.from(mapaT.values()).sort((a, b) => b.ultimaFecha.localeCompare(a.ultimaFecha))
-  const año = (t: TorneoResumen) => t.ultimaFecha?.slice(0, 4) ?? ''
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5">
-
-        {/* Banner — sec-banner-light del original */}
         <div className="rounded-xl px-7 py-6 mb-4 flex items-center gap-4" style={{ background: '#1e3a5f' }}>
           <svg width="36" height="36" fill="none" stroke="#93c5fd" strokeWidth="1.8" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 4 }}>
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
@@ -69,47 +49,7 @@ export default async function CompetenciasPage() {
           </div>
         </div>
 
-        {/* Grid de cards — repeat(auto-fill, minmax(300px, 1fr)) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-          {torneos.map(t => {
-            const tipo = TIPO_STYLES[t.tipo] ?? TIPO_STYLES.Otro
-            const pct = t.pj > 0 ? ((t.pg / t.pj) * 100).toFixed(0) : '0'
-            return (
-              <Link key={t.nombre} href={`/competencias/${t.slug}`}
-                className="bg-white border border-[#e2e8f0] rounded-xl flex flex-col gap-2.5 p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-sm"
-              >
-                {/* Tipo badge */}
-                <span className="text-[0.7rem] font-bold uppercase tracking-[0.07em] px-2 py-0.5 rounded self-start"
-                  style={{ background: tipo.bg, color: tipo.color }}>
-                  {t.tipo}
-                </span>
-
-                {/* Nombre + año */}
-                <div>
-                  <p className="font-bold text-[1rem] text-[#1e293b] leading-tight">{t.nombre}</p>
-                  <p className="text-[0.8rem] text-[#94a3b8] font-semibold mt-0.5">{año(t)}</p>
-                </div>
-
-                {/* Stats */}
-                <div className="flex gap-3 pt-2.5 border-t border-[#e2e8f0]">
-                  {[
-                    { num: t.pj, label: 'PJ' },
-                    { num: t.pg, label: 'PG', color: '#16a34a' },
-                    { num: t.pe, label: 'PE', color: '#ca8a04' },
-                    { num: t.pp, label: 'PP', color: '#dc2626' },
-                    { num: `${pct}%`, label: 'Rend.' },
-                  ].map(s => (
-                    <div key={s.label} className="flex-1 text-center">
-                      <p className="text-[1.1rem] font-black" style={{ color: s.color ?? '#2563eb' }}>{s.num}</p>
-                      <p className="text-[0.65rem] text-[#94a3b8] uppercase tracking-[0.05em] mt-0.5">{s.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-
+        <ListaCompetencias torneos={torneos} />
       </div>
     </main>
   )
