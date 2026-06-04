@@ -41,7 +41,7 @@ export async function GET() {
       group: 'dts', q: d.nombre.toLowerCase(),
       nombre: d.nombre,
       sub: ['Director Técnico', d.pais].filter(Boolean).join(' · '),
-      foto: fotoUrl(d.foto), initials: initialsOf(d.nombre), count: null, href: '/dts',
+      foto: fotoUrl(d.foto), initials: initialsOf(d.nombre), count: null, href: `/dt/${d.id}`,
     })
   }
 
@@ -53,7 +53,7 @@ export async function GET() {
       sub: [e.ciudad, e.provincia].filter(Boolean).join(' · '),
       foto: fotoUrl(e.fotoUrl), initials: initialsOf(e.nombre),
       count: data.partidos.filter(p => p.estadio === e.nombre).length,
-      href: '/estadios',
+      href: `/estadio/${e.id}`,
     })
   }
 
@@ -83,7 +83,7 @@ export async function GET() {
     items.push({
       group: 'arbitros', q: a.nombre.toLowerCase(),
       nombre: a.nombre, sub: 'Árbitro',
-      foto: fotoUrl(a.foto), initials: initialsOf(a.nombre), count: null, href: '/arbitros',
+      foto: fotoUrl(a.foto), initials: initialsOf(a.nombre), count: null, href: `/arbitro/${a.id}`,
     })
   }
 

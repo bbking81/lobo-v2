@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { SearchInput, AlphaBar, SortTh, sortIcon } from '@/components/listControls'
 import type { Arbitro } from '@/types'
 
@@ -51,13 +52,13 @@ export default function ListaArbitros({ arbitros }: { arbitros: Arbitro[] }) {
         {visibles.length === 0 ? (
           <div className="py-10 text-center text-gray-400 text-sm">Sin árbitros que coincidan</div>
         ) : visibles.map(a => (
-          <div key={a.id} className="grid gap-x-2 items-center px-4 py-2.5" style={{ gridTemplateColumns: GRID }}>
+          <Link key={a.id} href={`/arbitro/${a.id}`} className="grid gap-x-2 items-center px-4 py-2.5 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: GRID }}>
             <p className="text-sm font-semibold text-gray-800 truncate">{a.apellido}, {a.nombres}</p>
             <span className="w-7 text-center text-sm tabular-nums text-gray-600">{pjDe(a)}</span>
             <span className="w-7 text-center text-sm tabular-nums font-bold text-green-600">{a.v ?? a.pg}</span>
             <span className="w-7 text-center text-sm tabular-nums font-bold text-orange-500">{a.e ?? a.pe}</span>
             <span className="w-7 text-center text-sm tabular-nums font-bold text-red-500">{a.d ?? a.pp}</span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

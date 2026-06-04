@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { SearchInput, SortTh, sortIcon } from '@/components/listControls'
 import type { DT } from '@/types'
 
@@ -43,7 +44,7 @@ export default function ListaDTs({ dts }: { dts: DT[] }) {
         ) : visibles.map(d => {
           const pct = d.pj > 0 ? Math.round((d.pg / d.pj) * 100) : 0
           return (
-            <div key={d.id} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 items-center px-4 py-3" style={{ gridTemplateColumns: GRID }}>
+            <Link key={d.id} href={`/dt/${d.id}`} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 items-center px-4 py-3 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: GRID }}>
               <div>
                 <p className="text-sm font-bold text-gray-800">{d.apellido}, {d.nombres}</p>
                 <p className="text-xs text-gray-400">{pct}% victorias</p>
@@ -52,7 +53,7 @@ export default function ListaDTs({ dts }: { dts: DT[] }) {
               <span className="w-7 text-center text-sm tabular-nums font-bold text-green-600">{d.pg}</span>
               <span className="w-7 text-center text-sm tabular-nums font-bold text-orange-500">{d.pe}</span>
               <span className="w-7 text-center text-sm tabular-nums font-bold text-red-500">{d.pp}</span>
-            </div>
+            </Link>
           )
         })}
       </div>

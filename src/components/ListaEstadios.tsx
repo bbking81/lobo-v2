@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { SearchInput, sortIcon } from '@/components/listControls'
 import type { Estadio } from '@/types'
 
@@ -52,7 +53,7 @@ export default function ListaEstadios({ estadios }: { estadios: Estadio[] }) {
           const pct = e.pj > 0 ? Math.round((e.pg / e.pj) * 100) : 0
           const ubicacion = [e.ciudad, e.provincia, e.pais].filter(Boolean).join(', ')
           return (
-            <div key={e.id} className="flex items-center gap-3 px-4 py-3">
+            <Link key={e.id} href={`/estadio/${e.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-gray-800 truncate">{e.nombre}</p>
                 {ubicacion && <p className="text-xs text-gray-400">{ubicacion}</p>}
@@ -71,7 +72,7 @@ export default function ListaEstadios({ estadios }: { estadios: Estadio[] }) {
                   <span className="text-red-500 font-bold">{e.pp}</span>
                 </p>
               </div>
-            </div>
+            </Link>
           )
         })}
       </div>
