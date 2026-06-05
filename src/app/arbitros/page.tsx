@@ -9,7 +9,7 @@ export default async function ArbitrosPage() {
     .sort((a, b) => (b.pj || b.v + b.e + b.d) - (a.pj || a.v + a.e + a.d))
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#f8fafc]">
       <div className="max-w-2xl mx-auto px-3 py-4">
         <SecBanner
           title="Árbitros"

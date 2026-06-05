@@ -7,7 +7,7 @@ export default async function DTsPage() {
   const dts = data.dts.filter((d) => d.apellido && d.pj > 0).sort((a, b) => b.pj - a.pj)
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#f8fafc]">
       <div className="max-w-2xl mx-auto px-3 py-4">
         <SecBanner
           title="Directores Técnicos"

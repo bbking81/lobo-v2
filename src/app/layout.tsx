@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${dmSans.variable} h-full antialiased`}>
-      <body className="font-[family-name:var(--font-dm-sans)] bg-gray-50">
+      <body className="font-[family-name:var(--font-dm-sans)] bg-[#f8fafc]">
         <div className="flex flex-col min-h-screen">
           {/* Barra superior full-width */}
           <Topbar />

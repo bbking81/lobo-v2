@@ -36,7 +36,7 @@ export default async function HistorialesPage() {
     .sort((a, b) => b.pj - a.pj)
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-4 py-4 space-y-3">
         <SecBanner
           title="Historiales de Gimnasia y Esgrima"
