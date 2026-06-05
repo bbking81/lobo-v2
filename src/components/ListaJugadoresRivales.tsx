@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { SearchInput, AlphaBar } from '@/components/listControls'
 import type { JugadorRival } from '@/types'
 
@@ -42,7 +43,7 @@ export default function ListaJugadoresRivales({ jugadores }: { jugadores: Jugado
           </div>
           <div className="divide-y divide-gray-50">
             {lista.map(j => (
-              <div key={j.id} className="flex items-center gap-3 px-4 py-2.5">
+              <Link key={j.id} href={`/jugador-rival/${j.id}`} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-800 truncate">{j.apellido}, {j.nombres}</p>
                   {j.equipo && <p className="text-xs text-gray-400 truncate">{j.equipo}</p>}
@@ -51,7 +52,7 @@ export default function ListaJugadoresRivales({ jugadores }: { jugadores: Jugado
                   <p className="font-bold">{j.pj} PJ</p>
                   {j.goles > 0 && <p className="text-green-600 font-bold">{j.goles} ⚽</p>}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

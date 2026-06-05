@@ -74,7 +74,7 @@ export async function GET() {
       group: 'jugadores-rivales', q: j.nombre.toLowerCase(),
       nombre: j.nombre,
       sub: [j.posicion || 'Jugador rival', j.equipo].filter(Boolean).join(' · '),
-      foto: fotoUrl(j.foto), initials: initialsOf(j.nombre), count: null, href: '/jugadores-rivales',
+      foto: fotoUrl(j.foto), initials: initialsOf(j.nombre), count: null, href: `/jugador-rival/${j.id}`,
     })
   }
 
