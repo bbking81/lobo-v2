@@ -26,12 +26,11 @@ export default function ListaDTs({ dts }: { dts: DT[] }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
-        <span className="text-xs font-black text-white uppercase tracking-widest">Directores Técnicos</span>
-        <span className="ml-auto text-xs text-blue-300">{visibles.length}{visibles.length !== dts.length ? ` de ${dts.length}` : ''} DTs</span>
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#e2e8f0]">
+        <SearchInput value={q} onChange={setQ} placeholder="Buscar técnico..." />
+        <span className="ml-auto text-xs text-[#94a3b8] shrink-0">{visibles.length}{visibles.length !== dts.length ? ` de ${dts.length}` : ''} DTs</span>
       </div>
-      <div className="px-4 py-3 border-b border-gray-100"><SearchInput value={q} onChange={setQ} placeholder="Buscar técnico..." /></div>
-      <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-4 py-2 bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
+      <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-2 px-4 py-2 bg-[#162032] border-b border-[#e2e8f0] text-[10px] font-bold text-white uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
         <SortTh onClick={() => sort('nombre')}>Nombre {sortIcon(col === 'nombre', dir)}</SortTh>
         <SortTh onClick={() => sort('pj')} className="w-7 text-center">PJ {sortIcon(col === 'pj', dir)}</SortTh>
         <SortTh onClick={() => sort('pg')} className="w-7 text-center text-green-600">PG {sortIcon(col === 'pg', dir)}</SortTh>

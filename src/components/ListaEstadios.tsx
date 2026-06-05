@@ -29,12 +29,11 @@ export default function ListaEstadios({ estadios }: { estadios: Estadio[] }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
-        <span className="text-xs font-black text-white uppercase tracking-widest">Estadios</span>
-        <span className="ml-auto text-xs text-blue-300">{visibles.length}{visibles.length !== estadios.length ? ` de ${estadios.length}` : ''} estadios</span>
-      </div>
-      <div className="px-4 py-3 border-b border-gray-100 flex flex-col gap-3">
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar estadio..." />
+      <div className="px-4 py-3 border-b border-[#e2e8f0] flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <SearchInput value={q} onChange={setQ} placeholder="Buscar estadio..." />
+          <span className="ml-auto text-xs text-[#94a3b8] shrink-0">{visibles.length}{visibles.length !== estadios.length ? ` de ${estadios.length}` : ''} estadios</span>
+        </div>
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mr-1">Ordenar:</span>
           {COLS.map(({ c, label }) => (

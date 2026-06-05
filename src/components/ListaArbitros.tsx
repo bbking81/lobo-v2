@@ -33,15 +33,14 @@ export default function ListaArbitros({ arbitros }: { arbitros: Arbitro[] }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
-        <span className="text-xs font-black text-white uppercase tracking-widest">Árbitros</span>
-        <span className="ml-auto text-xs text-blue-300">{visibles.length}{visibles.length !== arbitros.length ? ` de ${arbitros.length}` : ''} árbitros</span>
-      </div>
-      <div className="px-4 py-3 border-b border-gray-100 flex flex-col gap-3">
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar árbitro..." />
+      <div className="px-4 py-3 border-b border-[#e2e8f0] flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <SearchInput value={q} onChange={setQ} placeholder="Buscar árbitro..." />
+          <span className="ml-auto text-xs text-[#94a3b8] shrink-0">{visibles.length}{visibles.length !== arbitros.length ? ` de ${arbitros.length}` : ''} árbitros</span>
+        </div>
         <AlphaBar value={letra} onChange={setLetra} />
       </div>
-      <div className="grid gap-x-2 px-4 py-2 bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
+      <div className="grid gap-x-2 px-4 py-2 bg-[#162032] border-b border-[#e2e8f0] text-[10px] font-bold text-white uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
         <SortTh onClick={() => sort('nombre')}>Árbitro {sortIcon(col === 'nombre', dir)}</SortTh>
         <SortTh onClick={() => sort('pj')} className="w-7 text-center">PJ {sortIcon(col === 'pj', dir)}</SortTh>
         <SortTh onClick={() => sort('v')} className="w-7 text-center text-green-600">V {sortIcon(col === 'v', dir)}</SortTh>
