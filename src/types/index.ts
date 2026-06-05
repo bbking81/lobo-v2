@@ -71,6 +71,9 @@ export interface Jugador {
   foto: string | null   // URL completa o ruta relativa
   fotoUrl: string | null
   pj: number            // partidos jugados
+  pg: number            // partidos ganados
+  pe: number            // partidos empatados
+  pp: number            // partidos perdidos
   goles: number
   asistencias: number
   ta: number            // tarjetas amarillas

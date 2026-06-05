@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 import ListaGoleadores from '@/components/ListaGoleadores'
 
 export default async function GoleadoresPage() {
@@ -13,6 +14,11 @@ export default async function GoleadoresPage() {
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5 max-w-[860px]">
+        <SecBanner
+          title="Goleadores históricos"
+          subtitle="Ranking de goleadores del club"
+          icon={<><circle cx="12" cy="12" r="10"/><polygon points="12,6.5 13.5,10 17.2,10 14.3,12.5 15.4,16.2 12,14 8.6,16.2 9.7,12.5 6.8,10 10.5,10" strokeWidth="1.5"/></>}
+        />
         <ListaGoleadores goleadores={goleadores} totalGoles={totalGoles} />
       </div>
     </main>
