@@ -64,7 +64,7 @@ export async function GET() {
       nombre: e.nombre, sub: e.ciudad || 'Equipo rival', foto: null,
       initials: e.nombre.slice(0, 2).toUpperCase(),
       count: data.partidos.filter(p => p.local === e.nombre || p.visitante === e.nombre).length,
-      href: '/historiales',
+      href: `/rival/${encodeURIComponent(e.nombre ?? '')}`,
     })
   }
 

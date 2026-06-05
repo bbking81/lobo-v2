@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { SearchInput, SortTh, sortIcon } from '@/components/listControls'
 
 export interface RivalRow {
@@ -48,7 +49,7 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
         ) : visibles.map(r => {
           const pct = r.pj > 0 ? Math.round((r.pg / r.pj) * 100) : 0
           return (
-            <div key={r.rival} className="grid gap-x-2 items-center px-4 py-2.5 hover:bg-blue-50/40 transition-colors" style={{ gridTemplateColumns: GRID }}>
+            <Link key={r.rival} href={`/rival/${encodeURIComponent(r.rival)}`} className="grid gap-x-2 items-center px-4 py-2.5 hover:bg-blue-50/40 transition-colors" style={{ gridTemplateColumns: GRID }}>
               <div className="min-w-0">
                 <p className="text-sm font-bold text-gray-800 truncate">{r.rival}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
@@ -64,7 +65,7 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
               <span className="w-7 text-center text-sm tabular-nums font-bold text-red-500">{r.pp}</span>
               <span className="w-7 text-center text-sm tabular-nums text-gray-600">{r.gf}</span>
               <span className="w-7 text-center text-sm tabular-nums text-gray-600">{r.gc}</span>
-            </div>
+            </Link>
           )
         })}
       </div>
