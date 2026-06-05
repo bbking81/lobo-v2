@@ -21,18 +21,52 @@ const TIPO_STYLES: Record<string, { bg: string; color: string }> = {
   Otro: { bg: '#f1f5f9', color: '#475569' },
 }
 
+const TIPOS = ['Liga', 'Copa', 'Regional', 'Torneo', 'Reducido', 'Playoff', 'Amistoso', 'Otro']
+const selCls = 'bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-3 py-[7px] text-sm text-[#1e293b] outline-none'
+
 export default function ListaCompetencias({ torneos }: { torneos: TorneoResumen[] }) {
   const [q, setQ] = useState('')
+  const [tipo, setTipo] = useState('')
+  const [decada, setDecada] = useState('')
+
+  const decadas = useMemo(() => {
+    const ds = new Set<string>()
+    for (const t of torneos) { const y = parseInt(t.ultimaFecha?.slice(0, 4) ?? ''); if (y) ds.add(String(Math.floor(y / 10) * 10)) }
+    return [...ds].sort((a, b) => Number(b) - Number(a))
+  }, [torneos])
+
   const visibles = useMemo(() => {
     const term = q.trim().toLowerCase()
-    return term ? torneos.filter(t => t.nombre.toLowerCase().includes(term)) : torneos
-  }, [torneos, q])
+    return torneos.filter(t => {
+      if (tipo && t.tipo !== tipo) return false
+      if (decada) { const y = parseInt(t.ultimaFecha?.slice(0, 4) ?? ''); if (String(Math.floor(y / 10) * 10) !== decada) return false }
+      if (term && !t.nombre.toLowerCase().includes(term)) return false
+      return true
+    })
+  }, [torneos, q, tipo, decada])
 
   const año = (t: TorneoResumen) => t.ultimaFecha?.slice(0, 4) ?? ''
 
   return (
     <>
-      <div className="mb-4"><SearchInput value={q} onChange={setQ} placeholder="Buscar torneo..." /></div>
+      {/* Filtros */}
+      <div className="flex gap-2.5 flex-wrap items-center mb-4">
+        <select value={tipo} onChange={e => setTipo(e.target.value)} className={selCls}>
+          <option value="">Todos los tipos</option>
+          {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
+        <select value={decada} onChange={e => setDecada(e.target.value)} className={selCls}>
+          <option value="">Todas las décadas</option>
+          {decadas.map(d => <option key={d} value={d}>{d}s</option>)}
+        </select>
+        <div className="flex-1 min-w-[160px]"><SearchInput value={q} onChange={setQ} placeholder="Buscar torneo..." /></div>
+      </div>
+
+      {/* Píldora total */}
+      <div className="inline-block bg-white border border-[#e2e8f0] text-[0.85rem] font-semibold text-[#1e293b] mb-4" style={{ borderRadius: 30, padding: '8px 18px' }}>
+        {visibles.length} competencia{visibles.length !== 1 ? 's' : ''}{visibles.length !== torneos.length ? ` de ${torneos.length}` : ''}
+      </div>
+
       {visibles.length === 0 ? (
         <div className="bg-white border border-[#e2e8f0] rounded-xl py-10 text-center text-[#94a3b8] text-sm">Sin torneos que coincidan</div>
       ) : (
@@ -42,7 +76,8 @@ export default function ListaCompetencias({ torneos }: { torneos: TorneoResumen[
             const pct = t.pj > 0 ? ((t.pg / t.pj) * 100).toFixed(0) : '0'
             return (
               <Link key={t.nombre} href={`/competencias/${t.slug}`}
-                className="bg-white border border-[#e2e8f0] rounded-xl flex flex-col gap-2.5 p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-sm">
+                className="bg-white border border-[#e2e8f0] rounded-[10px] flex flex-col gap-2.5 transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
+                style={{ padding: '20px 22px' }}>
                 <span className="text-[0.7rem] font-bold uppercase tracking-[0.07em] px-2 py-0.5 rounded self-start" style={{ background: tipo.bg, color: tipo.color }}>{t.tipo}</span>
                 <div>
                   <p className="font-bold text-[1rem] text-[#1e293b] leading-tight">{t.nombre}</p>

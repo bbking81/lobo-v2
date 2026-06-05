@@ -87,19 +87,21 @@ export default async function RankingsPage({ searchParams }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-4 py-4 space-y-3 max-w-3xl">
         <SecBanner title="Rankings" subtitle="Jugadores y cuerpo técnico en la historia del club"
           icon={<><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></>} />
 
-        {/* Tabs */}
-        <div className="flex gap-2">
-          <Link href="/rankings?tab=jug" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'jug' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Jugadores</Link>
-          <Link href="/rankings?tab=dt" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'dt' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Directores Técnicos</Link>
-        </div>
+        {/* Card: toggle + configuración (estructura del original) */}
+        <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.07)]">
+          {/* Toggle Jugadores / DT */}
+          <div className="flex gap-2 p-3 border-b border-[#e2e8f0] bg-[#f8fafc]">
+            <Link href="/rankings?tab=jug" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'jug' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Jugadores</Link>
+            <Link href="/rankings?tab=dt" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'dt' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Directores Técnicos</Link>
+          </div>
 
-        {/* Form de configuración */}
-        <form method="GET" action="/rankings" className="bg-white rounded-xl border border-[#e2e8f0] p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Form de configuración */}
+          <form method="GET" action="/rankings" className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input type="hidden" name="tab" value={tab} />
           <Field label="Ranking por">
             <select name="metrica" defaultValue={metrica} className={`${inputCls} w-full`}>
@@ -133,7 +135,8 @@ export default async function RankingsPage({ searchParams }: Props) {
           <div className="flex items-end">
             <button type="submit" className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg px-5 py-2 text-sm font-semibold transition-colors w-full sm:w-auto">Aplicar</button>
           </div>
-        </form>
+          </form>
+        </div>
 
         {/* Resultados */}
         {tab === 'jug'

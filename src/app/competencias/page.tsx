@@ -1,4 +1,5 @@
 import { getApiData, torneoToSlug } from '@/lib/api'
+import SecBanner from '@/components/SecBanner'
 import ListaCompetencias, { type TorneoResumen } from '@/components/ListaCompetencias'
 
 function inferirTipo(nombre: string): string {
@@ -36,18 +37,11 @@ export default async function CompetenciasPage() {
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5">
-        <div className="rounded-xl px-7 py-6 mb-4 flex items-center gap-4" style={{ background: '#1e3a5f' }}>
-          <svg width="36" height="36" fill="none" stroke="#93c5fd" strokeWidth="1.8" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 4 }}>
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-            <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-            <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
-          </svg>
-          <div>
-            <p className="text-white font-bold mb-1" style={{ fontSize: '1.8rem' }}>Competencias</p>
-            <p style={{ fontSize: '0.88rem', color: '#93c5fd' }}>{torneos.length} torneos en la historia del club</p>
-          </div>
-        </div>
+        <SecBanner
+          title="Competencias"
+          subtitle="Historial de torneos y competencias del club"
+          icon={<><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>}
+        />
 
         <ListaCompetencias torneos={torneos} />
       </div>
