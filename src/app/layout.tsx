@@ -3,6 +3,7 @@ import { DM_Sans, Archivo } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
+import Footer from "@/components/Footer";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -39,6 +40,8 @@ export default function RootLayout({
               {children}
             </div>
           </div>
+          {/* Footer full-width pegado contra el sidebar */}
+          <Footer />
         </div>
       </body>
     </html>
