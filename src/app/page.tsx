@@ -1,4 +1,4 @@
-import { getApiData } from '@/lib/api'
+import { getApiData, torneoToSlug } from '@/lib/api'
 import Link from 'next/link'
 import type { Partido, Jugador } from '@/types'
 
@@ -64,6 +64,20 @@ export default async function HomePage() {
     return parts.length >= 3 && parts[1] === mm && parts[2] === dd
   })
 
+  // Datos para la card de Último Partido (orden real local/visitante)
+  const findId = (arr: { id: number; nombre: string }[], name?: string) =>
+    name ? arr.find(x => (x.nombre || '').toLowerCase() === name.toLowerCase())?.id : undefined
+  const up = ultimoPartido
+  const upProps = up ? {
+    partido: up,
+    escudoLocal: esGecLocal(up.local) ? '/api/escudo-gec' : escudoDe(up.local),
+    escudoVisit: esGecLocal(up.local) ? escudoDe(up.visitante) : '/api/escudo-gec',
+    torneoHref: up.torneo?.trim() ? `/competencias/${torneoToSlug(up.torneo.trim())}` : null,
+    estadioId: findId(data.estadios, up.estadio),
+    dtId: findId(data.dts, up.dtGimnasia),
+    arbitroId: findId(data.arbitros, up.arbitro),
+  } : null
+
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5 max-w-[1100px] mx-auto space-y-5">
@@ -75,7 +89,7 @@ export default async function HomePage() {
           <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
             <CardHeader title="Último Partido"
               icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>} />
-            {ultimoPartido ? <UltimoPartidoCard partido={ultimoPartido} /> : <p className="text-center text-[#94a3b8] text-sm py-10">Sin partidos cargados</p>}
+            {upProps ? <UltimoPartidoCard {...upProps} /> : <p className="text-center text-[#94a3b8] text-sm py-10">Sin partidos cargados</p>}
           </div>
           <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
             <CardHeader title="Un día como hoy..."
@@ -172,53 +186,82 @@ function BannerProximo({ proximo }: { proximo: ProximoType }) {
   )
 }
 
-/* ── Card grande último partido (sin cambios) ── */
-function UltimoPartidoCard({ partido: p }: { partido: Partido }) {
-  const gecLocal = esGecLocal(p.local)
-  const golesGec = gecLocal ? p.gl : p.gv
-  const golesRival = gecLocal ? p.gv : p.gl
-  const rival = gecLocal ? p.visitante : p.local
-  const res = calcularResultado(p.gecGF, p.gecGC)
-  const resLabel = res === 'V' ? 'Victoria' : res === 'E' ? 'Empate' : 'Derrota'
-  const resBg = res === 'V' ? { bg: '#dcfce7', color: '#16a34a' } : res === 'E' ? { bg: '#fef9c3', color: '#854d0e' } : { bg: '#fee2e2', color: '#dc2626' }
+/* ── Card grande último partido (clon del original: orden real, escudos, 6 info cards) ── */
+function Escudo({ url }: { url: string | null }) {
   return (
-    <Link href={`/partido/partido-${p.id}`} className="block hover:bg-[#f8fafc] transition-colors">
-      <div className="px-7 py-6">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/api/escudo-gec" alt="GEC" className="h-16 w-16 object-contain" />
-            <p className="text-[0.87rem] font-bold text-[#1e293b] text-center leading-tight">{gecLocal ? p.local : p.visitante}</p>
-            <span className="text-[10px] text-[#94a3b8]">{gecLocal ? 'Local' : 'Visitante'}</span>
-          </div>
-          <div className="flex flex-col items-center gap-3 shrink-0">
-            <div className="flex items-center gap-3">
-              <span className="text-[3.2rem] font-black text-[#0f172a] tabular-nums leading-none">{golesGec}</span>
-              <span className="text-[1.5rem] text-[#94a3b8] font-light">—</span>
-              <span className="text-[3.2rem] font-black text-[#0f172a] tabular-nums leading-none">{golesRival}</span>
-            </div>
-            <span className="text-xs font-bold px-5 py-1 rounded-full" style={{ background: resBg.bg, color: resBg.color }}>{resLabel}</span>
-          </div>
-          <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
-            <div className="h-16 w-16 rounded-xl bg-[#e2e8f0] flex items-center justify-center text-2xl font-black text-[#64748b]">{rival.charAt(0)}</div>
-            <p className="text-[0.87rem] font-bold text-[#1e293b] text-center leading-tight truncate w-full">{rival}</p>
-            <span className="text-[10px] text-[#94a3b8]">{gecLocal ? 'Visitante' : 'Local'}</span>
-          </div>
+    <div className="mx-auto flex items-center justify-center" style={{ width: 110, height: 110, background: url ? '#fff' : '#f1f5f9', borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: url ? '0 2px 8px rgba(0,0,0,0.07)' : 'none' }}>
+      {url
+        // eslint-disable-next-line @next/next/no-img-element
+        ? <img src={url} alt="" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+        : <span style={{ fontSize: '2.5rem' }}>⚽</span>}
+    </div>
+  )
+}
+function InfoCard({ icon, label, value, href }: { icon: React.ReactNode; label: string; value: string; href?: string | null }) {
+  const inner = (
+    <>
+      <div className="flex items-center justify-center shrink-0" style={{ width: 32, height: 32, background: '#e2e8f0', borderRadius: 8, fontSize: '0.9rem' }}>{icon}</div>
+      <div className="min-w-0">
+        <div className="uppercase" style={{ fontSize: '0.62rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.5px' }}>{label}</div>
+        <div className="truncate" style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1e293b' }}>{value}</div>
+      </div>
+      {href && <svg className="ml-auto shrink-0 text-[#94a3b8]" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg>}
+    </>
+  )
+  const cls = 'flex items-center gap-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-[10px] px-3.5 py-3 min-w-0'
+  return href
+    ? <Link href={href} className={`${cls} hover:bg-[#eff6ff] hover:border-[#bfdbfe] transition-colors`}>{inner}</Link>
+    : <div className={cls}>{inner}</div>
+}
+
+function UltimoPartidoCard({ partido: p, escudoLocal, escudoVisit, torneoHref, estadioId, dtId, arbitroId }: {
+  partido: Partido; escudoLocal: string | null; escudoVisit: string | null
+  torneoHref: string | null; estadioId?: number; dtId?: number; arbitroId?: number
+}) {
+  const gecLocal = esGecLocal(p.local)
+  const res = calcularResultado(p.gecGF, p.gecGC)
+  const resBg = res === 'V' ? '#16a34a' : res === 'D' ? '#dc2626' : '#d97706'
+  const resTexto = res === 'V' ? 'Victoria' : res === 'D' ? 'Derrota' : 'Empate'
+  const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
+
+  return (
+    <div className="px-8 py-7">
+      {/* Equipos en orden real: local izq / visitante der */}
+      <div className="grid items-start gap-5 mb-7" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
+        <div className="text-center">
+          <Escudo url={escudoLocal} />
+          <div className="mt-3" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{p.local}</div>
+          <div className="mt-0.5" style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Local</div>
         </div>
-        <div className="mt-5 grid grid-cols-3 gap-2">
-          {[
-            { label: 'Fecha', val: new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }) },
-            { label: 'Torneo', val: p.torneo?.replace(/"/g, '').trim() },
-            { label: 'Condición', val: gecLocal ? 'Local' : 'Visitante' },
-          ].map(d => (
-            <div key={d.label} className="bg-[#f8fafc] rounded-lg px-3 py-2 border border-[#e2e8f0]">
-              <p className="text-[9px] text-[#94a3b8] uppercase tracking-wide font-semibold">{d.label}</p>
-              <p className="text-[11px] font-bold text-[#475569] truncate mt-0.5">{d.val}</p>
-            </div>
-          ))}
+        <div className="text-center">
+          <div style={{ fontSize: '4rem', fontWeight: 900, color: '#1e293b', lineHeight: 1, letterSpacing: '0.04em' }} className="tabular-nums">{p.gl} – {p.gv}</div>
+          <div className="inline-block mt-2.5 text-white" style={{ background: resBg, fontSize: '0.8rem', fontWeight: 700, padding: '6px 20px', borderRadius: 20 }}>{resTexto}</div>
+        </div>
+        <div className="text-center">
+          <Escudo url={escudoVisit} />
+          <div className="mt-3" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>{p.visitante}</div>
+          <div className="mt-0.5" style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Visitante</div>
         </div>
       </div>
-    </Link>
+
+      {/* 6 info cards */}
+      <div className="grid gap-2.5 mb-5" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <InfoCard icon="📅" label="Fecha" value={fecha} />
+        <InfoCard icon="🏆" label="Torneo" value={p.torneo?.trim() || '—'} href={torneoHref} />
+        <InfoCard icon="🏠" label="Condición" value={gecLocal ? 'Local' : 'Visitante'} />
+        <InfoCard icon="👔" label="DT" value={p.dtGimnasia || '—'} href={dtId ? `/dt/${dtId}` : null} />
+        <InfoCard icon="🏟️" label="Estadio" value={p.estadio || '—'} href={estadioId ? `/estadio/${estadioId}` : null} />
+        <InfoCard icon="🟨" label="Árbitro" value={p.arbitro || '—'} href={arbitroId ? `/arbitro/${arbitroId}` : null} />
+      </div>
+
+      {/* Ver detalle */}
+      <div className="flex justify-center pt-1 pb-1.5">
+        <Link href={`/partido/partido-${p.id}`} className="inline-flex items-center gap-1.5 bg-[#f1f5f9] hover:bg-[#dbeafe] text-[#475569] hover:text-[#2563eb] transition-colors" style={{ padding: '7px 18px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 700 }}>
+          <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polyline points="12 8 16 12 12 16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>
+          Ver detalle
+        </Link>
+      </div>
+    </div>
   )
 }
 
