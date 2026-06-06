@@ -146,9 +146,6 @@ export default async function PartidoPage({ params }: Props) {
         {/* ── LÍNEA DE TIEMPO ── */}
         {eventos.length > 0 && <Timeline eventos={eventos} local={p.local} visitante={p.visitante} />}
 
-        {/* ── MULTIMEDIA ── */}
-        <MediaPartido fotos={p.mediaFotos ?? []} videos={p.mediaVideos ?? []} audios={p.mediaAudios ?? []} />
-
         {/* ── DATOS DEL PARTIDO (chips) ── */}
         {(p.estadio || p.arbitro || p.asistente1 || p.asistente2 || p.cuarto || p.var || p.avar) && (
           <div className="flex flex-wrap gap-2.5">
@@ -181,6 +178,9 @@ export default async function PartidoPage({ params }: Props) {
             <div style={{ fontSize: '0.85rem', color: '#1e3a5f', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{p.notas}</div>
           </div>
         )}
+
+        {/* ── MULTIMEDIA (al final) ── */}
+        <MediaPartido fotos={p.mediaFotos ?? []} videos={p.mediaVideos ?? []} audios={p.mediaAudios ?? []} />
       </div>
     </main>
   )
