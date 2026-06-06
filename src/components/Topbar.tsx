@@ -87,13 +87,10 @@ export default function Topbar() {
         </div>
       </Link>
 
-      {/* Buscador (estilo FBref) */}
-      <div ref={boxRef} className="hidden sm:block relative flex-1" style={{ maxWidth: 620 }}>
+      {/* Buscador (estilo FBref) — corrido a la derecha, botón lupa */}
+      <div ref={boxRef} className="hidden sm:block relative ml-auto" style={{ width: 460 }}>
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-2.5 flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
-            <svg width="19" height="19" fill="none" stroke="#94a3b8" strokeWidth="1.6" viewBox="0 0 24 24" className="shrink-0">
-              <circle cx="11" cy="11" r="7.5" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" />
-            </svg>
+          <div className="flex items-center flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
             <input
               type="text"
               placeholder="Buscar jugador, partido, equipo..."
@@ -105,8 +102,8 @@ export default function Topbar() {
               className="border-none bg-transparent text-[1.02rem] text-[#1e293b] outline-none w-full placeholder:text-[#94a3b8]"
             />
           </div>
-          <button onClick={submit} className="text-white font-bold cursor-pointer" style={{ height: 48, padding: '0 24px', background: '#1e3a5f', borderRadius: 9, fontSize: '1rem' }}>
-            Buscar
+          <button onClick={submit} aria-label="Buscar" className="text-white cursor-pointer flex items-center justify-center shrink-0" style={{ height: 48, padding: '0 18px', background: '#1e3a5f', borderRadius: 9 }}>
+            <svg width="20" height="20" fill="none" stroke="#fff" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" /></svg>
           </button>
         </div>
 
