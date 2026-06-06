@@ -24,7 +24,6 @@ const Icons = {
 const NAV_MAIN = [
   { href: '/',                label: 'Inicio',             icon: Icons.home },
   { href: '/buscador',        label: 'Buscador avanzado',  icon: Icons.search },
-  { href: '/cumpleanos',      label: 'Cumpleaños',         icon: Icons.cake },
   { href: '/mapa',            label: 'Mapa global',        icon: Icons.map },
 ]
 
