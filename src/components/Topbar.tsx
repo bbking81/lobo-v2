@@ -65,47 +65,49 @@ export default function Topbar() {
 
   return (
     <header
-      className="flex items-center justify-between bg-white border-b border-[#e2e8f0] w-full shrink-0 sticky top-0 z-[200]"
+      className="flex items-center gap-8 bg-white w-full shrink-0 sticky top-0 z-[200] relative"
       style={{ height: 90, padding: '0 24px' }}
     >
       {/* Marca */}
-      <Link href="/" className="flex items-center gap-2.5 cursor-pointer" title="Ir al inicio">
+      <Link href="/" className="flex items-center gap-3.5 cursor-pointer shrink-0" title="Ir al inicio">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://loboentrerriano.com/static/logo.png"
           alt="Lobo Entrerriano"
-          className="h-[78px] w-[78px] object-contain shrink-0"
+          className="h-20 w-20 object-contain shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
         />
-        <div style={{ lineHeight: 1.2 }}>
-          <div className="whitespace-nowrap" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#1e293b', letterSpacing: '-0.01em', fontFamily: "'Inter', system-ui, sans-serif", lineHeight: 1.1 }}>
+        <div style={{ lineHeight: 1.1 }}>
+          <div className="whitespace-nowrap" style={{ fontSize: '2rem', fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', lineHeight: 1 }}>
             Lobo Entrerriano
           </div>
-          <div className="whitespace-nowrap uppercase" style={{ fontSize: '0.58rem', fontWeight: 600, color: '#2e5cda', letterSpacing: '0.22em', fontFamily: "'Inter', system-ui, sans-serif", marginTop: 3 }}>
+          <div className="whitespace-nowrap uppercase" style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2563eb', letterSpacing: '0.22em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', marginTop: 5 }}>
             · Estadísticas ·
           </div>
         </div>
       </Link>
 
-      {/* Buscador */}
-      <div ref={boxRef} className="hidden sm:block relative">
-        <div
-          className="flex items-center gap-2"
-          style={{ background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 20, padding: '7px 14px', width: 260 }}
-        >
-          <svg width="18" height="18" fill="none" stroke="#64748b" strokeWidth="2" viewBox="0 0 24 24" className="shrink-0 cursor-pointer" onClick={submit}>
-            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={q}
-            onChange={(e) => { loadIndex(); setQ(e.target.value); setOpen(true) }}
-            onFocus={() => { loadIndex(); setOpen(true) }}
-            onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setOpen(false) }}
-            autoComplete="off"
-            className="border-none bg-transparent text-[0.85rem] text-[#1e293b] outline-none w-full placeholder:text-[#94a3b8]"
-          />
+      {/* Buscador (estilo FBref) */}
+      <div ref={boxRef} className="hidden sm:block relative flex-1" style={{ maxWidth: 620 }}>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
+            <svg width="19" height="19" fill="none" stroke="#94a3b8" strokeWidth="1.6" viewBox="0 0 24 24" className="shrink-0">
+              <circle cx="11" cy="11" r="7.5" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar jugador, partido, equipo..."
+              value={q}
+              onChange={(e) => { loadIndex(); setQ(e.target.value); setOpen(true) }}
+              onFocus={() => { loadIndex(); setOpen(true) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setOpen(false) }}
+              autoComplete="off"
+              className="border-none bg-transparent text-[1.02rem] text-[#1e293b] outline-none w-full placeholder:text-[#94a3b8]"
+            />
+          </div>
+          <button onClick={submit} className="text-white font-bold cursor-pointer" style={{ height: 48, padding: '0 24px', background: '#1e3a5f', borderRadius: 9, fontSize: '1rem' }}>
+            Buscar
+          </button>
         </div>
 
         {/* Dropdown */}
@@ -158,6 +160,9 @@ export default function Topbar() {
           </div>
         )}
       </div>
+
+      {/* Franja de color de marca (estilo StatsBomb) */}
+      <div className="absolute left-0 right-0 bottom-0" style={{ height: 4, background: 'linear-gradient(to right, #e8742c, #1e3a5f)' }} />
     </header>
   )
 }

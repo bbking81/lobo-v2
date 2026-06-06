@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Archivo } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
@@ -7,6 +7,12 @@ import Topbar from "@/components/Topbar";
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
+});
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-archivo",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${dmSans.variable} h-full antialiased`}>
+    <html lang="es" className={`${dmSans.variable} ${archivo.variable} h-full antialiased`}>
       <body className="font-[family-name:var(--font-dm-sans)] bg-[#f8fafc]">
         <div className="flex flex-col min-h-screen">
           {/* Barra superior full-width */}
