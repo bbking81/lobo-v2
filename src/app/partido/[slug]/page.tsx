@@ -99,7 +99,7 @@ export default async function PartidoPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-3xl mx-auto px-3 py-5 flex flex-col gap-5">
+      <div className="max-w-5xl mx-auto px-4 py-5 flex flex-col gap-5">
 
         {/* ── CABEZAL ── */}
         <div className="bg-white border border-[#e2e8f0] rounded-[14px] overflow-hidden" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
