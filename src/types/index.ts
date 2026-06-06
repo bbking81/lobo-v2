@@ -16,6 +16,7 @@ export interface JugadorPlanilla {
   amarillas?: number
   rojas?: number
   penales?: number
+  golEnContra?: number
   minE?: string
   minS?: string
   minGoles?: string
@@ -47,6 +48,16 @@ export interface Partido {
   escudoRival?: string
   publicado: boolean
   arbitro?: string
+  asistente1?: string
+  asistente2?: string
+  cuarto?: string
+  var?: string
+  avar?: string
+  incidencias?: string
+  notas?: string
+  fase?: string
+  subfase?: string
+  fechaNro?: string | number
   dtGimnasia?: string
   dtRival?: string
   mediaFotos?: MediaFoto[]
