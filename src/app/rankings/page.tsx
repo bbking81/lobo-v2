@@ -30,16 +30,103 @@ const METRICAS_DT: { v: string; label: string; asc?: boolean; min?: number }[] =
   { v: 'local', label: '🏠 Más partidos de local' },
   { v: 'visitante', label: '🚌 Más partidos de visitante' },
 ]
+const METRICAS_EQ: { v: string; label: string }[] = [
+  { v: 'eq_vic_torneo', label: '🏆 Más victorias en un torneo' },
+  { v: 'eq_pg_pct_torneo', label: '📈 Mejor % victorias en un torneo (mín. 3 PJ)' },
+  { v: 'eq_gf_torneo', label: '⚽ Más goles en un torneo' },
+  { v: 'eq_gc_torneo', label: '🛡️ Menos goles recibidos en un torneo' },
+  { v: 'eq_invicta_torneo', label: '🔒 Mayor invicto en un torneo' },
+  { v: 'eq_racha_vic', label: '🔥 Mayor racha de victorias' },
+  { v: 'eq_racha_der', label: '❄️ Mayor racha de derrotas' },
+  { v: 'eq_racha_invicta', label: '⚡ Mayor racha invicta (V o E)' },
+  { v: 'eq_racha_sin_ganar', label: '😐 Mayor racha sin ganar (E o D)' },
+  { v: 'eq_mejor_temp', label: '📅 Mejor temporada (% victorias, mín. 5 PJ)' },
+  { v: 'eq_goles_temp', label: '🎯 Más goles en una temporada' },
+]
 const inputCls = 'bg-[#f8fafc] border border-[#e2e8f0] rounded-[7px] px-3 py-2 text-sm text-[#1e293b] outline-none'
 
 interface JugAcc { id?: number; nombre: string; goles: number; pj: number; dobletes: number; tripletes: number; pokers: number; cincoplus: number; rojas: number; amarillas: number; local: number; visitante: number }
 interface DTAcc { nombre: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; local: number; visitante: number }
+interface EqRow { titulo: string; sub: string; valor: string; valorLabel: string }
+
+// Ranking de Equipos (récords del club): por torneo, rachas y temporada
+function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo: string, topN: number): EqRow[] {
+  const todos = pubs.filter(p => {
+    if (!p.fecha) return false
+    if (fTemp && p.fecha.slice(0, 4) !== fTemp) return false
+    if (fTorneo && (p.torneo || '') !== fTorneo) return false
+    return true
+  }).sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''))
+  const res = (p: Partido) => p.gecGF > p.gecGC ? 'g' : p.gecGF < p.gecGC ? 'p' : 'e'
+  const fmt = (f: string) => f ? new Date(f + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'
+
+  const isRacha = ['eq_racha_vic', 'eq_racha_der', 'eq_racha_invicta', 'eq_racha_sin_ganar'].includes(metrica)
+  const isTemp = metrica === 'eq_mejor_temp' || metrica === 'eq_goles_temp'
+
+  if (isRacha) {
+    const rachas: { n: number; from: Partido; to: Partido; torneos: string }[] = []
+    let cur = 0, start: Partido | null = null, list: Partido[] = []
+    const flush = () => { if (cur >= 2 && start) rachas.push({ n: cur, from: start, to: list[list.length - 1], torneos: [...new Set(list.map(p => p.torneo).filter(Boolean))].join(', ') }); cur = 0; start = null; list = [] }
+    for (const p of todos) {
+      const r = res(p)
+      const match = metrica === 'eq_racha_vic' ? r === 'g' : metrica === 'eq_racha_der' ? r === 'p' : metrica === 'eq_racha_invicta' ? (r === 'g' || r === 'e') : (r === 'p' || r === 'e')
+      if (match) { cur++; if (!start) start = p; list.push(p) } else flush()
+    }
+    flush()
+    const lab = ({ eq_racha_vic: 'victorias', eq_racha_der: 'derrotas', eq_racha_invicta: 'sin perder', eq_racha_sin_ganar: 'sin ganar' } as Record<string, string>)[metrica] || ''
+    return rachas.sort((a, b) => b.n - a.n).slice(0, topN).map(r => ({ titulo: r.torneos || '—', sub: `${fmt(r.from.fecha)} – ${fmt(r.to.fecha)}`, valor: String(r.n), valorLabel: lab }))
+  }
+
+  if (isTemp) {
+    const t: Record<string, { año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number }> = {}
+    for (const p of todos) {
+      const año = (p.fecha || '').slice(0, 4); if (!año) continue
+      const s = t[año] ?? (t[año] = { año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0 })
+      const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC
+      if (r === 'g') s.pg++; else if (r === 'e') s.pe++; else s.pp++
+    }
+    return Object.values(t).filter(s => metrica === 'eq_mejor_temp' ? s.pj >= 5 : true)
+      .sort((a, b) => metrica === 'eq_mejor_temp' ? (b.pg / b.pj) - (a.pg / a.pj) : b.gf - a.gf)
+      .slice(0, topN).map(s => ({
+        titulo: s.año, sub: `${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`,
+        valor: metrica === 'eq_mejor_temp' ? `${Math.round((s.pg / s.pj) * 100)}%` : String(s.gf),
+        valorLabel: metrica === 'eq_mejor_temp' ? 'victorias' : 'goles',
+      }))
+  }
+
+  // Por torneo (torneo+año)
+  const g: Record<string, { torneo: string; año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; inv: number }> = {}
+  for (const p of todos) {
+    if (!p.torneo) continue
+    const año = (p.fecha || '').slice(0, 4); const key = `${p.torneo}||${año}`
+    const s = g[key] ?? (g[key] = { torneo: p.torneo, año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, inv: 0 })
+    const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC
+    if (r === 'g') { s.pg++; s.inv++ } else if (r === 'e') { s.pe++; s.inv++ } else s.pp++
+  }
+  const asc = metrica === 'eq_gc_torneo'
+  return Object.values(g).filter(s => {
+    if (metrica === 'eq_pg_pct_torneo' && s.pj < 3) return false
+    if (metrica === 'eq_vic_torneo' && s.pg === 0) return false
+    if (metrica === 'eq_gf_torneo' && s.gf === 0) return false
+    return true
+  }).sort((a, b) => {
+    if (asc) return a.gc - b.gc
+    if (metrica === 'eq_pg_pct_torneo') return (b.pg / b.pj) - (a.pg / a.pj)
+    if (metrica === 'eq_gf_torneo') return b.gf - a.gf
+    if (metrica === 'eq_invicta_torneo') return b.inv - a.inv
+    return b.pg - a.pg
+  }).slice(0, topN).map(s => {
+    const valor = metrica === 'eq_pg_pct_torneo' ? `${Math.round((s.pg / s.pj) * 100)}%` : metrica === 'eq_gf_torneo' ? String(s.gf) : metrica === 'eq_gc_torneo' ? String(s.gc) : metrica === 'eq_invicta_torneo' ? String(s.inv) : String(s.pg)
+    const valorLabel = metrica === 'eq_gf_torneo' ? 'goles' : metrica === 'eq_gc_torneo' ? 'recibidos' : metrica === 'eq_invicta_torneo' ? 'sin perder' : 'victorias'
+    return { titulo: s.torneo, sub: `${s.año} · ${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`, valor, valorLabel }
+  })
+}
 
 export default async function RankingsPage({ searchParams }: Props) {
   const sp = await searchParams
   const data = await getApiData()
-  const tab = sp.tab === 'dt' ? 'dt' : 'jug'
-  const metrica = sp.metrica ?? (tab === 'dt' ? 'pg' : 'goles')
+  const tab = sp.tab === 'dt' ? 'dt' : sp.tab === 'eq' ? 'eq' : 'jug'
+  const metrica = sp.metrica ?? (tab === 'dt' ? 'pg' : tab === 'eq' ? 'eq_vic_torneo' : 'goles')
   const topN = parseInt(sp.topN ?? '20') || 20
   const fTemporada = sp.temporada ?? ''
   const fTorneo = sp.torneo ?? ''
@@ -86,6 +173,11 @@ export default async function RankingsPage({ searchParams }: Props) {
     }
   }
 
+  // Ranking de equipos (récords del club) — usa todos los publicados, filtra dentro
+  const eqRows = tab === 'eq'
+    ? computeEquipos(data.partidos.filter(p => p.publicado), metrica, fTemporada, fTorneo, topN)
+    : []
+
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-4 py-4 space-y-3 max-w-3xl">
@@ -98,6 +190,7 @@ export default async function RankingsPage({ searchParams }: Props) {
           <div className="flex gap-2 p-3 border-b border-[#e2e8f0] bg-[#f8fafc]">
             <Link href="/rankings?tab=jug" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'jug' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Jugadores</Link>
             <Link href="/rankings?tab=dt" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'dt' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Directores Técnicos</Link>
+            <Link href="/rankings?tab=eq" className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${tab === 'eq' ? 'bg-[#1a2e4a] text-white border-[#1a2e4a]' : 'bg-white text-gray-500 border-gray-200'}`}>Equipos</Link>
           </div>
 
           {/* Form de configuración */}
@@ -105,7 +198,7 @@ export default async function RankingsPage({ searchParams }: Props) {
           <input type="hidden" name="tab" value={tab} />
           <Field label="Ranking por">
             <select name="metrica" defaultValue={metrica} className={`${inputCls} w-full`}>
-              {(tab === 'dt' ? METRICAS_DT : METRICAS_JUG).map(m => <option key={m.v} value={m.v}>{m.label}</option>)}
+              {(tab === 'dt' ? METRICAS_DT : tab === 'eq' ? METRICAS_EQ : METRICAS_JUG).map(m => <option key={m.v} value={m.v}>{m.label}</option>)}
             </select>
           </Field>
           <Field label="Mostrar top">
@@ -125,13 +218,15 @@ export default async function RankingsPage({ searchParams }: Props) {
               {torneos.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </Field>
-          <Field label="Condición">
-            <select name="cond" defaultValue={fCond} className={`${inputCls} w-full`}>
-              <option value="">Local y visitante</option>
-              <option value="local">Solo local</option>
-              <option value="visitante">Solo visitante</option>
-            </select>
-          </Field>
+          {tab !== 'eq' && (
+            <Field label="Condición">
+              <select name="cond" defaultValue={fCond} className={`${inputCls} w-full`}>
+                <option value="">Local y visitante</option>
+                <option value="local">Solo local</option>
+                <option value="visitante">Solo visitante</option>
+              </select>
+            </Field>
+          )}
           <div className="flex items-end">
             <button type="submit" className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg px-5 py-2 text-sm font-semibold transition-colors w-full sm:w-auto">Aplicar</button>
           </div>
@@ -139,9 +234,9 @@ export default async function RankingsPage({ searchParams }: Props) {
         </div>
 
         {/* Resultados */}
-        {tab === 'jug'
-          ? <RankingJugadores jugMap={jugMap} metrica={metrica} topN={topN} jugadores={data.jugadores} />
-          : <RankingDTs dtMap={dtMap} metrica={metrica} topN={topN} dts={data.dts} />}
+        {tab === 'jug' && <RankingJugadores jugMap={jugMap} metrica={metrica} topN={topN} jugadores={data.jugadores} />}
+        {tab === 'dt' && <RankingDTs dtMap={dtMap} metrica={metrica} topN={topN} dts={data.dts} />}
+        {tab === 'eq' && <RankingEquipos rows={eqRows} label={METRICAS_EQ.find(m => m.v === metrica)?.label ?? ''} />}
       </div>
     </main>
   )
@@ -152,6 +247,32 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div className="flex flex-col gap-1">
       <label className="text-[0.7rem] font-bold text-gray-400 uppercase tracking-wide">{label}</label>
       {children}
+    </div>
+  )
+}
+
+function RankingEquipos({ rows, label }: { rows: EqRow[]; label: string }) {
+  const medal = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1)
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100"><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</span></div>
+      {rows.length === 0 ? <div className="py-8 text-center text-gray-400 text-sm">Sin datos para esos filtros</div> : (
+        <div className="divide-y divide-gray-50">
+          {rows.map((r, i) => (
+            <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+              <span className="w-6 text-center text-sm font-black shrink-0">{medal(i)}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-gray-800 truncate">{r.titulo}</p>
+                <p className="text-xs text-gray-400 truncate">{r.sub}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-xl font-black text-[#1e3a5f] tabular-nums leading-none">{r.valor}</p>
+                <p className="text-[0.62rem] text-gray-400 mt-0.5">{r.valorLabel}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
