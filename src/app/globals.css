@@ -37,3 +37,16 @@ body {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Scrollbars — estilo loboentrerriano.com (fina, sin flechas) ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+* { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+
+/* Sidebar: thumb celeste como el original */
+aside::-webkit-scrollbar-thumb { background: #93c5fd; }
+aside::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+aside { scrollbar-color: #93c5fd transparent; }
