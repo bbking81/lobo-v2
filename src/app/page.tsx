@@ -1,7 +1,6 @@
 import { getApiData } from '@/lib/api'
 import Link from 'next/link'
 import type { Partido, Jugador } from '@/types'
-import CumpleBuscador, { type PartidoLite } from '@/components/CumpleBuscador'
 
 function calcularResultado(gecGF: number, gecGC: number): 'V' | 'E' | 'D' {
   if (gecGF > gecGC) return 'V'
@@ -64,11 +63,6 @@ export default async function HomePage() {
     const parts = j.nacimiento.split('-')
     return parts.length >= 3 && parts[1] === mm && parts[2] === dd
   })
-  const partidosCumple: PartidoLite[] = publicados.filter(p => p.fecha).map(p => ({
-    id: p.id, fecha: p.fecha, local: p.local, visitante: p.visitante, gl: p.gl, gv: p.gv, torneo: p.torneo,
-    esLocal: p.gl === p.gv ? esGecLocal(p.local) : (p.gecGF === p.gl && p.gecGC === p.gv),
-    resultado: p.gecGF > p.gecGC ? 'V' : p.gecGF === p.gecGC ? 'E' : 'D',
-  }))
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
@@ -137,9 +131,6 @@ export default async function HomePage() {
             </div>
           )}
         </div>
-
-        {/* ¿Qué pasó en tu cumpleaños? */}
-        <CumpleBuscador partidos={partidosCumple} hoyDia={String(diaHoy)} hoyMes={mm} />
 
         {/* Sobre este sitio */}
         <div className="bg-white border border-[#e2e8f0] rounded-xl p-6">

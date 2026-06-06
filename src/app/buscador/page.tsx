@@ -2,6 +2,7 @@ import { getApiData } from '@/lib/api'
 import SecBanner from '@/components/SecBanner'
 import Link from 'next/link'
 import type { Partido } from '@/types'
+import CumpleBuscador, { type PartidoLite } from '@/components/CumpleBuscador'
 
 interface Props {
   searchParams: Promise<Record<string, string | undefined>>
@@ -54,6 +55,14 @@ export default async function BuscadorPage({ searchParams }: Props) {
   const dtGec = sp.dtGec ?? ''
   const dtRival = sp.dtRival ?? ''
   const buscar = sp.buscar === '1'
+
+  // Datos para "¿Qué pasó en este día?"
+  const hoy = new Date()
+  const partidosCumple: PartidoLite[] = partidos.filter(p => p.fecha).map(p => ({
+    id: p.id, fecha: p.fecha, local: p.local, visitante: p.visitante, gl: p.gl, gv: p.gv, torneo: p.torneo,
+    esLocal: p.gl === p.gv ? esGecLocal(p) : (p.gecGF === p.gl && p.gecGC === p.gv),
+    resultado: p.gecGF > p.gecGC ? 'V' : p.gecGF === p.gecGC ? 'E' : 'D',
+  }))
 
   const filterGF = !(gfVal === 0 && gfOp === 'exacto')
   const filterGC = !(gcVal === 0 && gcOp === 'exacto')
@@ -218,6 +227,11 @@ export default async function BuscadorPage({ searchParams }: Props) {
             </div>
           </div>
         )}
+
+        {/* ¿Qué pasó en este día? */}
+        <div className="mt-6">
+          <CumpleBuscador partidos={partidosCumple} hoyDia={String(hoy.getDate())} hoyMes={String(hoy.getMonth() + 1).padStart(2, '0')} />
+        </div>
       </div>
     </main>
   )
