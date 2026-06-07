@@ -39,6 +39,7 @@ const METRICAS_EQ: { v: string; label: string }[] = [
   { v: 'eq_racha_vic', label: '🔥 Mayor racha de victorias' },
   { v: 'eq_racha_der', label: '❄️ Mayor racha de derrotas' },
   { v: 'eq_racha_invicta', label: '⚡ Mayor racha invicta (V o E)' },
+  { v: 'eq_racha_valla', label: '🥅 Mayor racha de vallas invictas (arco en cero)' },
   { v: 'eq_racha_sin_ganar', label: '😐 Mayor racha sin ganar (E o D)' },
   { v: 'eq_mejor_temp', label: '📅 Mejor temporada (% victorias, mín. 5 PJ)' },
   { v: 'eq_goles_temp', label: '🎯 Más goles en una temporada' },
@@ -60,7 +61,7 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
   const res = (p: Partido) => p.gecGF > p.gecGC ? 'g' : p.gecGF < p.gecGC ? 'p' : 'e'
   const fmt = (f: string) => f ? new Date(f + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'
 
-  const isRacha = ['eq_racha_vic', 'eq_racha_der', 'eq_racha_invicta', 'eq_racha_sin_ganar'].includes(metrica)
+  const isRacha = ['eq_racha_vic', 'eq_racha_der', 'eq_racha_invicta', 'eq_racha_sin_ganar', 'eq_racha_valla'].includes(metrica)
   const isTemp = metrica === 'eq_mejor_temp' || metrica === 'eq_goles_temp'
 
   if (isRacha) {
@@ -69,11 +70,11 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
     const flush = () => { if (cur >= 2 && start) rachas.push({ n: cur, from: start, to: list[list.length - 1], torneos: [...new Set(list.map(p => p.torneo).filter(Boolean))].join(', ') }); cur = 0; start = null; list = [] }
     for (const p of todos) {
       const r = res(p)
-      const match = metrica === 'eq_racha_vic' ? r === 'g' : metrica === 'eq_racha_der' ? r === 'p' : metrica === 'eq_racha_invicta' ? (r === 'g' || r === 'e') : (r === 'p' || r === 'e')
+      const match = metrica === 'eq_racha_vic' ? r === 'g' : metrica === 'eq_racha_der' ? r === 'p' : metrica === 'eq_racha_invicta' ? (r === 'g' || r === 'e') : metrica === 'eq_racha_sin_ganar' ? (r === 'p' || r === 'e') : p.gecGC === 0
       if (match) { cur++; if (!start) start = p; list.push(p) } else flush()
     }
     flush()
-    const lab = ({ eq_racha_vic: 'victorias', eq_racha_der: 'derrotas', eq_racha_invicta: 'sin perder', eq_racha_sin_ganar: 'sin ganar' } as Record<string, string>)[metrica] || ''
+    const lab = ({ eq_racha_vic: 'victorias', eq_racha_der: 'derrotas', eq_racha_invicta: 'sin perder', eq_racha_sin_ganar: 'sin ganar', eq_racha_valla: 'sin recibir' } as Record<string, string>)[metrica] || ''
     return rachas.sort((a, b) => b.n - a.n).slice(0, topN).map(r => ({ titulo: r.torneos || '—', sub: `${fmt(r.from.fecha)} – ${fmt(r.to.fecha)}`, valor: String(r.n), valorLabel: lab }))
   }
 
