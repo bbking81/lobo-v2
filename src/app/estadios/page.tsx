@@ -10,7 +10,7 @@ export default async function EstadiosPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4">
+      <div className="max-w-4xl mx-auto px-3 py-4">
         <SecBanner
           title="Estadios"
           subtitle="Canchas y estadios donde jugó Gimnasia y Esgrima"

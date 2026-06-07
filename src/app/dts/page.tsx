@@ -8,7 +8,7 @@ export default async function DTsPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4">
+      <div className="max-w-4xl mx-auto px-3 py-4">
         <SecBanner
           title="Directores Técnicos"
           subtitle="Cuerpo técnico en la historia del club"

@@ -34,7 +34,7 @@ export default async function JugadorRivalPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-3 py-4 space-y-4">
         <div className="bg-[#1e3a5f] rounded-xl p-5 text-white">
           <p className="text-[#93c5fd] text-xs uppercase tracking-widest mb-1">{jugador.posicion ?? 'Jugador rival'}</p>
           <h1 className="font-black text-xl leading-tight">{jugador.apellido}, {jugador.nombres}</h1>

@@ -27,7 +27,7 @@ export default async function EstadioPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-3 py-4 space-y-4">
         {/* Ficha header */}
         <div className="bg-[#1e3a5f] rounded-xl overflow-hidden text-white">
           {estadio.fotoUrl && (

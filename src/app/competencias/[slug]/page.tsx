@@ -54,7 +54,7 @@ export default async function CompetenciaDetallePage({ params }: Props) {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-3 py-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-3 py-4 space-y-4">
 
         {/* Stats GEC en esta competencia */}
         <div className="bg-[#1e3a5f] rounded-lg text-white overflow-hidden">

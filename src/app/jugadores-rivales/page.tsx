@@ -17,7 +17,7 @@ export default async function JugadoresRivalesPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4 space-y-3">
+      <div className="max-w-4xl mx-auto px-3 py-4 space-y-3">
         <SecBanner
           title="Jugadores Rivales"
           subtitle="Jugadores de equipos rivales"

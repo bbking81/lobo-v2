@@ -10,7 +10,7 @@ export default async function DTRivalesPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-2xl mx-auto px-3 py-4">
+      <div className="max-w-4xl mx-auto px-3 py-4">
         <SecBanner
           title="DT Rivales"
           subtitle="Directores técnicos de equipos rivales"
