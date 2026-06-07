@@ -43,7 +43,9 @@ export default function MapaEstadios({ estadios }: { estadios: EstadioMapa[] }) 
       const L = window.L
       if (!L || !ref.current || mapRef.current) return
 
-      const map = L.map(ref.current, { zoomControl: true, scrollWheelZoom: true })
+      // scrollWheelZoom:false → la rueda hace scroll de la página, no zoom del mapa.
+      // El zoom se hace con los botones +/-, doble clic o pellizco (touch).
+      const map = L.map(ref.current, { zoomControl: true, scrollWheelZoom: false })
       mapRef.current = map
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
