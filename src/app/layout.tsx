@@ -28,6 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${dmSans.variable} ${archivo.variable} h-full antialiased`}>
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
+      </head>
       <body className="font-[family-name:var(--font-dm-sans)] bg-[#f8fafc]">
         <div className="flex flex-col min-h-screen">
           {/* Barra superior full-width */}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { fotoUrl } from '@/lib/api'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
+import Flag from '@/components/Flag'
 import { SearchInput } from '@/components/listControls'
 import type { Jugador } from '@/types'
 
@@ -79,9 +80,10 @@ export default function ListaJugadores({ jugadores }: { jugadores: Jugador[] }) 
                 <td className="px-3.5 py-3">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <PlayerAvatar src={fotoUrl(j.foto)} apellido={j.apellido} size={28} />
-                    <span className="font-semibold text-[#1e293b]">
+                    <Flag pais={j.pais} size={20} />
+                    <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>
                       <Link href={`/jugador/${j.id}`} onClick={e => e.stopPropagation()} className="hover:text-[#2563eb]">{j.apellido}{j.nombres ? `, ${j.nombres}` : ''}</Link>
-                      {j.posicion && <span className="text-[0.72rem] text-[#94a3b8] ml-2 font-normal">{j.posicion}</span>}
+                      {j.posicion && <span style={{ fontSize: '0.72rem', color: '#94a3b8', marginLeft: 8, fontWeight: 400 }}>{j.posicion}</span>}
                     </span>
                   </div>
                 </td>

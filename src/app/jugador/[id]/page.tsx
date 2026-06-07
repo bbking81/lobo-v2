@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getApiData, fotoUrl } from '@/lib/api'
 import type { Metadata } from 'next'
-import { PlayerHeroPhoto } from '@/components/PlayerAvatar'
+import Flag from '@/components/Flag'
 import JugadorPerfil, { type PartidoRow, type ConxItem } from '@/components/JugadorPerfil'
 
 interface Props {
@@ -31,7 +31,6 @@ export default async function JugadorPage({ params }: Props) {
   if (!jugador || !jugador.apellido) notFound()
 
   const foto = fotoUrl(jugador.foto)
-  const esNueva = foto?.includes('_nobg')
 
   // Partidos en los que participó (todos), ordenados por fecha desc
   const partidosTodos = data.partidos
@@ -119,51 +118,59 @@ export default async function JugadorPage({ params }: Props) {
   const edad = jugador.nacimiento
     ? Math.floor((Date.now() - new Date(jugador.nacimiento).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
     : null
+  const nacFmt = jugador.nacimiento ? new Date(jugador.nacimiento + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : null
+  const lugar = [jugador.ciudad, jugador.provincia].filter(Boolean).join(', ')
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-3 py-4 space-y-4">
+    <main className="min-h-screen bg-[#f8fafc]">
+      <div className="max-w-5xl mx-auto px-4 py-5 space-y-4">
 
-        {/* Hero jugador */}
-        <div className="bg-[#1e3a5f] rounded-lg overflow-hidden flex">
-          {/* Foto */}
-          <div className="w-36 shrink-0 flex items-end justify-center bg-[#162e4d] overflow-hidden">
-            <PlayerHeroPhoto src={foto} apellido={jugador.apellido} esNueva={!!esNueva} />
-          </div>
-
-          {/* Info */}
-          <div className="flex-1 p-4 text-white">
-            <p className="text-blue-200 text-xs uppercase tracking-widest mb-1">{jugador.posicion ?? 'Sin posición'}</p>
-            <h1 className="font-black text-xl leading-tight">{jugador.apellido}</h1>
-            <p className="text-blue-200 text-sm">{jugador.nombres}</p>
-
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              {edad && (
-                <div>
-                  <p className="text-blue-300 text-xs">Edad</p>
-                  <p className="font-bold">{edad} años</p>
-                </div>
-              )}
-              {jugador.ciudad && (
-                <div>
-                  <p className="text-blue-300 text-xs">Origen</p>
-                  <p className="font-bold text-sm">{jugador.ciudad}</p>
-                </div>
-              )}
+        {/* Ficha header + stats (estilo original) */}
+        <div className="bg-white border border-[#e2e8f0] rounded-[10px] overflow-hidden">
+          {/* perfil-header oscuro */}
+          <div className="flex flex-col sm:flex-row items-center gap-6" style={{ background: '#162032', padding: '32px 28px 24px' }}>
+            <div className="shrink-0 flex items-center justify-center overflow-hidden" style={{ width: 170, height: 170, borderRadius: 24, border: '3px solid #60a5fa', background: '#fff', fontSize: '3rem', fontWeight: 800, color: '#344D83' }}>
+              {foto
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={foto} alt={jugador.apellido} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%' }} />
+                : jugador.apellido.charAt(0)}
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <div className="uppercase" style={{ fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em', marginBottom: 6 }}>{jugador.posicion || 'Jugador'}</div>
+              <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', lineHeight: 1.1, marginBottom: 8 }}>{jugador.nombre}</h1>
+              <div className="flex flex-wrap gap-3 items-center justify-center sm:justify-start" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                {jugador.pais && <span className="flex items-center gap-1.5" style={{ fontSize: '0.85rem' }}><Flag pais={jugador.pais} size={20} /> {jugador.pais}</span>}
+                {nacFmt && <span className="flex items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                  {nacFmt}{edad ? ` · ${edad} años` : ''}</span>}
+                {lugar && <span className="flex items-center gap-1.5" style={{ fontSize: '0.85rem' }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                  {lugar}</span>}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Estadísticas */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest px-4 py-3 border-b border-gray-100">
-            Estadísticas
-          </h2>
-          <div className="grid grid-cols-4 divide-x divide-gray-100">
-            <Stat label="Partidos" valor={jugador.pj} />
-            <Stat label="Goles" valor={jugador.goles} />
-            <Stat label="Amarillas" valor={jugador.ta} />
-            <Stat label="Rojas" valor={jugador.tr} />
+          {/* Stats en tarjetas oscuras */}
+          <div className="flex flex-col gap-3.5" style={{ padding: '16px 20px', background: '#f8fafc' }}>
+            <div>
+              <StatLabel>Resultados</StatLabel>
+              <div className="grid grid-cols-3 gap-2">
+                <DarkStat bg="#14532d" color="#4ade80" num={jugador.pg} label="Ganados" />
+                <DarkStat bg="#713f12" color="#fbbf24" num={jugador.pe} label="Empatados" />
+                <DarkStat bg="#7f1d1d" color="#f87171" num={jugador.pp} label="Perdidos" />
+              </div>
+            </div>
+            <div>
+              <StatLabel>Goles</StatLabel>
+              <DarkStat bg="#431407" color="#fb923c" num={jugador.goles} label="Goles" />
+            </div>
+            <div>
+              <StatLabel>Tarjetas</StatLabel>
+              <div className="grid grid-cols-2 gap-2">
+                <DarkStat bg="#422006" color="#fbbf24" num={jugador.ta} label="Amarillas" />
+                <DarkStat bg="#450a0a" color="#f87171" num={jugador.tr} label="Rojas" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -223,11 +230,14 @@ export default async function JugadorPage({ params }: Props) {
   )
 }
 
-function Stat({ label, valor }: { label: string; valor: number }) {
+function StatLabel({ children }: { children: React.ReactNode }) {
+  return <div className="uppercase" style={{ fontSize: '0.64rem', fontWeight: 700, letterSpacing: '0.1em', color: '#94a3b8', marginBottom: 8 }}>{children}</div>
+}
+function DarkStat({ bg, color, num, label }: { bg: string; color: string; num: number; label: string }) {
   return (
-    <div className="flex flex-col items-center py-4 gap-1">
-      <span className="text-2xl font-black text-gray-800">{valor}</span>
-      <span className="text-xs text-gray-400 uppercase tracking-wide">{label}</span>
+    <div className="text-center" style={{ background: bg, borderRadius: 10, padding: '16px 10px' }}>
+      <div className="tabular-nums" style={{ fontSize: '1.9rem', fontWeight: 900, color, lineHeight: 1 }}>{num ?? 0}</div>
+      <div className="uppercase" style={{ fontSize: '0.67rem', fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(255,255,255,0.6)', marginTop: 6 }}>{label}</div>
     </div>
   )
 }
