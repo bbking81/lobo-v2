@@ -1,6 +1,7 @@
 import { getApiData, fotoUrl } from '@/lib/api'
 import Link from 'next/link'
 import SecBanner from '@/components/SecBanner'
+import RankingEquipos, { type EqRow, type EqMatch } from '@/components/RankingEquipos'
 import type { Partido } from '@/types'
 
 interface Props { searchParams: Promise<Record<string, string | undefined>> }
@@ -48,7 +49,16 @@ const inputCls = 'bg-[#f8fafc] border border-[#e2e8f0] rounded-[7px] px-3 py-2 t
 
 interface JugAcc { id?: number; nombre: string; goles: number; pj: number; dobletes: number; tripletes: number; pokers: number; cincoplus: number; rojas: number; amarillas: number; local: number; visitante: number }
 interface DTAcc { nombre: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; local: number; visitante: number }
-interface EqRow { titulo: string; sub: string; valor: string; valorLabel: string }
+
+// Convierte un partido al formato compacto que muestra la lupa de detalle.
+const toMatch = (p: Partido): EqMatch => ({
+  id: p.id,
+  fecha: p.fecha,
+  rival: (p.local || '').toLowerCase().includes('gimnasia') ? p.visitante : p.local,
+  gf: p.gecGF,
+  gc: p.gecGC,
+  torneo: p.torneo || '',
+})
 
 // Ranking de Equipos (récords del club): por torneo, rachas y temporada
 function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo: string, topN: number): EqRow[] {
@@ -65,9 +75,9 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
   const isTemp = metrica === 'eq_mejor_temp' || metrica === 'eq_goles_temp'
 
   if (isRacha) {
-    const rachas: { n: number; from: Partido; to: Partido; torneos: string }[] = []
+    const rachas: { n: number; from: Partido; to: Partido; torneos: string; partidos: Partido[] }[] = []
     let cur = 0, start: Partido | null = null, list: Partido[] = []
-    const flush = () => { if (cur >= 2 && start) rachas.push({ n: cur, from: start, to: list[list.length - 1], torneos: [...new Set(list.map(p => p.torneo).filter(Boolean))].join(', ') }); cur = 0; start = null; list = [] }
+    const flush = () => { if (cur >= 2 && start) rachas.push({ n: cur, from: start, to: list[list.length - 1], torneos: [...new Set(list.map(p => p.torneo).filter(Boolean))].join(', '), partidos: [...list] }); cur = 0; start = null; list = [] }
     for (const p of todos) {
       const r = res(p)
       const match = metrica === 'eq_racha_vic' ? r === 'g' : metrica === 'eq_racha_der' ? r === 'p' : metrica === 'eq_racha_invicta' ? (r === 'g' || r === 'e') : metrica === 'eq_racha_sin_ganar' ? (r === 'p' || r === 'e') : p.gecGC === 0
@@ -75,15 +85,15 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
     }
     flush()
     const lab = ({ eq_racha_vic: 'victorias', eq_racha_der: 'derrotas', eq_racha_invicta: 'sin perder', eq_racha_sin_ganar: 'sin ganar', eq_racha_valla: 'sin recibir' } as Record<string, string>)[metrica] || ''
-    return rachas.sort((a, b) => b.n - a.n).slice(0, topN).map(r => ({ titulo: r.torneos || '—', sub: `${fmt(r.from.fecha)} – ${fmt(r.to.fecha)}`, valor: String(r.n), valorLabel: lab }))
+    return rachas.sort((a, b) => b.n - a.n).slice(0, topN).map(r => ({ titulo: r.torneos || '—', sub: `${fmt(r.from.fecha)} – ${fmt(r.to.fecha)}`, valor: String(r.n), valorLabel: lab, partidos: r.partidos.map(toMatch) }))
   }
 
   if (isTemp) {
-    const t: Record<string, { año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number }> = {}
+    const t: Record<string, { año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; partidos: Partido[] }> = {}
     for (const p of todos) {
       const año = (p.fecha || '').slice(0, 4); if (!año) continue
-      const s = t[año] ?? (t[año] = { año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0 })
-      const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC
+      const s = t[año] ?? (t[año] = { año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, partidos: [] })
+      const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC; s.partidos.push(p)
       if (r === 'g') s.pg++; else if (r === 'e') s.pe++; else s.pp++
     }
     return Object.values(t).filter(s => metrica === 'eq_mejor_temp' ? s.pj >= 5 : true)
@@ -92,16 +102,17 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
         titulo: s.año, sub: `${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`,
         valor: metrica === 'eq_mejor_temp' ? `${Math.round((s.pg / s.pj) * 100)}%` : String(s.gf),
         valorLabel: metrica === 'eq_mejor_temp' ? 'victorias' : 'goles',
+        partidos: s.partidos.map(toMatch),
       }))
   }
 
   // Por torneo (torneo+año)
-  const g: Record<string, { torneo: string; año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; inv: number }> = {}
+  const g: Record<string, { torneo: string; año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; inv: number; partidos: Partido[] }> = {}
   for (const p of todos) {
     if (!p.torneo) continue
     const año = (p.fecha || '').slice(0, 4); const key = `${p.torneo}||${año}`
-    const s = g[key] ?? (g[key] = { torneo: p.torneo, año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, inv: 0 })
-    const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC
+    const s = g[key] ?? (g[key] = { torneo: p.torneo, año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, inv: 0, partidos: [] })
+    const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC; s.partidos.push(p)
     if (r === 'g') { s.pg++; s.inv++ } else if (r === 'e') { s.pe++; s.inv++ } else s.pp++
   }
   const asc = metrica === 'eq_gc_torneo'
@@ -119,7 +130,7 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
   }).slice(0, topN).map(s => {
     const valor = metrica === 'eq_pg_pct_torneo' ? `${Math.round((s.pg / s.pj) * 100)}%` : metrica === 'eq_gf_torneo' ? String(s.gf) : metrica === 'eq_gc_torneo' ? String(s.gc) : metrica === 'eq_invicta_torneo' ? String(s.inv) : String(s.pg)
     const valorLabel = metrica === 'eq_gf_torneo' ? 'goles' : metrica === 'eq_gc_torneo' ? 'recibidos' : metrica === 'eq_invicta_torneo' ? 'sin perder' : 'victorias'
-    return { titulo: s.torneo, sub: `${s.año} · ${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`, valor, valorLabel }
+    return { titulo: s.torneo, sub: `${s.año} · ${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`, valor, valorLabel, partidos: s.partidos.map(toMatch) }
   })
 }
 
@@ -248,32 +259,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div className="flex flex-col gap-1">
       <label className="text-[0.7rem] font-bold text-gray-400 uppercase tracking-wide">{label}</label>
       {children}
-    </div>
-  )
-}
-
-function RankingEquipos({ rows, label }: { rows: EqRow[]; label: string }) {
-  const medal = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1)
-  return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100"><span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</span></div>
-      {rows.length === 0 ? <div className="py-8 text-center text-gray-400 text-sm">Sin datos para esos filtros</div> : (
-        <div className="divide-y divide-gray-50">
-          {rows.map((r, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-2.5">
-              <span className="w-6 text-center text-sm font-black shrink-0">{medal(i)}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-800 truncate">{r.titulo}</p>
-                <p className="text-xs text-gray-400 truncate">{r.sub}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-xl font-black text-[#1e3a5f] tabular-nums leading-none">{r.valor}</p>
-                <p className="text-[0.62rem] text-gray-400 mt-0.5">{r.valorLabel}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
