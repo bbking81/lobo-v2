@@ -35,29 +35,8 @@ export default async function MapaPage() {
               <p className="text-xs mt-1">Las coordenadas se cargan desde el admin</p>
             </div>
           ) : (
-            <MapaEstadios estadios={estadiosMapa} />
+            <MapaEstadios estadios={estadiosMapa} height="calc(100vh - 250px)" />
           )}
-        </div>
-
-        {/* Lista igual que estadios */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de estadios</span>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {estadios.map(e => {
-              const ubicacion = [e.ciudad, e.provincia].filter(Boolean).join(', ')
-              return (
-                <div key={e.id} className="flex items-center gap-3 px-4 py-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-800">{e.nombre}</p>
-                    {ubicacion && <p className="text-xs text-gray-400">{ubicacion}</p>}
-                  </div>
-                  <p className="text-sm font-black text-gray-600 shrink-0">{e.pj} PJ</p>
-                </div>
-              )
-            })}
-          </div>
         </div>
 
       </div>

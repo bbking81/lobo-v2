@@ -24,7 +24,7 @@ const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
  * Mapa de estadios con Leaflet (cargado desde CDN), clonado del original
  * loboentrerriano.com: tiles CARTO, label "Islas Malvinas", markers azules.
  */
-export default function MapaEstadios({ estadios }: { estadios: EstadioMapa[] }) {
+export default function MapaEstadios({ estadios, height = 480 }: { estadios: EstadioMapa[]; height?: number | string }) {
   const ref = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
@@ -111,5 +111,5 @@ export default function MapaEstadios({ estadios }: { estadios: EstadioMapa[] }) 
     }
   }, [estadios])
 
-  return <div ref={ref} className="w-full" style={{ height: 480, background: '#e2e8f0' }} />
+  return <div ref={ref} className="w-full" style={{ height, minHeight: 360, background: '#e2e8f0' }} />
 }
