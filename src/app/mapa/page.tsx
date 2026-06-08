@@ -43,22 +43,24 @@ export default async function MapaPage() {
 
         {/* Lista de estadios — grilla de tarjetas (estilo estadisticascasla.com) */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de estadios</span>
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
+            <svg width="15" height="15" fill="none" stroke="#93c5fd" strokeWidth="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+            <span className="text-xs font-black text-white uppercase tracking-widest">Lista de Estadios</span>
+            <span className="ml-auto text-xs text-blue-300">{estadios.length} estadios</span>
           </div>
-          <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <div className="p-2.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {estadios.map(e => {
               const ubicacion = [e.ciudad, e.provincia].filter(Boolean).join(', ')
               return (
                 <Link
                   key={e.id}
                   href={`/estadio/${e.id}`}
-                  className="group flex items-center gap-3 p-3 bg-[#f8fafc] hover:bg-[#eef2ff] border border-[#e2e8f0] rounded-lg transition-colors"
+                  className="group flex items-center gap-2.5 px-3 py-2 bg-[#f8fafc] hover:bg-[#eef2ff] border border-[#e2e8f0] rounded-lg transition-colors"
                 >
-                  <Flag pais={e.pais || 'Argentina'} size={22} />
+                  <Flag pais={e.pais || 'Argentina'} size={18} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#1e293b] group-hover:text-[#2563eb] transition-colors truncate">{e.nombre}</p>
-                    {ubicacion && <p className="text-xs text-gray-400 truncate">{ubicacion}</p>}
+                    <p className="text-[0.82rem] font-semibold text-[#1e293b] group-hover:text-[#2563eb] transition-colors truncate leading-tight">{e.nombre}</p>
+                    {ubicacion && <p className="text-[0.68rem] text-gray-400 truncate">{ubicacion}</p>}
                   </div>
                 </Link>
               )
