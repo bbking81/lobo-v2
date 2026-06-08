@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { getApiData } from '@/lib/api'
 import SecBanner from '@/components/SecBanner'
+import Flag from '@/components/Flag'
 import MapaEstadios, { type EstadioMapa } from '@/components/MapaEstadios'
 
 export default async function MapaPage() {
@@ -35,8 +37,33 @@ export default async function MapaPage() {
               <p className="text-xs mt-1">Las coordenadas se cargan desde el admin</p>
             </div>
           ) : (
-            <MapaEstadios estadios={estadiosMapa} height="calc(100vh - 250px)" />
+            <MapaEstadios estadios={estadiosMapa} height={520} />
           )}
+        </div>
+
+        {/* Lista de estadios — grilla de tarjetas (estilo estadisticascasla.com) */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de estadios</span>
+          </div>
+          <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {estadios.map(e => {
+              const ubicacion = [e.ciudad, e.provincia].filter(Boolean).join(', ')
+              return (
+                <Link
+                  key={e.id}
+                  href={`/estadio/${e.id}`}
+                  className="group flex items-center gap-3 p-3 bg-[#f8fafc] hover:bg-[#eef2ff] border border-[#e2e8f0] rounded-lg transition-colors"
+                >
+                  <Flag pais={e.pais || 'Argentina'} size={22} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[#1e293b] group-hover:text-[#2563eb] transition-colors truncate">{e.nombre}</p>
+                    {ubicacion && <p className="text-xs text-gray-400 truncate">{ubicacion}</p>}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
         </div>
 
       </div>
