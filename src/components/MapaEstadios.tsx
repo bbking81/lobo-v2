@@ -43,9 +43,8 @@ export default function MapaEstadios({ estadios, height = 480 }: { estadios: Est
       const L = window.L
       if (!L || !ref.current || mapRef.current) return
 
-      // scrollWheelZoom:false → la rueda hace scroll de la página, no zoom del mapa.
-      // El zoom se hace con los botones +/-, doble clic o pellizco (touch).
-      const map = L.map(ref.current, { zoomControl: true, scrollWheelZoom: false })
+      // scrollWheelZoom:true → la rueda acerca/aleja el mapa (como estadisticascasla.com).
+      const map = L.map(ref.current, { zoomControl: true, scrollWheelZoom: true })
       mapRef.current = map
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
