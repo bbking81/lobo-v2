@@ -17,7 +17,7 @@ export default async function MapaPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-5xl mx-auto px-4 py-4 space-y-3">
+      <div className="max-w-5xl mx-auto px-4 py-4 space-y-6">
 
         <SecBanner
           title="Mapa Global"
