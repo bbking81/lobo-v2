@@ -36,7 +36,7 @@ const METRICAS_EQ: { v: string; label: string }[] = [
   { v: 'eq_pg_pct_torneo', label: '📈 Mejor % victorias en un torneo (mín. 3 PJ)' },
   { v: 'eq_gf_torneo', label: '⚽ Más goles en un torneo' },
   { v: 'eq_gc_torneo', label: '🛡️ Menos goles recibidos en un torneo' },
-  { v: 'eq_invicta_torneo', label: '🔒 Mayor invicto en un torneo' },
+  { v: 'eq_invicta_torneo', label: '🔒 Mayor racha invicta en un torneo' },
   { v: 'eq_racha_vic', label: '🔥 Mayor racha de victorias' },
   { v: 'eq_racha_der', label: '❄️ Mayor racha de derrotas' },
   { v: 'eq_racha_invicta', label: '⚡ Mayor racha invicta (V o E)' },
@@ -106,14 +106,45 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
       }))
   }
 
+  // Mayor invicto en un torneo = racha consecutiva más larga SIN PERDER dentro de
+  // un mismo torneo (se corta con cada derrota). El detalle muestra solo esos
+  // partidos (todos victoria o empate, nunca derrota).
+  if (metrica === 'eq_invicta_torneo') {
+    const grupos: Record<string, Partido[]> = {}
+    for (const p of todos) {
+      if (!p.torneo) continue
+      const año = (p.fecha || '').slice(0, 4)
+      ;(grupos[`${p.torneo}||${año}`] ??= []).push(p)
+    }
+    const recs: { torneo: string; año: string; partidos: Partido[] }[] = []
+    for (const key of Object.keys(grupos)) {
+      let best: Partido[] = [], cur: Partido[] = []
+      for (const p of grupos[key]) {
+        if (res(p) !== 'p') { cur.push(p); if (cur.length > best.length) best = cur.slice() }
+        else cur = []
+      }
+      if (best.length >= 2) {
+        const [torneo, año] = key.split('||')
+        recs.push({ torneo, año, partidos: best })
+      }
+    }
+    return recs.sort((a, b) => b.partidos.length - a.partidos.length).slice(0, topN).map(r => ({
+      titulo: r.torneo,
+      sub: `${r.año} · ${fmt(r.partidos[0].fecha)} – ${fmt(r.partidos[r.partidos.length - 1].fecha)}`,
+      valor: String(r.partidos.length),
+      valorLabel: 'sin perder',
+      partidos: r.partidos.map(toMatch),
+    }))
+  }
+
   // Por torneo (torneo+año)
-  const g: Record<string, { torneo: string; año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; inv: number; partidos: Partido[] }> = {}
+  const g: Record<string, { torneo: string; año: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; partidos: Partido[] }> = {}
   for (const p of todos) {
     if (!p.torneo) continue
     const año = (p.fecha || '').slice(0, 4); const key = `${p.torneo}||${año}`
-    const s = g[key] ?? (g[key] = { torneo: p.torneo, año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, inv: 0, partidos: [] })
+    const s = g[key] ?? (g[key] = { torneo: p.torneo, año, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, partidos: [] })
     const r = res(p); s.pj++; s.gf += p.gecGF; s.gc += p.gecGC; s.partidos.push(p)
-    if (r === 'g') { s.pg++; s.inv++ } else if (r === 'e') { s.pe++; s.inv++ } else s.pp++
+    if (r === 'g') s.pg++; else if (r === 'e') s.pe++; else s.pp++
   }
   const asc = metrica === 'eq_gc_torneo'
   return Object.values(g).filter(s => {
@@ -125,11 +156,10 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
     if (asc) return a.gc - b.gc
     if (metrica === 'eq_pg_pct_torneo') return (b.pg / b.pj) - (a.pg / a.pj)
     if (metrica === 'eq_gf_torneo') return b.gf - a.gf
-    if (metrica === 'eq_invicta_torneo') return b.inv - a.inv
     return b.pg - a.pg
   }).slice(0, topN).map(s => {
-    const valor = metrica === 'eq_pg_pct_torneo' ? `${Math.round((s.pg / s.pj) * 100)}%` : metrica === 'eq_gf_torneo' ? String(s.gf) : metrica === 'eq_gc_torneo' ? String(s.gc) : metrica === 'eq_invicta_torneo' ? String(s.inv) : String(s.pg)
-    const valorLabel = metrica === 'eq_gf_torneo' ? 'goles' : metrica === 'eq_gc_torneo' ? 'recibidos' : metrica === 'eq_invicta_torneo' ? 'sin perder' : 'victorias'
+    const valor = metrica === 'eq_pg_pct_torneo' ? `${Math.round((s.pg / s.pj) * 100)}%` : metrica === 'eq_gf_torneo' ? String(s.gf) : metrica === 'eq_gc_torneo' ? String(s.gc) : String(s.pg)
+    const valorLabel = metrica === 'eq_gf_torneo' ? 'goles' : metrica === 'eq_gc_torneo' ? 'recibidos' : 'victorias'
     return { titulo: s.torneo, sub: `${s.año} · ${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`, valor, valorLabel, partidos: s.partidos.map(toMatch) }
   })
 }
