@@ -3,7 +3,10 @@ import type { ApiData, Partido } from '@/types'
 const BASE_URL = 'https://loboentrerriano.com'
 
 export async function getApiData(): Promise<ApiData> {
-  const res = await fetch(`${BASE_URL}/api/db`, { cache: 'no-store' })
+  // Caché de 5 minutos (ISR): Vercel guarda el JSON y lo sirve al instante;
+  // pasados 300s lo vuelve a pedir fresco. Un dato nuevo cargado en el admin
+  // tarda hasta 5 min en verse. Para volver a "siempre fresco": cache:'no-store'.
+  const res = await fetch(`${BASE_URL}/api/db`, { next: { revalidate: 300 } })
   if (!res.ok) throw new Error('Error al obtener datos')
   return res.json()
 }
