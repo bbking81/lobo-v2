@@ -11,7 +11,12 @@ export async function getApiData(): Promise<ApiData> {
   let lastError: unknown
   for (let intento = 1; intento <= 3; intento++) {
     try {
-      const res = await fetch(`${BASE_URL}/api/db`, { next: { revalidate: 300 } })
+      const res = await fetch(`${BASE_URL}/api/db`, {
+        next: { revalidate: 300 },
+        // Tope de 15s por intento: si el API se cuelga, cortamos y reintentamos
+        // en vez de dejar colgado el build/request.
+        signal: AbortSignal.timeout(15000),
+      })
       if (res.ok) return res.json()
       lastError = new Error(`API respondió ${res.status}`)
     } catch (e) {
