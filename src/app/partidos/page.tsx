@@ -158,6 +158,8 @@ function PartidoFila({ partido: p }: { partido: Partido }) {
   const s = RES_SOLID[res]
 
   const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
+  // Detalle del torneo (como el original): "Fecha N · fase · subfase"
+  const detalle = [p.fechaNro ? `Fecha ${p.fechaNro}` : '', p.fase || '', p.subfase || ''].filter(Boolean).join(' · ')
 
   return (
     <Link href={`/partido/partido-${p.id}`}
@@ -177,7 +179,10 @@ function PartidoFila({ partido: p }: { partido: Partido }) {
         <p className="text-[0.87rem] font-medium text-[#151e22] truncate flex-1 max-w-[140px]">{gecLocal ? rival : 'Gimnasia y Esgrima'}</p>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <p className="text-[0.72rem] text-[#94a3b8] truncate text-right max-w-[120px]">{p.torneo?.trim()}</p>
+        <div className="min-w-0 text-right">
+          <p className="text-[0.72rem] text-[#475569] font-medium truncate">{p.torneo?.trim()}</p>
+          {detalle && <p className="text-[0.64rem] text-[#94a3b8] truncate">{detalle}</p>}
+        </div>
         <span className="text-[0.62rem] font-black text-white px-2 py-0.5 rounded shrink-0" style={{ background: s.bg }}>{res}</span>
       </div>
     </Link>
