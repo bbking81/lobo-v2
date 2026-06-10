@@ -52,13 +52,21 @@ export default async function PartidosPage({ searchParams }: Props) {
   const pe = filtrados.filter(p => p.gecGF === p.gecGC).length
   const pp = filtrados.filter(p => p.gecGF < p.gecGC).length
 
-  const grupos = new Map<string, Partido[]>()
-  for (const p of filtrados) {
-    const año = p.fecha?.slice(0, 4) ?? 'Sin fecha'
-    if (!grupos.has(año)) grupos.set(año, [])
-    grupos.get(año)!.push(p)
+  // Nombre del torneo normalizado para mostrar (clon del original): si el torneo
+  // crudo no trae año, se completa con el nombre oficial de la competencia
+  // (ej: Torneo Federal → Torneo Federal "A") y el año del propio partido.
+  const comps = data.competencias ?? []
+  const torneoLabel = (p: Partido): string => {
+    const raw = p.torneo?.trim() || '—'
+    if (/\d{4}/.test(raw)) return raw
+    const rl = raw.toLowerCase()
+    const comp = comps.find(c => c.nombre?.toLowerCase().trim() === rl)
+      ?? comps.find(c => c.nombre?.toLowerCase().trim().startsWith(rl))
+      ?? comps.find(c => c.nombre && rl.startsWith(c.nombre.toLowerCase().trim()))
+    const nombre = comp?.nombre ?? raw
+    const año = p.fecha?.slice(0, 4)
+    return año ? `${nombre} - ${año}` : nombre
   }
-  const gruposOrden = Array.from(grupos.entries()).sort((a, b) => b[0].localeCompare(a[0]))
 
   return (
     <main className="min-h-screen bg-[#f8fafc]">
@@ -121,20 +129,16 @@ export default async function PartidosPage({ searchParams }: Props) {
           </div>
         )}
 
-        {/* Lista */}
+        {/* Lista (corrida, sin agrupar por año — como el original) */}
         {pj === 0 ? (
           <div className="bg-white rounded-xl border border-[#e2e8f0] py-12 text-center text-[#94a3b8] text-sm">No hay partidos con estos filtros</div>
-        ) : gruposOrden.map(([año, partidos]) => (
-          <div key={año} className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden mb-4">
-            <div className="px-5 py-3 flex items-center justify-between" style={{ background: '#162032' }}>
-              <span className="text-sm font-bold text-[#f1f5f9]">{año}</span>
-              <span className="text-xs text-[#94a3b8]">{partidos.length} partidos</span>
-            </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
             <div className="divide-y divide-[#f1f5f9]">
-              {partidos.map(p => <PartidoFila key={p.id} partido={p} />)}
+              {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} />)}
             </div>
           </div>
-        ))}
+        )}
       </div>
     </main>
   )
@@ -149,7 +153,7 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function PartidoFila({ partido: p }: { partido: Partido }) {
+function PartidoFila({ partido: p, torneo }: { partido: Partido; torneo: string }) {
   const gecLocal = esGecLocal(p.local)
   const rival = gecLocal ? p.visitante : p.local
   const golesGec = gecLocal ? p.gl : p.gv
@@ -180,7 +184,7 @@ function PartidoFila({ partido: p }: { partido: Partido }) {
       </div>
       <div className="flex items-center justify-end gap-2">
         <div className="min-w-0 text-right">
-          <p className="text-[0.72rem] text-[#475569] font-medium truncate">{p.torneo?.trim()}</p>
+          <p className="text-[0.72rem] text-[#475569] font-medium truncate">{torneo}</p>
           {detalle && <p className="text-[0.64rem] text-[#94a3b8] truncate">{detalle}</p>}
         </div>
         <span className="text-[0.62rem] font-black text-white px-2 py-0.5 rounded shrink-0" style={{ background: s.bg }}>{res}</span>
