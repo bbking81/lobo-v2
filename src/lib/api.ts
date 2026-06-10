@@ -6,9 +6,20 @@ export async function getApiData(): Promise<ApiData> {
   // Caché de 5 minutos (ISR): Vercel guarda el JSON y lo sirve al instante;
   // pasados 300s lo vuelve a pedir fresco. Un dato nuevo cargado en el admin
   // tarda hasta 5 min en verse. Para volver a "siempre fresco": cache:'no-store'.
-  const res = await fetch(`${BASE_URL}/api/db`, { next: { revalidate: 300 } })
-  if (!res.ok) throw new Error('Error al obtener datos')
-  return res.json()
+  // Con reintentos: el API a veces tira 500 transitorios, y un fallo durante
+  // el build de Vercel tumbaría el deploy entero.
+  let lastError: unknown
+  for (let intento = 1; intento <= 3; intento++) {
+    try {
+      const res = await fetch(`${BASE_URL}/api/db`, { next: { revalidate: 300 } })
+      if (res.ok) return res.json()
+      lastError = new Error(`API respondió ${res.status}`)
+    } catch (e) {
+      lastError = e
+    }
+    if (intento < 3) await new Promise(r => setTimeout(r, 2000 * intento))
+  }
+  throw lastError instanceof Error ? lastError : new Error('Error al obtener datos')
 }
 
 export function fotoUrl(foto: string | null | undefined): string | null {
