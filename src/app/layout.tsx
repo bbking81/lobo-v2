@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description: "Estadísticas de Gimnasia y Esgrima de Concepción del Uruguay",
 };
 
+// Todas las páginas se renderizan por request (nada se prerenderiza en el
+// build): el build de Vercel NO llama al API de loboentrerriano.com, que
+// tira 500/cuelgues esporádicos y venía tumbando deploys. La caché de DATOS
+// de 5 min de getApiData (revalidate explícito en el fetch) sigue vigente,
+// así que el rendimiento se mantiene.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
