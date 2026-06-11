@@ -82,7 +82,7 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5 max-w-[1100px] mx-auto space-y-5">
 
-        {proximo && <BannerProximo proximo={proximo} />}
+        {proximo && <BannerProximo proximo={proximo} escudoRival={escudoDe(proximo.rival)} />}
 
         {/* FILA 1: Último partido + Un día como hoy */}
         <div className="grid gap-5" style={{ gridTemplateColumns: '1fr 340px' }}>
@@ -162,25 +162,48 @@ export default async function HomePage() {
   )
 }
 
-/* ── Banner próximo partido (sin cambios) ── */
-function BannerProximo({ proximo }: { proximo: ProximoType }) {
-  const fecha = new Date(proximo.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })
+/* ── Banner próximo partido — tarjeta de partido (escudos a los costados,
+      hora grande al centro, orden real local/visitante) ── */
+function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 min-w-0" style={{ width: 150 }}>
+      <div className="flex items-center justify-center shrink-0" style={{ width: 64, height: 64, background: '#fff', borderRadius: 14, boxShadow: '0 2px 10px rgba(0,0,0,0.25)' }}>
+        {url
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={url} alt={nombre} style={{ width: 48, height: 48, objectFit: 'contain' }} />
+          : <span style={{ fontSize: '1.7rem' }}>⚽</span>}
+      </div>
+      <p className="text-white text-center font-bold leading-tight w-full" style={{ fontSize: '0.82rem', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>{nombre}</p>
+    </div>
+  )
+}
+function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoRival: string | null }) {
+  const fd = new Date(proximo.fecha + 'T12:00:00')
+  const fecha = fd.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const esLocal = (proximo.condicion || '').toLowerCase().startsWith('local')
+  const izq = esLocal
+    ? { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
+    : { url: escudoRival, nombre: proximo.rival }
+  const der = esLocal
+    ? { url: escudoRival, nombre: proximo.rival }
+    : { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
   return (
     <div className="rounded-xl overflow-hidden" style={{ background: 'linear-gradient(to right, #1e3a5f, #6b1a1a)', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
-      <div className="flex items-start px-[18px] py-4 gap-3.5">
-        <div className="flex items-center justify-center shrink-0 rounded-[9px]" style={{ background: 'rgba(255,255,255,0.18)', width: 38, height: 38 }}>
-          <svg width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div className="text-center pt-3">
+        <span className="uppercase font-bold" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em' }}>Próximo Partido</span>
+      </div>
+      <div className="flex items-center justify-center gap-4 sm:gap-10 px-4 pt-2 pb-3">
+        <BannerEscudo url={izq.url} nombre={izq.nombre} />
+        <div className="text-center shrink-0">
+          <p className="text-white font-black tabular-nums leading-none" style={{ fontSize: '2rem' }}>{proximo.hora}<span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}> hs</span></p>
+          <p className="capitalize mt-1.5" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{fecha}</p>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[0.65rem] font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.6)', letterSpacing: '0.3px' }}>Próximo Partido</p>
-          <p className="text-[1.2rem] font-black text-white leading-tight">{proximo.rival}</p>
-          <p className="text-[0.72rem] mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>{proximo.torneo.trim()} · {proximo.condicion}</p>
-        </div>
-        <div className="text-right shrink-0">
-          <p className="text-[0.95rem] font-black text-white whitespace-nowrap">{fecha}</p>
-          <p className="text-[0.88rem] font-medium whitespace-nowrap mt-1" style={{ color: 'rgba(255,255,255,0.75)' }}>{proximo.hora} hs</p>
-          {proximo.estadio && <p className="text-[0.72rem] mt-0.5 whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.6)' }}>🏟️ {proximo.estadio}</p>}
-        </div>
+        <BannerEscudo url={der.url} nombre={der.nombre} />
+      </div>
+      <div className="flex items-center justify-center gap-2 flex-wrap pb-3 px-4" style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)' }}>
+        <span>{proximo.torneo.trim()}</span>
+        {proximo.estadio && <><span>·</span><span>🏟️ {proximo.estadio}</span></>}
+        <span>·</span><span>{proximo.condicion}</span>
       </div>
     </div>
   )
