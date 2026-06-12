@@ -1,6 +1,8 @@
 import type { ApiData, Partido } from '@/types'
 
-const BASE_URL = 'https://loboentrerriano.com'
+// En el VPS se setea GEC_API_URL=http://127.0.0.1:8000 (lee el API local,
+// sin viaje por internet). Sin la env var (ej. Vercel) usa el dominio público.
+const BASE_URL = process.env.GEC_API_URL || 'https://loboentrerriano.com'
 
 export async function getApiData(): Promise<ApiData> {
   // Caché de 5 minutos (ISR): Vercel guarda el JSON y lo sirve al instante;
