@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
+import { useMobileNav, setMobileNav } from '@/lib/useMobileNav'
 
 // SVG icons inline — alineados a los del original loboentrerriano.com (stroke 2.4)
 const Icons = {
@@ -44,66 +46,76 @@ const NAV_DATOS = [
   { href: '/arbitros',        label: 'Árbitros',           icon: Icons.whistle },
 ]
 
-export default function Sidebar() {
-  const pathname = usePathname()
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
-
+function NavContenido({ isActive, onNav }: { isActive: (h: string) => boolean; onNav: () => void }) {
   return (
     <>
-      {/* Sidebar desktop */}
-      <aside className="hidden md:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 sticky top-[90px] h-[calc(100vh-90px)] overflow-y-auto">
-        {/* Nav principal */}
-        <nav className="flex flex-col px-3 pt-4 gap-0.5">
-          {NAV_MAIN.map(link => (
-            <NavItem key={link.href} link={link} active={isActive(link.href)} />
-          ))}
-        </nav>
-
-        {/* ESTADÍSTICAS */}
-        <div className="px-5 pt-5 pb-1">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Estadísticas</p>
-        </div>
-        <nav className="flex flex-col px-3 gap-0.5">
-          {NAV_ESTADISTICAS.map(link => (
-            <NavItem key={link.href} link={link} active={isActive(link.href)} />
-          ))}
-        </nav>
-
-        {/* DATOS */}
-        <div className="px-5 pt-5 pb-1">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Datos</p>
-        </div>
-        <nav className="flex flex-col px-3 gap-0.5 pb-6">
-          {NAV_DATOS.map(link => (
-            <NavItem key={link.href} link={link} active={isActive(link.href)} />
-          ))}
-        </nav>
-      </aside>
-
-      {/* Bottom nav mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex">
-        {[NAV_MAIN[0], NAV_ESTADISTICAS[0], NAV_ESTADISTICAS[2], NAV_ESTADISTICAS[3], NAV_ESTADISTICAS[5]].map(link => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold transition-colors ${
-              isActive(link.href) ? 'text-[#2563eb]' : 'text-gray-400'
-            }`}
-          >
-            <span className="leading-none">{link.icon}</span>
-            <span className="truncate max-w-full px-1">{link.label}</span>
-          </Link>
-        ))}
+      <nav className="flex flex-col px-3 pt-4 gap-0.5">
+        {NAV_MAIN.map(link => <NavItem key={link.href} link={link} active={isActive(link.href)} onNav={onNav} />)}
+      </nav>
+      <div className="px-5 pt-5 pb-1"><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Estadísticas</p></div>
+      <nav className="flex flex-col px-3 gap-0.5">
+        {NAV_ESTADISTICAS.map(link => <NavItem key={link.href} link={link} active={isActive(link.href)} onNav={onNav} />)}
+      </nav>
+      <div className="px-5 pt-5 pb-1"><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Datos</p></div>
+      <nav className="flex flex-col px-3 gap-0.5 pb-6">
+        {NAV_DATOS.map(link => <NavItem key={link.href} link={link} active={isActive(link.href)} onNav={onNav} />)}
       </nav>
     </>
   )
 }
 
-function NavItem({ link, active }: { link: { href: string; icon: React.ReactNode; label: string }; active: boolean }) {
+export default function Sidebar() {
+  const pathname = usePathname()
+  const open = useMobileNav()
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href)
+  const close = () => setMobileNav(false)
+
+  // Cerrar con Escape + bloquear scroll del body cuando el drawer está abierto
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
+  }, [open])
+
+  return (
+    <>
+      {/* Sidebar fijo en desktop (≥1024px) */}
+      <aside className="hidden lg:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 sticky top-[90px] h-[calc(100vh-90px)] overflow-y-auto">
+        <NavContenido isActive={isActive} onNav={() => {}} />
+      </aside>
+
+      {/* Overlay (tablet/celular) */}
+      <div
+        onClick={close}
+        className={`lg:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        aria-hidden="true"
+      />
+      {/* Drawer deslizable (tablet/celular) */}
+      <aside
+        className={`lg:hidden fixed top-0 left-0 z-[300] h-full w-[270px] max-w-[82vw] bg-white shadow-2xl overflow-y-auto transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        aria-hidden={!open}
+      >
+        <div className="flex items-center justify-between px-4 h-[60px] border-b border-gray-200">
+          <span className="font-extrabold text-[#1e293b]" style={{ fontFamily: 'var(--font-archivo), system-ui' }}>Menú</span>
+          <button onClick={close} aria-label="Cerrar menú" className="p-2 -mr-2 text-gray-500 hover:text-gray-800">
+            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <NavContenido isActive={isActive} onNav={close} />
+      </aside>
+    </>
+  )
+}
+
+function NavItem({ link, active, onNav }: { link: { href: string; icon: React.ReactNode; label: string }; active: boolean; onNav: () => void }) {
   return (
     <Link
       href={link.href}
+      onClick={onNav}
       className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[1rem] font-normal transition-all ${
         active
           ? 'bg-[#2563eb] text-white font-semibold shadow-sm'

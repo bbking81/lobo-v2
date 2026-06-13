@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { IndexItem } from '@/app/api/search-index/route'
+import { toggleMobileNav } from '@/lib/useMobileNav'
 
 // Orden, etiqueta, tope de resultados e ícono de cada grupo
 const GROUPS: { key: string; label: string; max: number; bg: string; stroke: string; path: React.ReactNode }[] = [
@@ -65,30 +66,38 @@ export default function Topbar() {
 
   return (
     <header
-      className="flex items-center gap-8 bg-white w-full shrink-0 sticky top-0 z-[200] relative"
-      style={{ height: 90, padding: '0 24px' }}
+      className="flex items-center gap-3 lg:gap-8 bg-white w-full shrink-0 sticky top-0 z-[200] relative h-[64px] lg:h-[90px] px-3 lg:px-6"
     >
+      {/* Botón hamburguesa (tablet/celular) */}
+      <button
+        onClick={toggleMobileNav}
+        aria-label="Abrir menú"
+        className="lg:hidden flex items-center justify-center shrink-0 -ml-1 p-2 rounded-lg text-[#1e293b] hover:bg-gray-100"
+      >
+        <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
       {/* Marca */}
-      <Link href="/" className="flex items-center gap-3.5 cursor-pointer shrink-0" title="Ir al inicio">
+      <Link href="/" className="flex items-center gap-2.5 lg:gap-3.5 cursor-pointer shrink-0 min-w-0" title="Ir al inicio">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://loboentrerriano.com/static/logo.png"
           alt="Lobo Entrerriano"
-          className="h-20 w-20 object-contain shrink-0"
+          className="h-11 w-11 lg:h-20 lg:w-20 object-contain shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
         />
-        <div style={{ lineHeight: 1.1 }}>
-          <div className="whitespace-nowrap" style={{ fontSize: '2rem', fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', lineHeight: 1 }}>
+        <div className="min-w-0" style={{ lineHeight: 1.1 }}>
+          <div className="whitespace-nowrap truncate text-[1.15rem] lg:text-[2rem]" style={{ fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', lineHeight: 1 }}>
             Lobo Entrerriano
           </div>
-          <div className="whitespace-nowrap uppercase" style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2563eb', letterSpacing: '0.22em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', marginTop: 5 }}>
+          <div className="whitespace-nowrap uppercase text-[0.5rem] lg:text-[0.62rem]" style={{ fontWeight: 700, color: '#2563eb', letterSpacing: '0.22em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', marginTop: 4 }}>
             · Estadísticas ·
           </div>
         </div>
       </Link>
 
       {/* Buscador (estilo FBref) — corrido a la derecha, botón lupa */}
-      <div ref={boxRef} className="hidden sm:block relative ml-auto" style={{ width: 460 }}>
+      <div ref={boxRef} className="hidden lg:block relative ml-auto" style={{ width: 460 }}>
         <div className="flex items-center gap-2.5">
           <div className="flex items-center flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
             <input

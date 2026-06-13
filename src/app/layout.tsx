@@ -47,7 +47,7 @@ export default function RootLayout({
             <Sidebar />
             {/* Contenido principal — el footer va acá adentro: su borde
                 izquierdo choca contra el sidebar, no pasa por debajo */}
-            <div className="flex-1 min-w-0 flex flex-col pb-16 md:pb-0 bg-[#f8fafc]">
+            <div className="flex-1 min-w-0 flex flex-col bg-[#f8fafc]">
               <div className="flex-1 min-w-0">{children}</div>
               <Footer />
             </div>
