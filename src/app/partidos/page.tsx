@@ -19,9 +19,9 @@ function esGecLocal(local: string) {
 }
 
 const RES_SOLID = {
-  V: { bg: '#16a34a', border: 'border-l-[#16a34a]' },
-  E: { bg: '#64748b', border: 'border-l-[#ca8a04]' },
-  D: { bg: '#dc2626', border: 'border-l-[#dc2626]' },
+  V: { bg: '#16a34a' },
+  E: { bg: '#ca8a04' },
+  D: { bg: '#dc2626' },
 }
 const selCls = 'w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-[7px] px-3 py-2 text-sm text-[#1e293b] outline-none'
 
@@ -170,7 +170,7 @@ function PartidoFila({ partido: p, torneo }: { partido: Partido; torneo: string 
 
   return (
     <Link href={`/partido/partido-${p.id}`}
-      className={`block px-3 sm:px-4 py-2.5 hover:bg-[#f8fafc] transition-colors border-l-[3px] ${s.border}`}>
+      className="block px-3 sm:px-4 py-2.5 hover:bg-[#f8fafc] transition-colors">
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Fecha + condición (desde sm) */}
         <div className="hidden sm:block w-[100px] shrink-0">
