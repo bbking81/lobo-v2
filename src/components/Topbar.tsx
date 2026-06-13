@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { IndexItem } from '@/app/api/search-index/route'
-import { toggleMobileNav } from '@/lib/useMobileNav'
+import { toggleMobileNav, useMobileNav } from '@/lib/useMobileNav'
 
 // Orden, etiqueta, tope de resultados e ícono de cada grupo
 const GROUPS: { key: string; label: string; max: number; bg: string; stroke: string; path: React.ReactNode }[] = [
@@ -23,6 +23,7 @@ const GROUPS: { key: string; label: string; max: number; bg: string; stroke: str
  */
 export default function Topbar() {
   const router = useRouter()
+  const navOpen = useMobileNav()
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState<IndexItem[] | null>(null)
@@ -66,15 +67,17 @@ export default function Topbar() {
 
   return (
     <header
-      className="flex items-center gap-3 lg:gap-8 bg-white w-full shrink-0 sticky top-0 z-[200] relative h-[64px] lg:h-[90px] px-3 lg:px-6"
+      className="flex items-center gap-3 lg:gap-8 bg-white w-full shrink-0 sticky top-0 z-[400] relative h-[64px] lg:h-[90px] px-3 lg:px-6"
     >
-      {/* Botón hamburguesa (tablet/celular) */}
+      {/* Botón hamburguesa ⇄ X (tablet/celular) */}
       <button
         onClick={toggleMobileNav}
-        aria-label="Abrir menú"
+        aria-label={navOpen ? 'Cerrar menú' : 'Abrir menú'}
         className="lg:hidden flex items-center justify-center shrink-0 -ml-1 p-2 rounded-lg text-[#1e293b] hover:bg-gray-100"
       >
-        <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        {navOpen
+          ? <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          : <svg width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
       </button>
 
       {/* Marca */}

@@ -89,7 +89,7 @@ export default async function HomePage() {
         {proximo && <BannerProximo proximo={proximo} escudoRival={escudoDe(proximo.rival)} />}
 
         {/* FILA 1: Último partido + Un día como hoy */}
-        <div className="grid gap-5" style={{ gridTemplateColumns: '1fr 340px' }}>
+        <div className="grid gap-5 grid-cols-1 lg:grid-cols-[1fr_340px]">
           <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
             <CardHeader title="Último Partido"
               icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>} />
@@ -116,7 +116,7 @@ export default async function HomePage() {
         </div>
 
         {/* FILA 3: Máximas Participaciones + Máximos Goleadores */}
-        <div className="grid gap-5" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2">
           <Podio titulo="Máximas Participaciones" jugadores={maxParticipaciones} campo="pj" sufijo="PJ" tema="azul"
             verHref="/jugadores" verTxt="Ver todos los jugadores →"
             icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>} />

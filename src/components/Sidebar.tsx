@@ -94,17 +94,12 @@ export default function Sidebar() {
         className={`lg:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         aria-hidden="true"
       />
-      {/* Drawer deslizable (tablet/celular) */}
+      {/* Drawer deslizable (tablet/celular), debajo del topbar (64px) */}
       <aside
-        className={`lg:hidden fixed top-0 left-0 z-[300] h-full w-[270px] max-w-[82vw] bg-white shadow-2xl overflow-y-auto transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className="lg:hidden fixed top-[64px] left-0 z-[300] h-[calc(100%-64px)] w-[270px] max-w-[82vw] bg-white shadow-2xl overflow-y-auto"
+        style={{ transform: open ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.2s ease' }}
         aria-hidden={!open}
       >
-        <div className="flex items-center justify-between px-4 h-[60px] border-b border-gray-200">
-          <span className="font-extrabold text-[#1e293b]" style={{ fontFamily: 'var(--font-archivo), system-ui' }}>Menú</span>
-          <button onClick={close} aria-label="Cerrar menú" className="p-2 -mr-2 text-gray-500 hover:text-gray-800">
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
         <NavContenido isActive={isActive} onNav={close} />
       </aside>
     </>
