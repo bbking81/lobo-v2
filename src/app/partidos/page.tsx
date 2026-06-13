@@ -170,27 +170,36 @@ function PartidoFila({ partido: p, torneo }: { partido: Partido; torneo: string 
 
   return (
     <Link href={`/partido/partido-${p.id}`}
-      className={`grid items-center px-4 py-3 hover:bg-[#f8fafc] transition-colors border-l-[3px] ${s.border}`}
-      style={{ gridTemplateColumns: '110px 1fr 180px' }}>
-      <div>
-        <p className="text-[0.7rem] text-[#475569] font-medium whitespace-nowrap">{fecha}</p>
-        <p className="text-[0.65rem] text-[#94a3b8] mt-0.5">{gecLocal ? 'Local' : 'Visitante'}</p>
-      </div>
-      <div className="flex items-center justify-center gap-2 min-w-0">
-        <p className="text-[0.87rem] font-medium text-[#151e22] text-right truncate flex-1 max-w-[140px]">{gecLocal ? 'Gimnasia y Esgrima' : rival}</p>
-        <div className="flex items-center gap-1.5 shrink-0 px-2">
-          <span className="text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesGec}</span>
-          <span className="text-[#94a3b8] text-sm">-</span>
-          <span className="text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesRival}</span>
+      className={`block px-3 sm:px-4 py-2.5 hover:bg-[#f8fafc] transition-colors border-l-[3px] ${s.border}`}>
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Fecha + condición (desde sm) */}
+        <div className="hidden sm:block w-[100px] shrink-0">
+          <p className="text-[0.7rem] text-[#475569] font-medium whitespace-nowrap">{fecha}</p>
+          <p className="text-[0.65rem] text-[#94a3b8] mt-0.5">{gecLocal ? 'Local' : 'Visitante'}</p>
         </div>
-        <p className="text-[0.87rem] font-medium text-[#151e22] truncate flex-1 max-w-[140px]">{gecLocal ? rival : 'Gimnasia y Esgrima'}</p>
-      </div>
-      <div className="flex items-center justify-end gap-2">
-        <div className="min-w-0 text-right">
-          <p className="text-[0.72rem] text-[#475569] font-medium truncate">{torneo}</p>
-          {detalle && <p className="text-[0.64rem] text-[#94a3b8] truncate">{detalle}</p>}
+        {/* Equipos + marcador */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+          <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] text-right truncate flex-1">{gecLocal ? 'Gimnasia y Esgrima' : rival}</p>
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 px-1 sm:px-2">
+            <span className="text-[1.05rem] sm:text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesGec}</span>
+            <span className="text-[#94a3b8] text-sm">-</span>
+            <span className="text-[1.05rem] sm:text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesRival}</span>
+          </div>
+          <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] truncate flex-1">{gecLocal ? rival : 'Gimnasia y Esgrima'}</p>
         </div>
-        <span className="text-[0.62rem] font-black text-white px-2 py-0.5 rounded shrink-0" style={{ background: s.bg }}>{res}</span>
+        {/* Torneo (desde md) + badge resultado */}
+        <div className="flex items-center justify-end gap-2 shrink-0">
+          <div className="hidden md:block min-w-0 text-right max-w-[160px]">
+            <p className="text-[0.72rem] text-[#475569] font-medium truncate">{torneo}</p>
+            {detalle && <p className="text-[0.64rem] text-[#94a3b8] truncate">{detalle}</p>}
+          </div>
+          <span className="text-[0.62rem] font-black text-white px-2 py-0.5 rounded shrink-0" style={{ background: s.bg }}>{res}</span>
+        </div>
+      </div>
+      {/* Línea inferior compacta solo en móvil: fecha · condición · torneo */}
+      <div className="sm:hidden flex items-center gap-1.5 mt-1 pl-0.5 text-[0.62rem] text-[#94a3b8]">
+        <span className="whitespace-nowrap">{fecha} · {gecLocal ? 'Local' : 'Visitante'}</span>
+        {torneo && <span className="truncate">· {torneo}</span>}
       </div>
     </Link>
   )
