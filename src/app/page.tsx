@@ -32,7 +32,11 @@ export default async function HomePage() {
   const publicados = data.partidos.filter(p => p.publicado)
   const ordenados = [...publicados].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))
   const ultimoPartido = ordenados[0]
-  const proximo = data.proximoPartido as ProximoType | undefined
+  // Próximo partido: solo si la fecha no pasó (hora argentina aprox UTC-3);
+  // si quedó vencido en el admin, el banner se oculta solo.
+  const proximoRaw = data.proximoPartido as ProximoType | undefined
+  const hoyArg = new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10)
+  const proximo = proximoRaw?.fecha && proximoRaw.fecha >= hoyArg ? proximoRaw : undefined
 
   // Un día como hoy
   const hoy = new Date()
