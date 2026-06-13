@@ -16,8 +16,8 @@ interface SecBannerProps {
 export default function SecBanner({ icon, title, subtitle, right }: SecBannerProps) {
   return (
     <div
-      className="flex items-center justify-between gap-4"
-      style={{ background: '#1e3a5f', borderRadius: 12, padding: '24px 28px', marginBottom: 16 }}
+      className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 px-3.5 py-4 sm:px-7 sm:py-6"
+      style={{ background: '#1e3a5f', borderRadius: 12, marginBottom: 16 }}
     >
       <div className="flex items-start" style={{ gap: 14 }}>
         <svg
@@ -27,7 +27,7 @@ export default function SecBanner({ icon, title, subtitle, right }: SecBannerPro
           {icon}
         </svg>
         <div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#ffffff', marginBottom: 4, lineHeight: 1.15 }}>
+          <div className="text-[1.3rem] sm:text-[1.8rem]" style={{ fontWeight: 700, color: '#ffffff', marginBottom: 4, lineHeight: 1.15 }}>
             {title}
           </div>
           {subtitle && <div style={{ fontSize: '0.88rem', color: '#93c5fd' }}>{subtitle}</div>}

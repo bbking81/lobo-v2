@@ -150,7 +150,7 @@ export default async function BuscadorPage({ searchParams }: Props) {
           </Row>
 
           <Row label="En condición:">
-            <select name="cond" defaultValue={cond} className={inputCls} style={{ minWidth: 220 }}>
+            <select name="cond" defaultValue={cond} className={`${inputCls} w-full sm:w-auto sm:min-w-[220px]`}>
               <option value="">Todas</option>
               <option value="local">Local</option>
               <option value="visitante">Visitante</option>
@@ -239,9 +239,9 @@ export default async function BuscadorPage({ searchParams }: Props) {
 
 function Row({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) {
   return (
-    <div className={`flex items-center gap-4 flex-wrap py-3.5 ${last ? '' : 'border-b border-[#e2e8f0]'}`}>
-      <label className="text-[0.85rem] text-[#64748b] shrink-0" style={{ minWidth: 160 }}>{label}</label>
-      <div className="flex items-center gap-2.5 flex-wrap flex-1 min-w-0">{children}</div>
+    <div className={`flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4 sm:flex-wrap py-3.5 ${last ? '' : 'border-b border-[#e2e8f0]'}`}>
+      <label className="text-[0.85rem] text-[#64748b] shrink-0 sm:min-w-[160px]">{label}</label>
+      <div className="flex items-center gap-2.5 flex-wrap flex-1 min-w-0 w-full sm:w-auto">{children}</div>
     </div>
   )
 }
@@ -259,7 +259,7 @@ function SelectOp({ name, value, variant }: { name: string; value: string; varia
 
 function SelectList({ name, value, placeholder, options, wide }: { name: string; value: string; placeholder: string; options: string[]; wide?: boolean }) {
   return (
-    <select name={name} defaultValue={value} className={inputCls} style={wide ? { minWidth: 220, maxWidth: '100%' } : undefined}>
+    <select name={name} defaultValue={value} className={`${inputCls} ${wide ? 'w-full sm:w-auto sm:min-w-[220px] max-w-full' : ''}`}>
       <option value="">{placeholder}</option>
       {options.map(o => <option key={o} value={o}>{o}</option>)}
     </select>
