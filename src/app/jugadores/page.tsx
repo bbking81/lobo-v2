@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaJugadores from '@/components/ListaJugadores'
+
+export const metadata = pageMeta({
+  title: 'Jugadores de Gimnasia y Esgrima',
+  description: 'Todos los jugadores en la historia de Gimnasia y Esgrima de Concepción del Uruguay, con sus partidos, goles y tarjetas.',
+  path: '/jugadores',
+})
 
 export default async function JugadoresPage() {
   const data = await getApiData()

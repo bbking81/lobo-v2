@@ -1,8 +1,15 @@
 import Link from 'next/link'
+import { pageMeta } from '@/lib/seo'
 import { getApiData } from '@/lib/api'
 import SecBanner from '@/components/SecBanner'
 import Flag from '@/components/Flag'
 import MapaEstadios, { type EstadioMapa } from '@/components/MapaEstadios'
+
+export const metadata = pageMeta({
+  title: 'Mapa de estadios — Gimnasia y Esgrima',
+  description: 'Mapa de los estadios donde jugó Gimnasia y Esgrima de Concepción del Uruguay.',
+  path: '/mapa',
+})
 
 export default async function MapaPage() {
   const data = await getApiData()

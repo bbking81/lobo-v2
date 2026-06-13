@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaJugadoresRivales from '@/components/ListaJugadoresRivales'
 
@@ -8,6 +9,12 @@ function ordenPos(pos: string | null) {
   for (const [k, v] of Object.entries(ORDEN)) if (pos.toLowerCase().includes(k.toLowerCase())) return v
   return 50
 }
+
+export const metadata = pageMeta({
+  title: 'Jugadores rivales de Gimnasia y Esgrima',
+  description: 'Jugadores rivales que enfrentaron a Gimnasia y Esgrima de Concepción del Uruguay.',
+  path: '/jugadores-rivales',
+})
 
 export default async function JugadoresRivalesPage() {
   const data = await getApiData()

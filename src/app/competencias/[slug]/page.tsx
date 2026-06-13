@@ -10,7 +10,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  return { title: `${slugToTorneo(slug)} | Lobo Entrerriano` }
+  return { title: `${slugToTorneo(slug)}` }
 }
 
 interface PlantelRow { id?: number; nombre: string; foto: string | null; pj: number; goles: number; ta: number; tr: number }

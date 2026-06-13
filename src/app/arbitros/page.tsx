@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaArbitros from '@/components/ListaArbitros'
+
+export const metadata = pageMeta({
+  title: 'Árbitros de Gimnasia y Esgrima',
+  description: 'Árbitros que dirigieron a Gimnasia y Esgrima de Concepción del Uruguay, con estadísticas por resultado.',
+  path: '/arbitros',
+})
 
 export default async function ArbitrosPage() {
   const data = await getApiData()

@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const data = await getApiData()
   const j = data.jugadoresRivales.find(x => x.id === parseInt(id))
-  return { title: j ? `${j.nombre} | Lobo Entrerriano` : 'Jugador rival no encontrado' }
+  return { title: j ? `${j.nombre}` : 'Jugador rival no encontrado' }
 }
 
 export default async function JugadorRivalPage({ params }: Props) {

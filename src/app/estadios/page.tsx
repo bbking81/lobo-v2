@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaEstadios from '@/components/ListaEstadios'
+
+export const metadata = pageMeta({
+  title: 'Estadios de Gimnasia y Esgrima',
+  description: 'Estadios donde jugó Gimnasia y Esgrima de Concepción del Uruguay, con partidos y ubicación.',
+  path: '/estadios',
+})
 
 export default async function EstadiosPage() {
   const data = await getApiData()

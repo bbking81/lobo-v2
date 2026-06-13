@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaGoleadores from '@/components/ListaGoleadores'
+
+export const metadata = pageMeta({
+  title: 'Goleadores históricos de Gimnasia y Esgrima',
+  description: 'Ranking de máximos goleadores en la historia de Gimnasia y Esgrima de Concepción del Uruguay.',
+  path: '/goleadores',
+})
 
 export default async function GoleadoresPage() {
   const data = await getApiData()

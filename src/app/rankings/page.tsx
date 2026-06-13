@@ -1,4 +1,5 @@
 import { getApiData, fotoUrl } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import Link from 'next/link'
 import SecBanner from '@/components/SecBanner'
 import RankingEquipos, { type EqRow, type EqMatch } from '@/components/RankingEquipos'
@@ -163,6 +164,12 @@ function computeEquipos(pubs: Partido[], metrica: string, fTemp: string, fTorneo
     return { titulo: s.torneo, sub: `${s.año} · ${s.pj} PJ · ${s.pg}G ${s.pe}E ${s.pp}D · ${s.gf}:${s.gc}`, valor, valorLabel, partidos: s.partidos.map(toMatch) }
   })
 }
+
+export const metadata = pageMeta({
+  title: 'Rankings y récords de Gimnasia y Esgrima',
+  description: 'Rankings de jugadores, DTs y récords del club Gimnasia y Esgrima de Concepción del Uruguay.',
+  path: '/rankings',
+})
 
 export default async function RankingsPage({ searchParams }: Props) {
   const sp = await searchParams

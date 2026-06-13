@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaHistoriales from '@/components/ListaHistoriales'
 
@@ -6,6 +7,12 @@ function esGecLocal(local: string) {
   const l = local.toLowerCase()
   return l.includes('gimnasia') && !l.includes('chivilcoy') && !l.includes('gualeguay') && !l.includes('jujuy') && !l.includes('mendoza')
 }
+
+export const metadata = pageMeta({
+  title: 'Historiales vs cada rival — Gimnasia y Esgrima',
+  description: 'Historial completo de Gimnasia y Esgrima frente a cada rival: partidos, goles y resultados.',
+  path: '/historiales',
+})
 
 export default async function HistorialesPage() {
   const data = await getApiData()

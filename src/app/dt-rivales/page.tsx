@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaDTRivales from '@/components/ListaDTRivales'
+
+export const metadata = pageMeta({
+  title: 'DTs rivales de Gimnasia y Esgrima',
+  description: 'Directores técnicos rivales que enfrentaron a Gimnasia y Esgrima de Concepción del Uruguay.',
+  path: '/dt-rivales',
+})
 
 export default async function DTRivalesPage() {
   const data = await getApiData()

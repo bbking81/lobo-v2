@@ -7,7 +7,7 @@ interface Props { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  return { title: `${decodeURIComponent(slug)} | Lobo Entrerriano` }
+  return { title: `${decodeURIComponent(slug)}` }
 }
 
 export default async function RivalPage({ params }: Props) {

@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import Link from 'next/link'
 import SecBanner from '@/components/SecBanner'
 import type { Partido } from '@/types'
@@ -24,6 +25,12 @@ const RES_SOLID = {
   D: { bg: '#dc2626' },
 }
 const selCls = 'w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-[7px] px-3 py-2 text-sm text-[#1e293b] outline-none'
+
+export const metadata = pageMeta({
+  title: 'Partidos de Gimnasia y Esgrima',
+  description: 'Todos los partidos oficiales de Gimnasia y Esgrima de Concepción del Uruguay: resultados, rivales, torneos y condición.',
+  path: '/partidos',
+})
 
 export default async function PartidosPage({ searchParams }: Props) {
   const sp = await searchParams

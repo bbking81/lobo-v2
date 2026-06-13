@@ -1,4 +1,5 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import Link from 'next/link'
 import type { Partido } from '@/types'
@@ -18,6 +19,12 @@ function matchOp(val: number, op: string | undefined, target: number): boolean {
   if (op === 'no-mas') return val <= target
   return true
 }
+
+export const metadata = pageMeta({
+  title: 'Buscador avanzado de partidos — Gimnasia y Esgrima',
+  description: 'Buscá partidos de Gimnasia y Esgrima por resultado, rival, torneo, estadio, jugador y más.',
+  path: '/buscador',
+})
 
 export default async function BuscadorPage({ searchParams }: Props) {
   const sp = await searchParams

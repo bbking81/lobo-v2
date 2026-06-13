@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getApiData, fotoUrl } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import type { Metadata } from 'next'
 import Flag from '@/components/Flag'
 import JugadorPerfil, { type PartidoRow, type ConxItem } from '@/components/JugadorPerfil'
@@ -20,7 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getApiData()
   const jugador = data.jugadores.find(j => j.id === parseInt(id))
   if (!jugador) return { title: 'Jugador no encontrado' }
-  return { title: `${jugador.nombre} | Lobo Entrerriano` }
+  const partes = [jugador.posicion, jugador.pj ? `${jugador.pj} partidos` : '', jugador.goles ? `${jugador.goles} goles` : ''].filter(Boolean).join(' · ')
+  return pageMeta({
+    title: jugador.nombre,
+    description: `${jugador.nombre} en Gimnasia y Esgrima de Concepción del Uruguay${partes ? `: ${partes}` : ''}. Estadísticas, partidos y trayectoria.`,
+    path: `/jugador/${jugador.id}`,
+    image: fotoUrl(jugador.foto),
+  })
 }
 
 export default async function JugadorPage({ params }: Props) {

@@ -1,4 +1,5 @@
 import { getApiData, torneoToSlug } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaCompetencias, { type TorneoResumen } from '@/components/ListaCompetencias'
 
@@ -13,6 +14,12 @@ function inferirTipo(nombre: string): string {
   if (n.includes('federal') || n.includes('argentino') || n.includes('torneo') || n.includes('primera') || n.includes('nacional')) return 'Torneo'
   return 'Otro'
 }
+
+export const metadata = pageMeta({
+  title: 'Competencias y torneos de Gimnasia y Esgrima',
+  description: 'Historial de Gimnasia y Esgrima por torneo y competencia, con rendimiento y tabla de posiciones.',
+  path: '/competencias',
+})
 
 export default async function CompetenciasPage() {
   const data = await getApiData()

@@ -1,6 +1,13 @@
 import { getApiData } from '@/lib/api'
+import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import ListaDTs from '@/components/ListaDTs'
+
+export const metadata = pageMeta({
+  title: 'Directores Técnicos de Gimnasia y Esgrima',
+  description: 'Todos los DTs en la historia de Gimnasia y Esgrima de Concepción del Uruguay, con su rendimiento.',
+  path: '/dts',
+})
 
 export default async function DTsPage() {
   const data = await getApiData()

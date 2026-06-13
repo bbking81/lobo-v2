@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const data = await getApiData()
   const e = data.estadios.find(x => x.id === parseInt(id))
-  return { title: e ? `${e.nombre} | Lobo Entrerriano` : 'Estadio no encontrado' }
+  return { title: e ? `${e.nombre}` : 'Estadio no encontrado' }
 }
 
 export default async function EstadioPage({ params }: Props) {

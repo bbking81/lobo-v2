@@ -6,6 +6,7 @@ import Formacion from '@/components/Formacion'
 import PlanillaPartido from '@/components/PlanillaPartido'
 import MediaPartido from '@/components/MediaPartido'
 import type { Metadata } from 'next'
+import { pageMeta, SITE_URL } from '@/lib/seo'
 import type { JugadorPlanilla, Partido, Evento } from '@/types'
 
 interface Props { params: Promise<{ slug: string }> }
@@ -16,7 +17,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const data = await getApiData()
   const p = data.partidos.find(x => x.id === slugToId(slug))
-  return { title: p ? `${p.local} ${p.gl} - ${p.gv} ${p.visitante} | Lobo Entrerriano` : 'Partido no encontrado' }
+  if (!p) return { title: 'Partido no encontrado' }
+  const fechaTxt = p.fecha ? new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''
+  const title = `${p.local} ${p.gl} - ${p.gv} ${p.visitante}`
+  return pageMeta({
+    title,
+    description: `${title}${p.torneo ? ` por ${p.torneo}` : ''}${fechaTxt ? ` (${fechaTxt})` : ''}. Resultado, goleadores, formaciones y planilla del partido de Gimnasia y Esgrima.`,
+    path: `/partido/${slug}`,
+  })
 }
 
 export async function generateStaticParams() {
@@ -97,8 +105,23 @@ export default async function PartidoPage({ params }: Props) {
   const arbitroId = findId(data.arbitros, p.arbitro)
   const dtGecId = findId(data.dts, p.dtGimnasia)
 
+  const eventoJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: `${p.local} vs ${p.visitante}`,
+    sport: 'Soccer',
+    ...(p.fecha ? { startDate: p.fecha } : {}),
+    ...(p.estadio ? { location: { '@type': 'Place', name: p.estadio } } : {}),
+    homeTeam: { '@type': 'SportsTeam', name: p.local },
+    awayTeam: { '@type': 'SportsTeam', name: p.visitante },
+    url: `${SITE_URL}/partido/${slug}`,
+    eventStatus: 'https://schema.org/EventScheduled',
+    description: `${p.local} ${p.gl} - ${p.gv} ${p.visitante}${p.torneo ? ` · ${p.torneo}` : ''}`,
+  }
+
   return (
     <main className="min-h-screen bg-[#f8fafc]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventoJsonLd) }} />
       <div className="max-w-5xl mx-auto px-4 py-5 flex flex-col gap-5">
 
         {/* ── CABEZAL ── */}

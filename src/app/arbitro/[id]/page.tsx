@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const data = await getApiData()
   const a = data.arbitros.find(x => x.id === parseInt(id))
-  return { title: a ? `${a.nombre} | Lobo Entrerriano` : 'Árbitro no encontrado' }
+  return { title: a ? `${a.nombre}` : 'Árbitro no encontrado' }
 }
 
 export default async function ArbitroPage({ params }: Props) {

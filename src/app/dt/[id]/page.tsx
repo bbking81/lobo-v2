@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const data = await getApiData()
   const d = data.dts.find(x => x.id === parseInt(id))
-  return { title: d ? `${d.nombre} | Lobo Entrerriano` : 'DT no encontrado' }
+  return { title: d ? `${d.nombre}` : 'DT no encontrado' }
 }
 
 export default async function DTPage({ params }: Props) {
