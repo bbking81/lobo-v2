@@ -5,16 +5,16 @@ import type { ApiData, Partido } from '@/types'
 const BASE_URL = process.env.GEC_API_URL || 'https://loboentrerriano.com'
 
 export async function getApiData(): Promise<ApiData> {
-  // Caché de 5 minutos (ISR): Vercel guarda el JSON y lo sirve al instante;
-  // pasados 300s lo vuelve a pedir fresco. Un dato nuevo cargado en el admin
-  // tarda hasta 5 min en verse. Para volver a "siempre fresco": cache:'no-store'.
+  // Caché de 1 minuto (ISR): guarda el JSON y lo sirve al instante; pasados 60s
+  // lo vuelve a pedir fresco. Un dato nuevo cargado en el admin tarda hasta 1 min
+  // en verse. Para volver a "siempre fresco": cache:'no-store'.
   // Con reintentos: el API a veces tira 500 transitorios, y un fallo durante
   // el build de Vercel tumbaría el deploy entero.
   let lastError: unknown
   for (let intento = 1; intento <= 3; intento++) {
     try {
       const res = await fetch(`${BASE_URL}/api/db`, {
-        next: { revalidate: 300 },
+        next: { revalidate: 60 },
         // Tope de 15s por intento: si el API se cuelga, cortamos y reintentamos
         // en vez de dejar colgado el build/request.
         signal: AbortSignal.timeout(15000),
