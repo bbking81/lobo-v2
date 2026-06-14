@@ -171,11 +171,11 @@ export default async function HomePage() {
       abajo y chapa de cuenta regresiva automática. ── */
 function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
   return (
-    <div className="flex items-center justify-center shrink-0" style={{ width: 50, height: 50, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '50%' }}>
+    <div className="flex items-center justify-center shrink-0" style={{ width: 72, height: 72 }}>
       {url
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt={nombre} style={{ width: 38, height: 38, objectFit: 'contain' }} />
-        : <span style={{ fontSize: '1.4rem' }}>⚽</span>}
+        ? <img src={url} alt={nombre} style={{ width: 64, height: 64, objectFit: 'contain' }} />
+        : <span style={{ fontSize: '2.2rem' }}>⚽</span>}
     </div>
   )
 }
@@ -210,7 +210,7 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
           <span className="font-bold text-[#1e293b] text-right truncate" style={{ fontSize: '0.85rem' }}>{izq.nombre}</span>
           <BannerEscudo url={izq.url} nombre={izq.nombre} />
         </div>
-        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b]" style={{ fontSize: '1.7rem', minWidth: 72 }}>{proximo.hora}</div>
+        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b]" style={{ fontSize: '2rem', minWidth: 78 }}>{proximo.hora}</div>
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
           <BannerEscudo url={der.url} nombre={der.nombre} />
           <span className="font-bold text-[#1e293b] truncate" style={{ fontSize: '0.85rem' }}>{der.nombre}</span>
