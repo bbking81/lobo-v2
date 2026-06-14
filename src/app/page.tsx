@@ -201,7 +201,9 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
     : { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
   const chip = cuentaRegresiva(proximo.fecha, proximo.hora)
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-xl px-4 sm:px-6 py-4">
+    <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden flex">
+      <div className="shrink-0" style={{ width: 7, background: '#ca8a04' }} />
+      <div className="flex-1 min-w-0 px-4 sm:px-6 py-4">
       <div className="text-center uppercase font-bold mb-3" style={{ fontSize: '0.66rem', color: '#94a3b8', letterSpacing: '0.08em' }}>
         {proximo.torneo.trim()}
       </div>
@@ -221,6 +223,7 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
       </div>
       <div className="text-center mt-2.5">
         <span className="inline-block uppercase font-bold text-white" style={{ background: '#1e3a5f', fontSize: '0.65rem', letterSpacing: '0.06em', padding: '5px 14px', borderRadius: 6 }}>{chip}</span>
+      </div>
       </div>
     </div>
   )
