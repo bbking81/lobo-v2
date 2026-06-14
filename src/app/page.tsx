@@ -1,6 +1,7 @@
 import { getApiData, torneoToSlug } from '@/lib/api'
 import Link from 'next/link'
 import type { Partido, Jugador } from '@/types'
+import BannerLive from '@/components/BannerLive'
 
 function calcularResultado(gecGF: number, gecGC: number): 'V' | 'E' | 'D' {
   if (gecGF > gecGC) return 'V'
@@ -86,7 +87,7 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#f8fafc]">
       <div className="px-5 py-5 max-w-[1100px] mx-auto space-y-5">
 
-        {proximo && <BannerProximo proximo={proximo} escudoRival={escudoDe(proximo.rival)} />}
+        {proximo && <BannerLive proximo={proximo} escudoRival={escudoDe(proximo.rival)} />}
 
         {/* FILA 1: Último partido + Un día como hoy */}
         <div className="grid gap-5 grid-cols-1 lg:grid-cols-[1fr_340px]">
@@ -166,86 +167,8 @@ export default async function HomePage() {
   )
 }
 
-/* ── Banner próximo partido — "marcador clásico" (opción 1): tarjeta clara,
-      escudos a los costados con nombre, hora grande al centro, fecha + estadio
-      abajo y chapa de cuenta regresiva automática. ── */
-function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
-  return (
-    <div className="flex items-center justify-center shrink-0 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px]">
-      {url
-        // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt={nombre} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain' }} />
-        : <span className="text-[2.6rem] sm:text-[3.2rem]">⚽</span>}
-    </div>
-  )
-}
-const CELESTE_GEC = '#38bdf8'
-function hexRgba(hex: string, a: number): string {
-  const h = (hex || '').replace('#', '')
-  const f = h.length === 3 ? h.split('').map(c => c + c).join('') : h
-  const n = parseInt(f, 16)
-  if (Number.isNaN(n) || f.length !== 6) return `rgba(148,163,184,${a})`
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`
-}
-function cuentaRegresiva(fecha: string, hora?: string): string {
-  const inicio = new Date(`${fecha}T${(hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : '00:00')}:00-03:00`)
-  const ms = inicio.getTime() - Date.now()
-  if (ms <= 0) return 'Hoy'
-  const min = Math.floor(ms / 60000)
-  if (min < 60) return `Dentro de ${min} min`
-  if (min < 60 * 24) { const h = Math.floor(min / 60); return `Dentro de ${h} hora${h !== 1 ? 's' : ''}` }
-  const d = Math.floor(min / (60 * 24))
-  return `Dentro de ${d} día${d !== 1 ? 's' : ''}`
-}
-function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoRival: string | null }) {
-  const fd = new Date(proximo.fecha + 'T12:00:00')
-  const diaSemana = fd.toLocaleDateString('es-AR', { weekday: 'long' })
-  const mes = fd.toLocaleDateString('es-AR', { month: 'long' })
-  const fecha = `${diaSemana}, ${fd.getDate()}º ${mes}`
-  const lineaInfo = [fecha, proximo.hora, proximo.estadio].filter(Boolean).join('  |  ')
-  const tituloTorneo = `${proximo.torneo.trim()}${proximo.jornada ? ` - ${proximo.jornada}` : ''}`
-  const subLinea = [proximo.fase, proximo.zona].filter(Boolean).join(' · ')
-  const esLocal = (proximo.condicion || '').toLowerCase().startsWith('local')
-  const izq = esLocal
-    ? { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
-    : { url: escudoRival, nombre: proximo.rival }
-  const der = esLocal
-    ? { url: escudoRival, nombre: proximo.rival }
-    : { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
-  const chip = cuentaRegresiva(proximo.fecha, proximo.hora)
-  const colorRival = proximo.colorRival || '#dc2626'
-  const colorIzq = esLocal ? CELESTE_GEC : colorRival
-  const colorDer = esLocal ? colorRival : CELESTE_GEC
-  const fondo = `linear-gradient(100deg, ${hexRgba(colorIzq, 0.22)} 0%, #ffffff 48%, ${hexRgba(colorDer, 0.22)} 100%)`
-  return (
-    <div className="border border-[#e2e8f0] rounded-xl overflow-hidden px-4 sm:px-6 py-4" style={{ background: fondo }}>
-      <div className="text-center uppercase font-bold mb-1 text-[#1e293b] text-[0.85rem] sm:text-[0.98rem]" style={{ letterSpacing: '0.04em' }}>
-        {tituloTorneo}
-      </div>
-      {subLinea && (
-        <div className="text-center mb-3 text-[#475569] font-medium" style={{ fontSize: '0.75rem' }}>
-          {subLinea}
-        </div>
-      )}
-      <div className="flex items-center justify-center gap-3 sm:gap-5">
-        <div className="flex items-center gap-3 flex-1 min-w-0 justify-end">
-          <span className="font-bold text-[#1e293b] text-right truncate text-[1.05rem] sm:text-[1.3rem]">{izq.nombre}</span>
-          <BannerEscudo url={izq.url} nombre={izq.nombre} />
-        </div>
-        <div className="shrink-0 flex justify-center min-w-[100px] sm:min-w-[130px]">
-          <span className="inline-block uppercase font-bold text-white text-center leading-tight" style={{ background: '#1e3a5f', fontSize: '0.72rem', letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 8 }}>{chip}</span>
-        </div>
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <BannerEscudo url={der.url} nombre={der.nombre} />
-          <span className="font-bold text-[#1e293b] truncate text-[1.05rem] sm:text-[1.3rem]">{der.nombre}</span>
-        </div>
-      </div>
-      <div className="text-center mt-3 font-semibold text-[#1e293b]" style={{ fontSize: '0.92rem' }}>
-        {lineaInfo}
-      </div>
-    </div>
-  )
-}
+/* ── Banner próximo partido: ahora vive en src/components/BannerLive.tsx
+      (componente cliente con cuenta regresiva + marcador EN VIVO vía /api/live). ── */
 
 /* ── Card grande último partido (clon del original: orden real, escudos, 6 info cards) ── */
 function Escudo({ url }: { url: string | null }) {
