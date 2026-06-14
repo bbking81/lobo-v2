@@ -171,11 +171,11 @@ export default async function HomePage() {
       abajo y chapa de cuenta regresiva automática. ── */
 function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
   return (
-    <div className="flex items-center justify-center shrink-0" style={{ width: 72, height: 72 }}>
+    <div className="flex items-center justify-center shrink-0 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px]">
       {url
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt={nombre} style={{ width: 64, height: 64, objectFit: 'contain' }} />
-        : <span style={{ fontSize: '2.2rem' }}>⚽</span>}
+        ? <img src={url} alt={nombre} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain' }} />
+        : <span className="text-[2.6rem] sm:text-[3.2rem]">⚽</span>}
     </div>
   )
 }
@@ -208,14 +208,14 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
         {proximo.torneo.trim()}
       </div>
       <div className="flex items-center justify-center gap-3 sm:gap-5">
-        <div className="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
-          <span className="font-bold text-[#1e293b] text-right truncate" style={{ fontSize: '0.85rem' }}>{izq.nombre}</span>
+        <div className="flex items-center gap-3 flex-1 min-w-0 justify-end">
+          <span className="font-bold text-[#1e293b] text-right truncate text-[1.05rem] sm:text-[1.3rem]">{izq.nombre}</span>
           <BannerEscudo url={izq.url} nombre={izq.nombre} />
         </div>
-        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b]" style={{ fontSize: '2rem', minWidth: 78 }}>{proximo.hora}</div>
-        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b] text-[2.2rem] sm:text-[2.8rem] min-w-[88px]">{proximo.hora}</div>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <BannerEscudo url={der.url} nombre={der.nombre} />
-          <span className="font-bold text-[#1e293b] truncate" style={{ fontSize: '0.85rem' }}>{der.nombre}</span>
+          <span className="font-bold text-[#1e293b] truncate text-[1.05rem] sm:text-[1.3rem]">{der.nombre}</span>
         </div>
       </div>
       <div className="text-center capitalize mt-2.5" style={{ fontSize: '0.75rem', color: '#64748b' }}>
