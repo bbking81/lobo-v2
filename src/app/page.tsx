@@ -23,7 +23,7 @@ function CardHeader({ icon, title, children }: { icon: React.ReactNode; title: s
   )
 }
 
-type ProximoType = { rival: string; fecha: string; hora: string; condicion: string; torneo: string; estadio: string; colorRival?: string }
+type ProximoType = { rival: string; fecha: string; hora: string; condicion: string; torneo: string; estadio: string; colorRival?: string; jornada?: string }
 
 const MESES_AB = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC']
 
@@ -199,7 +199,11 @@ function cuentaRegresiva(fecha: string, hora?: string): string {
 }
 function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoRival: string | null }) {
   const fd = new Date(proximo.fecha + 'T12:00:00')
-  const fecha = fd.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' })
+  const diaSemana = fd.toLocaleDateString('es-AR', { weekday: 'long' })
+  const mes = fd.toLocaleDateString('es-AR', { month: 'long' })
+  const fecha = `${diaSemana}, ${fd.getDate()}º ${mes}`
+  const lineaInfo = [fecha, proximo.hora, proximo.estadio].filter(Boolean).join('  |  ')
+  const tituloTorneo = `${proximo.torneo.trim()}${proximo.jornada ? ` - ${proximo.jornada}` : ''}`
   const esLocal = (proximo.condicion || '').toLowerCase().startsWith('local')
   const izq = esLocal
     ? { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
@@ -213,11 +217,9 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
   const colorDer = esLocal ? colorRival : CELESTE_GEC
   const fondo = `linear-gradient(100deg, ${hexRgba(colorIzq, 0.22)} 0%, #ffffff 48%, ${hexRgba(colorDer, 0.22)} 100%)`
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden flex">
-      <div className="shrink-0" style={{ width: 7, background: '#ca8a04' }} />
-      <div className="flex-1 min-w-0 px-4 sm:px-6 py-4" style={{ background: fondo }}>
-      <div className="text-center uppercase font-bold mb-3" style={{ fontSize: '0.66rem', color: '#94a3b8', letterSpacing: '0.08em' }}>
-        {proximo.torneo.trim()}
+    <div className="border border-[#e2e8f0] rounded-xl overflow-hidden px-4 sm:px-6 py-4" style={{ background: fondo }}>
+      <div className="text-center uppercase font-bold mb-3 text-[#1e293b] text-[0.85rem] sm:text-[0.98rem]" style={{ letterSpacing: '0.04em' }}>
+        {tituloTorneo}
       </div>
       <div className="flex items-center justify-center gap-3 sm:gap-5">
         <div className="flex items-center gap-3 flex-1 min-w-0 justify-end">
@@ -230,12 +232,11 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
           <span className="font-bold text-[#1e293b] truncate text-[1.05rem] sm:text-[1.3rem]">{der.nombre}</span>
         </div>
       </div>
-      <div className="text-center capitalize mt-2.5" style={{ fontSize: '0.75rem', color: '#64748b' }}>
-        {fecha}{proximo.estadio ? ` · ${proximo.estadio}` : ''}
+      <div className="text-center mt-2.5 font-semibold text-[#1e293b]" style={{ fontSize: '0.82rem' }}>
+        {lineaInfo}
       </div>
       <div className="text-center mt-2.5">
         <span className="inline-block uppercase font-bold text-white" style={{ background: '#1e3a5f', fontSize: '0.65rem', letterSpacing: '0.06em', padding: '5px 14px', borderRadius: 6 }}>{chip}</span>
-      </div>
       </div>
     </div>
   )
