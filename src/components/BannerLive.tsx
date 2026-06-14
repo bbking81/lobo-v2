@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-type ProximoType = { rival: string; fecha: string; hora: string; condicion: string; torneo: string; estadio: string; colorRival?: string; jornada?: string; fase?: string; zona?: string }
+type ProximoType = { rival: string; fecha: string; hora: string; condicion: string; torneo: string; estadio: string; colorRival?: string; colorRival2?: string; jornada?: string; fase?: string; zona?: string }
 type LiveData = { enVivo: boolean; terminado: boolean; estado: string | null; minuto: number | null; golesGec: number | null; golesRival: number | null; esLocal: boolean | null; rival: string | null; actualizado: string }
 
 const CELESTE_GEC = '#38bdf8'
@@ -82,9 +82,22 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
     : { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
 
   const colorRival = proximo.colorRival || '#dc2626'
-  const colorIzq = esLocal ? CELESTE_GEC : colorRival
-  const colorDer = esLocal ? colorRival : CELESTE_GEC
-  const fondo = `linear-gradient(100deg, ${hexRgba(colorIzq, 0.22)} 0%, #ffffff 48%, ${hexRgba(colorDer, 0.22)} 100%)`
+  const colorRival2 = proximo.colorRival2 && proximo.colorRival2 !== colorRival ? proximo.colorRival2 : null
+  const A = 0.22
+  let fondo: string
+  if (colorRival2) {
+    // lado rival con dos tonos (rayas/franjas); Gimnasia mantiene su celeste
+    const rivalStops = esLocal
+      ? `${hexRgba(colorRival, A)} 76%, ${hexRgba(colorRival2, A)} 100%`
+      : `${hexRgba(colorRival2, A)} 0%, ${hexRgba(colorRival, A)} 24%`
+    fondo = esLocal
+      ? `linear-gradient(100deg, ${hexRgba(CELESTE_GEC, A)} 0%, #ffffff 48%, ${rivalStops})`
+      : `linear-gradient(100deg, ${rivalStops}, #ffffff 52%, ${hexRgba(CELESTE_GEC, A)} 100%)`
+  } else {
+    const colorIzq = esLocal ? CELESTE_GEC : colorRival
+    const colorDer = esLocal ? colorRival : CELESTE_GEC
+    fondo = `linear-gradient(100deg, ${hexRgba(colorIzq, A)} 0%, #ffffff 48%, ${hexRgba(colorDer, A)} 100%)`
+  }
 
   const fd = new Date(proximo.fecha + 'T12:00:00')
   const diaSemana = fd.toLocaleDateString('es-AR', { weekday: 'long' })
