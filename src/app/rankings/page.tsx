@@ -49,7 +49,7 @@ const METRICAS_EQ: { v: string; label: string }[] = [
 const inputCls = 'bg-[#f8fafc] border border-[#e2e8f0] rounded-[7px] px-3 py-2 text-sm text-[#1e293b] outline-none'
 
 interface JugAcc { id?: number; nombre: string; goles: number; pj: number; dobletes: number; tripletes: number; pokers: number; cincoplus: number; rojas: number; amarillas: number; local: number; visitante: number }
-interface DTAcc { nombre: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; local: number; visitante: number }
+interface DTAcc { id?: number; nombre: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; local: number; visitante: number }
 
 // Convierte un partido al formato compacto que muestra la lupa de detalle.
 const toMatch = (p: Partido): EqMatch => ({
@@ -212,10 +212,13 @@ export default async function RankingsPage({ searchParams }: Props) {
       if (g === 2) a.dobletes++; else if (g === 3) a.tripletes++; else if (g === 4) a.pokers++; else if (g >= 5) a.cincoplus++
       if (gecLocal) a.local++; else a.visitante++
     }
-    const dt = p.dtGimnasia?.trim()
-    if (dt) {
-      let d = dtMap.get(dt)
-      if (!d) { d = { nombre: dt, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, local: 0, visitante: 0 }; dtMap.set(dt, d) }
+    const dtsList = (p.dtsGimnasia && p.dtsGimnasia.length)
+      ? p.dtsGimnasia
+      : (p.dtGimnasia?.trim() ? [{ id: 0, nombre: p.dtGimnasia.trim() }] : [])
+    for (const dtItem of dtsList) {
+      const key = dtItem.id ? `id:${dtItem.id}` : `t:${dtItem.nombre.toLowerCase()}`
+      let d = dtMap.get(key)
+      if (!d) { d = { id: dtItem.id || undefined, nombre: dtItem.nombre, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, local: 0, visitante: 0 }; dtMap.set(key, d) }
       d.pj++; d.gf += p.gecGF; d.gc += p.gecGC
       if (p.gecGF > p.gecGC) d.pg++; else if (p.gecGF === p.gecGC) d.pe++; else d.pp++
       if (gecLocal) d.local++; else d.visitante++
@@ -351,7 +354,7 @@ function RankingDTs({ dtMap, metrica, topN, dts }: { dtMap: Map<string, DTAcc>; 
       {lista.length === 0 ? <div className="py-8 text-center text-gray-400 text-sm">Sin datos para esos filtros</div> : (
         <div className="divide-y divide-gray-50">
           {lista.map((d, i) => {
-            const id = idByNombre.get(d.nombre.toLowerCase())
+            const id = d.id ?? idByNombre.get(d.nombre.toLowerCase())
             const medal = i === 0 ? 'text-yellow-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-600' : 'text-gray-300'
             const inner = (
               <>

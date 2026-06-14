@@ -59,6 +59,7 @@ export interface Partido {
   subfase?: string
   fechaNro?: string | number
   dtGimnasia?: string
+  dtsGimnasia?: { id: number; nombre: string }[]
   dtRival?: string
   mediaFotos?: MediaFoto[]
   mediaVideos?: MediaFoto[]

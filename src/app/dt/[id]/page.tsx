@@ -20,7 +20,11 @@ export default async function DTPage({ params }: Props) {
   if (!dt) notFound()
 
   const partidos = data.partidos
-    .filter(p => p.publicado && (p.dtGimnasia || '').toLowerCase() === dt.nombre.toLowerCase())
+    .filter(p => {
+      if (!p.publicado) return false
+      if (p.dtsGimnasia && p.dtsGimnasia.length) return p.dtsGimnasia.some(x => x.id === dt.id)
+      return (p.dtGimnasia || '').toLowerCase() === dt.nombre.toLowerCase()
+    })
     .sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))
 
   const foto = fotoUrl(dt.fotoUrl ?? dt.foto)
