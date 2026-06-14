@@ -232,16 +232,15 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
           <span className="font-bold text-[#1e293b] text-right truncate text-[1.05rem] sm:text-[1.3rem]">{izq.nombre}</span>
           <BannerEscudo url={izq.url} nombre={izq.nombre} />
         </div>
-        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b] text-[2.2rem] sm:text-[2.8rem] min-w-[88px]">{proximo.hora}</div>
+        <div className="shrink-0 flex justify-center min-w-[100px] sm:min-w-[130px]">
+          <span className="inline-block uppercase font-bold text-white text-center leading-tight" style={{ background: '#1e3a5f', fontSize: '0.72rem', letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 8 }}>{chip}</span>
+        </div>
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <BannerEscudo url={der.url} nombre={der.nombre} />
           <span className="font-bold text-[#1e293b] truncate text-[1.05rem] sm:text-[1.3rem]">{der.nombre}</span>
         </div>
       </div>
-      <div className="text-center mt-3">
-        <span className="inline-block uppercase font-bold text-white" style={{ background: '#1e3a5f', fontSize: '0.65rem', letterSpacing: '0.06em', padding: '5px 14px', borderRadius: 6 }}>{chip}</span>
-      </div>
-      <div className="text-center mt-2.5 font-semibold text-[#1e293b]" style={{ fontSize: '0.92rem' }}>
+      <div className="text-center mt-3 font-semibold text-[#1e293b]" style={{ fontSize: '0.92rem' }}>
         {lineaInfo}
       </div>
     </div>
