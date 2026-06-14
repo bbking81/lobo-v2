@@ -70,7 +70,10 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
     return () => { activo = false; clearInterval(t) }
   }, [])
 
-  const esLocal = (proximo.condicion || '').toLowerCase().startsWith('local')
+  // Orden local-izq / visitante-der: durante el vivo manda la API (verdad del fixture);
+  // antes del partido, lo que esté cargado en el admin (campo "Condición").
+  const esLocalAdmin = (proximo.condicion || '').toLowerCase().startsWith('local')
+  const esLocal = (live && live.esLocal != null) ? live.esLocal : esLocalAdmin
   const izq = esLocal
     ? { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
     : { url: escudoRival, nombre: proximo.rival }
