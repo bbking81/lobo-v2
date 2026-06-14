@@ -166,24 +166,32 @@ export default async function HomePage() {
   )
 }
 
-/* ── Banner próximo partido — tarjeta de partido (escudos a los costados,
-      hora grande al centro, orden real local/visitante) ── */
+/* ── Banner próximo partido — "marcador clásico" (opción 1): tarjeta clara,
+      escudos a los costados con nombre, hora grande al centro, fecha + estadio
+      abajo y chapa de cuenta regresiva automática. ── */
 function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
   return (
-    <div className="flex flex-col items-center gap-2 min-w-0" style={{ width: 150 }}>
-      <div className="flex items-center justify-center shrink-0" style={{ width: 64, height: 64, background: '#fff', borderRadius: 14, boxShadow: '0 2px 10px rgba(0,0,0,0.25)' }}>
-        {url
-          // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={url} alt={nombre} style={{ width: 48, height: 48, objectFit: 'contain' }} />
-          : <span style={{ fontSize: '1.7rem' }}>⚽</span>}
-      </div>
-      <p className="text-white text-center font-bold leading-tight w-full" style={{ fontSize: '0.82rem', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>{nombre}</p>
+    <div className="flex items-center justify-center shrink-0" style={{ width: 50, height: 50, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '50%' }}>
+      {url
+        // eslint-disable-next-line @next/next/no-img-element
+        ? <img src={url} alt={nombre} style={{ width: 38, height: 38, objectFit: 'contain' }} />
+        : <span style={{ fontSize: '1.4rem' }}>⚽</span>}
     </div>
   )
 }
+function cuentaRegresiva(fecha: string, hora?: string): string {
+  const inicio = new Date(`${fecha}T${(hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : '00:00')}:00-03:00`)
+  const ms = inicio.getTime() - Date.now()
+  if (ms <= 0) return 'Hoy'
+  const min = Math.floor(ms / 60000)
+  if (min < 60) return `Dentro de ${min} min`
+  if (min < 60 * 24) { const h = Math.floor(min / 60); return `Dentro de ${h} hora${h !== 1 ? 's' : ''}` }
+  const d = Math.floor(min / (60 * 24))
+  return `Dentro de ${d} día${d !== 1 ? 's' : ''}`
+}
 function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoRival: string | null }) {
   const fd = new Date(proximo.fecha + 'T12:00:00')
-  const fecha = fd.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const fecha = fd.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' })
   const esLocal = (proximo.condicion || '').toLowerCase().startsWith('local')
   const izq = esLocal
     ? { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
@@ -191,23 +199,28 @@ function BannerProximo({ proximo, escudoRival }: { proximo: ProximoType; escudoR
   const der = esLocal
     ? { url: escudoRival, nombre: proximo.rival }
     : { url: '/api/escudo-gec', nombre: 'Gimnasia y Esgrima' }
+  const chip = cuentaRegresiva(proximo.fecha, proximo.hora)
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: 'linear-gradient(to right, #1e3a5f, #6b1a1a)', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
-      <div className="text-center pt-3">
-        <span className="uppercase font-bold" style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.18em' }}>Próximo Partido</span>
+    <div className="bg-white border border-[#e2e8f0] rounded-xl px-4 sm:px-6 py-4">
+      <div className="text-center uppercase font-bold mb-3" style={{ fontSize: '0.66rem', color: '#94a3b8', letterSpacing: '0.08em' }}>
+        {proximo.torneo.trim()}
       </div>
-      <div className="flex items-center justify-center gap-4 sm:gap-10 px-4 pt-2 pb-3">
-        <BannerEscudo url={izq.url} nombre={izq.nombre} />
-        <div className="text-center shrink-0">
-          <p className="text-white font-black tabular-nums leading-none" style={{ fontSize: '2rem' }}>{proximo.hora}<span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}> hs</span></p>
-          <p className="capitalize mt-1.5" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{fecha}</p>
+      <div className="flex items-center justify-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
+          <span className="font-bold text-[#1e293b] text-right truncate" style={{ fontSize: '0.85rem' }}>{izq.nombre}</span>
+          <BannerEscudo url={izq.url} nombre={izq.nombre} />
         </div>
-        <BannerEscudo url={der.url} nombre={der.nombre} />
+        <div className="font-black tabular-nums text-center shrink-0 text-[#1e293b]" style={{ fontSize: '1.7rem', minWidth: 72 }}>{proximo.hora}</div>
+        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <BannerEscudo url={der.url} nombre={der.nombre} />
+          <span className="font-bold text-[#1e293b] truncate" style={{ fontSize: '0.85rem' }}>{der.nombre}</span>
+        </div>
       </div>
-      <div className="flex items-center justify-center gap-2 flex-wrap pb-3 px-4" style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)' }}>
-        <span>{proximo.torneo.trim()}</span>
-        {proximo.estadio && <><span>·</span><span>🏟️ {proximo.estadio}</span></>}
-        <span>·</span><span>{proximo.condicion}</span>
+      <div className="text-center capitalize mt-2.5" style={{ fontSize: '0.75rem', color: '#64748b' }}>
+        {fecha}{proximo.estadio ? ` · ${proximo.estadio}` : ''}
+      </div>
+      <div className="text-center mt-2.5">
+        <span className="inline-block uppercase font-bold text-white" style={{ background: '#1e3a5f', fontSize: '0.65rem', letterSpacing: '0.06em', padding: '5px 14px', borderRadius: 6 }}>{chip}</span>
       </div>
     </div>
   )
