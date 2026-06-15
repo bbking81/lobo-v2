@@ -84,7 +84,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar fijo en desktop (≥1024px) */}
-      <aside className="hidden lg:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 sticky top-[90px] h-[calc(100vh-90px)] overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-[262px] shrink-0 bg-white border-r border-gray-200 sticky top-[100px] h-[calc(100vh-100px)] overflow-y-auto">
         <NavContenido isActive={isActive} onNav={() => {}} />
       </aside>
 

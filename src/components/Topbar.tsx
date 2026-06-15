@@ -67,7 +67,7 @@ export default function Topbar() {
 
   return (
     <header
-      className="flex items-center gap-3 lg:gap-8 bg-white w-full shrink-0 sticky top-0 z-[400] relative h-[64px] lg:h-[90px] px-3 lg:px-6"
+      className="flex items-center gap-3 lg:gap-8 bg-white w-full shrink-0 sticky top-0 z-[400] relative h-[64px] lg:h-[100px] px-3 lg:px-6"
     >
       {/* Botón hamburguesa ⇄ X (tablet/celular) */}
       <button
