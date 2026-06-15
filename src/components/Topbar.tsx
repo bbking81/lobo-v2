@@ -171,7 +171,7 @@ export default function Topbar() {
       </div>
 
       {/* Franja de color de marca (estilo StatsBomb) */}
-      <div className="absolute left-0 right-0 bottom-0" style={{ height: 4, background: 'linear-gradient(to right, #38bdf8, #1e3a5f)' }} />
+      <div className="absolute left-0 right-0 bottom-0" style={{ height: 4, background: 'linear-gradient(to right, #334155, #38bdf8)' }} />
     </header>
   )
 }
