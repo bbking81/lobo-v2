@@ -123,7 +123,7 @@ export default async function HomePage() {
             icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>} />
           <Podio titulo="Máximos Goleadores" jugadores={maxGoleadores} campo="goles" sufijo="⚽" tema="ambar"
             verHref="/goleadores" verTxt="Ver tabla de goleadores →"
-            icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>} />
+            icon={<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.755 3.455l-1.82 5.59h-5.87l-1.82 -5.59z"/><path d="M12 7v-3.5"/><path d="M16.755 10.455l3.331 -1.083"/><path d="M14.936 16.045l2.063 2.835"/><path d="M9.064 16.045l-2.063 2.835"/><path d="M7.245 10.455l-3.331 -1.083"/></svg>} />
         </div>
 
         {/* Hoy cumplen años */}
