@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type SyntheticEvent } from 'react'
 
 type ProximoType = { rival: string; fecha: string; hora: string; condicion: string; torneo: string; estadio: string; colorRival?: string; colorRival2?: string; jornada?: string; fase?: string; zona?: string }
 type LiveData = { enVivo: boolean; terminado: boolean; estado: string | null; minuto: number | null; golesGec: number | null; golesRival: number | null; esLocal: boolean | null; rival: string | null; actualizado: string }
@@ -26,11 +26,27 @@ function cuentaRegresiva(fecha: string, hora: string | undefined, ahora: number)
 }
 
 function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
+  // Autorregulador: distintos escudos tienen formas distintas (uno vertical, otro
+  // casi cuadrado). object-fit:contain los iguala por altura, pero el cuadrado
+  // "pesa" más. Medimos la proporción al cargar y normalizamos el área visual
+  // para que todos ocupen un tamaño parejo dentro de la caja.
+  const [scale, setScale] = useState(1)
+  const onLoad = (e: SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget
+    if (!img.naturalWidth || !img.naturalHeight) return
+    const ar = img.naturalWidth / img.naturalHeight
+    // tamaño dentro de la caja (lado mayor = 1)
+    const w = ar >= 1 ? 1 : ar
+    const h = ar >= 1 ? 1 / ar : 1
+    const geom = Math.sqrt(w * h)        // "diámetro" visual
+    const target = 0.86                   // área visual objetivo
+    setScale(Math.max(0.75, Math.min(1.18, target / geom)))
+  }
   return (
     <div className="flex items-center justify-center shrink-0 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px]">
       {url
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt={nombre} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain' }} />
+        ? <img src={url} alt={nombre} onLoad={onLoad} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain', transform: `scale(${scale})`, transition: 'transform 0.15s ease' }} />
         : <span className="text-[2.6rem] sm:text-[3.2rem]">⚽</span>}
     </div>
   )
