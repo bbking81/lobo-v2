@@ -31,9 +31,8 @@ function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
   // "pesa" más. Medimos la proporción al cargar y normalizamos el área visual
   // para que todos ocupen un tamaño parejo dentro de la caja.
   const [scale, setScale] = useState(1)
-  const onLoad = (e: SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget
-    if (!img.naturalWidth || !img.naturalHeight) return
+  const medir = (img: HTMLImageElement | null) => {
+    if (!img || !img.naturalWidth || !img.naturalHeight) return
     const ar = img.naturalWidth / img.naturalHeight
     // tamaño dentro de la caja (lado mayor = 1)
     const w = ar >= 1 ? 1 : ar
@@ -42,11 +41,14 @@ function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
     const target = 0.86                   // área visual objetivo
     setScale(Math.max(0.75, Math.min(1.18, target / geom)))
   }
+  // Callback ref: si la imagen ya está cacheada (complete) al montar, onLoad NO
+  // dispara en React → medimos acá. onLoad cubre las que cargan después.
+  const refMedir = (img: HTMLImageElement | null) => { if (img && img.complete) medir(img) }
   return (
     <div className="flex items-center justify-center shrink-0 w-[80px] h-[80px] sm:w-[104px] sm:h-[104px]">
       {url
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt={nombre} onLoad={onLoad} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain', transform: `scale(${scale})`, transition: 'transform 0.15s ease' }} />
+        ? <img src={url} alt={nombre} ref={refMedir} onLoad={(e: SyntheticEvent<HTMLImageElement>) => medir(e.currentTarget)} className="w-[72px] h-[72px] sm:w-[96px] sm:h-[96px]" style={{ objectFit: 'contain', transform: `scale(${scale})`, transition: 'transform 0.15s ease' }} />
         : <span className="text-[2.6rem] sm:text-[3.2rem]">⚽</span>}
     </div>
   )
