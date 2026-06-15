@@ -192,7 +192,7 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
         {proximo.estadio && <>
           <span aria-hidden="true" className="opacity-30">|</span>
           <span className="inline-flex items-center gap-1.5">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="1.5" /><line x1="12" y1="6" x2="12" y2="18" /><circle cx="12" cy="12" r="2.1" /><path d="M2 9h3v6H2" /><path d="M22 9h-3v6h3" /></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><line x1="12" y1="4" x2="12" y2="20" /><circle cx="12" cy="12" r="2.6" /><path d="M2 8h3.5v8H2" /><path d="M22 8h-3.5v8h3.5" /></svg>
             {proximo.estadio}
           </span>
         </>}
