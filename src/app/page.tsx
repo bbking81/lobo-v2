@@ -173,10 +173,10 @@ export default async function HomePage() {
 /* ── Card grande último partido (clon del original: orden real, escudos, 6 info cards) ── */
 function Escudo({ url }: { url: string | null }) {
   return (
-    <div className="mx-auto flex items-center justify-center" style={{ width: 110, height: 110, background: url ? '#fff' : '#f1f5f9', borderRadius: 16, border: '1px solid #e2e8f0', boxShadow: url ? '0 2px 8px rgba(0,0,0,0.07)' : 'none' }}>
+    <div className="mx-auto flex items-center justify-center" style={{ width: 110, height: 110 }}>
       {url
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={url} alt="" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+        ? <img src={url} alt="" style={{ width: 96, height: 96, objectFit: 'contain' }} />
         : <span style={{ fontSize: '2.5rem' }}>⚽</span>}
     </div>
   )
@@ -218,8 +218,10 @@ function UltimoPartidoCard({ partido: p, escudoLocal, escudoVisit, torneoHref, e
           <div className="mt-0.5" style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Local</div>
         </div>
         <div className="text-center">
-          <div style={{ fontSize: '4rem', fontWeight: 900, color: '#1e293b', lineHeight: 1, letterSpacing: '0.04em' }} className="tabular-nums">{p.gl} – {p.gv}</div>
-          <div className="inline-block mt-2.5 text-white" style={{ background: resBg, fontSize: '0.8rem', fontWeight: 700, padding: '6px 20px', borderRadius: 20 }}>{resTexto}</div>
+          <div className="flex items-center justify-center" style={{ height: 110 }}>
+            <div style={{ fontSize: '4rem', fontWeight: 900, color: '#1e293b', lineHeight: 1, letterSpacing: '0.04em' }} className="tabular-nums">{p.gl} – {p.gv}</div>
+          </div>
+          <div className="inline-block mt-2 text-white" style={{ background: resBg, fontSize: '0.8rem', fontWeight: 700, padding: '6px 20px', borderRadius: 20 }}>{resTexto}</div>
         </div>
         <div className="text-center">
           <Escudo url={escudoVisit} />
