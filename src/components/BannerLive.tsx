@@ -14,15 +14,28 @@ function hexRgba(hex: string, a: number): string {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`
 }
 
-function cuentaRegresiva(fecha: string, hora: string | undefined, ahora: number): string {
+/** Cuenta regresiva en vivo estilo marcador (HH:MM:SS, con prefijo "Nd" si faltan
+ * días). Subcomponente propio para que el tic de 1s solo re-renderice el número. */
+function CuentaRegresiva({ fecha, hora }: { fecha: string; hora?: string }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [])
   const inicio = new Date(`${fecha}T${(hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : '00:00')}:00-03:00`)
-  const ms = inicio.getTime() - ahora
-  if (ms <= 0) return 'Hoy'
-  const min = Math.floor(ms / 60000)
-  if (min < 60) return `Dentro de ${min} min`
-  if (min < 60 * 24) { const h = Math.floor(min / 60); return `Dentro de ${h} hora${h !== 1 ? 's' : ''}` }
-  const d = Math.floor(min / (60 * 24))
-  return `Dentro de ${d} día${d !== 1 ? 's' : ''}`
+  const ms = inicio.getTime() - now
+  if (ms <= 0) return <span className="uppercase font-bold text-[#1e3a5f]" style={{ fontSize: '0.85rem', letterSpacing: '0.05em' }}>¡Hoy!</span>
+  const tot = Math.floor(ms / 1000)
+  const d = Math.floor(tot / 86400)
+  const h = Math.floor((tot % 86400) / 3600)
+  const m = Math.floor((tot % 3600) / 60)
+  const s = tot % 60
+  const z = (n: number) => String(n).padStart(2, '0')
+  return (
+    <span className="tabular-nums font-medium text-[#1e293b] leading-none whitespace-nowrap text-[1.35rem] sm:text-[1.7rem]">
+      {d > 0 && <span className="text-[0.7em]">{d}d </span>}{z(h)}:{z(m)}:{z(s)}
+    </span>
+  )
 }
 
 function BannerEscudo({ url, nombre }: { url: string | null; nombre: string }) {
@@ -63,14 +76,7 @@ function rotuloEstado(estado: string | null, minuto: number | null): string {
 }
 
 export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoType; escudoRival: string | null }) {
-  const [now, setNow] = useState(() => Date.now())
   const [live, setLive] = useState<LiveData | null>(null)
-
-  // reloj para la cuenta regresiva (tic cada 30s)
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 30000)
-    return () => clearInterval(t)
-  }, [])
 
   // polling del marcador en vivo cada 20s
   useEffect(() => {
@@ -166,9 +172,7 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
               )}
             </>
           ) : (
-            <span className="inline-block uppercase font-bold text-white text-center leading-tight" style={{ background: '#1e3a5f', fontSize: '0.72rem', letterSpacing: '0.04em', padding: '7px 14px', borderRadius: 8 }}>
-              {cuentaRegresiva(proximo.fecha, proximo.hora, now)}
-            </span>
+            <CuentaRegresiva fecha={proximo.fecha} hora={proximo.hora} />
           )}
         </div>
 
