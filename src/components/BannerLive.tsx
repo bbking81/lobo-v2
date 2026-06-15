@@ -118,10 +118,7 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
   }
 
   const fd = new Date(proximo.fecha + 'T12:00:00')
-  const diaSemana = fd.toLocaleDateString('es-AR', { weekday: 'long' })
-  const mes = fd.toLocaleDateString('es-AR', { month: 'long' })
-  const fecha = `${diaSemana}, ${fd.getDate()}º ${mes}`
-  const lineaInfo = [fecha, proximo.hora, proximo.estadio].filter(Boolean).join('  |  ')
+  const fecha = `${String(fd.getDate()).padStart(2, '0')}/${String(fd.getMonth() + 1).padStart(2, '0')}/${fd.getFullYear()}`
   const tituloTorneo = `${proximo.torneo.trim()}${proximo.jornada ? ` - ${proximo.jornada}` : ''}`
   const subLinea = [proximo.fase, proximo.zona].filter(Boolean).join(' · ')
 
@@ -180,8 +177,25 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
           <span className="font-bold text-[#1e293b] truncate text-[1.05rem] sm:text-[1.3rem]">{der.nombre}</span>
         </div>
       </div>
-      <div className="text-center mt-3 font-semibold text-[#1e293b]" style={{ fontSize: '0.92rem' }}>
-        {lineaInfo}
+      <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 mt-3 font-semibold text-[#1e293b]" style={{ fontSize: '0.92rem' }}>
+        <span className="inline-flex items-center gap-1.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+          {fecha}
+        </span>
+        {proximo.hora && <>
+          <span aria-hidden="true" className="opacity-30">|</span>
+          <span className="inline-flex items-center gap-1.5">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" /></svg>
+            {proximo.hora}
+          </span>
+        </>}
+        {proximo.estadio && <>
+          <span aria-hidden="true" className="opacity-30">|</span>
+          <span className="inline-flex items-center gap-1.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="5.5" /><ellipse cx="12" cy="12" rx="4.5" ry="2.5" /></svg>
+            {proximo.estadio}
+          </span>
+        </>}
       </div>
     </div>
   )
