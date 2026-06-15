@@ -93,7 +93,7 @@ export default function Topbar() {
           <div className="whitespace-nowrap truncate text-[1.15rem] lg:text-[2rem]" style={{ fontWeight: 800, color: '#1e293b', letterSpacing: '-0.02em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', lineHeight: 1 }}>
             Lobo Entrerriano
           </div>
-          <div className="whitespace-nowrap uppercase text-[0.5rem] lg:text-[0.62rem]" style={{ fontWeight: 700, color: '#0ea5e9', letterSpacing: '0.22em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', marginTop: 4 }}>
+          <div className="whitespace-nowrap uppercase text-[0.5rem] lg:text-[0.62rem]" style={{ fontWeight: 700, color: '#38bdf8', letterSpacing: '0.22em', fontFamily: 'var(--font-archivo), system-ui, sans-serif', marginTop: 4 }}>
             · Estadísticas ·
           </div>
         </div>
