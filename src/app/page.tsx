@@ -13,10 +13,10 @@ function esGecLocal(local: string): boolean {
   return l.includes('gimnasia') && !l.includes('chivilcoy') && !l.includes('gualeguay') && !l.includes('jujuy') && !l.includes('mendoza')
 }
 
-/* Header de card — gradiente #0f1e35 → #1e4a8a */
+/* Header de card — gradiente pizarra #334155 → celeste #0193de (igual que la línea del topbar) */
 function CardHeader({ icon, title, children }: { icon: React.ReactNode; title: string; children?: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ background: 'linear-gradient(to right, #0f1e35, #1e4a8a)' }}>
+    <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ background: 'linear-gradient(to right, #334155, #0193de)' }}>
       <span className="text-[#60a5fa] shrink-0">{icon}</span>
       <span className="text-[0.75rem] font-bold text-white uppercase" style={{ letterSpacing: '1px' }}>{title}</span>
       {children}
