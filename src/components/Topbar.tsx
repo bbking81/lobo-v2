@@ -84,7 +84,7 @@ export default function Topbar() {
       <Link href="/" className="flex items-center gap-2.5 lg:gap-3.5 cursor-pointer shrink-0 min-w-0" title="Ir al inicio">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://loboentrerriano.com/static/logo.png?v=gec4"
+          src="https://loboentrerriano.com/static/logo.png?v=gec5"
           alt="Gimnasia y Esgrima"
           className="h-11 w-11 lg:h-20 lg:w-20 object-contain shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}

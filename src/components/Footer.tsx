@@ -7,7 +7,7 @@ export default function Footer() {
     >
       <div className="flex items-center gap-3.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="https://loboentrerriano.com/static/logo.png?v=gec4" alt="Gimnasia y Esgrima" className="w-10 h-10 object-contain" />
+        <img src="https://loboentrerriano.com/static/logo.png?v=gec5" alt="Gimnasia y Esgrima" className="w-10 h-10 object-contain" />
         <div>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', letterSpacing: '0.5px', fontFamily: 'var(--font-archivo), system-ui, sans-serif' }}>
             Lobo entrerriano
