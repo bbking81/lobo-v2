@@ -18,16 +18,25 @@ export default async function HistorialesPage() {
   const data = await getApiData()
   const publicados = data.partidos.filter(p => p.publicado)
 
+  // Escudo del rival por nombre (igual que Home/Partidos); null → iniciales
+  const escudoDe = (nombre: string): string | null => {
+    const rl = nombre.toLowerCase()
+    const eqs = data.equipos as { nombre?: string; escudoUrl?: string }[]
+    let eq = eqs.find(e => (e.nombre || '').toLowerCase() === rl)
+    if (!eq) eq = eqs.find(e => rl.includes((e.nombre || '').toLowerCase()) || (e.nombre || '').toLowerCase().includes(rl))
+    return eq?.escudoUrl || null
+  }
+
   // Agrupar por rival
   const rivalMap = new Map<string, {
-    rival: string; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; ultimaFecha: string
+    rival: string; escudoUrl: string | null; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; ultimaFecha: string
   }>()
 
   for (const p of publicados) {
     const gecLocal = esGecLocal(p.local)
     const rival = gecLocal ? p.visitante : p.local
     if (!rivalMap.has(rival)) {
-      rivalMap.set(rival, { rival, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, ultimaFecha: p.fecha })
+      rivalMap.set(rival, { rival, escudoUrl: escudoDe(rival), pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, ultimaFecha: p.fecha })
     }
     const r = rivalMap.get(rival)!
     r.pj++
