@@ -144,7 +144,12 @@ export default function BannerLive({ proximo, escudoRival }: { proximo: ProximoT
   const golesDer = esLocal ? live?.golesRival : live?.golesGec
 
   return (
-    <div className="border border-[#e2e8f0] rounded-xl overflow-hidden px-4 sm:px-6 py-4" style={{ background: fondo }}>
+    <div className="relative border border-[#e2e8f0] rounded-xl overflow-hidden px-4 sm:px-6 py-4" style={{ background: fondo }}>
+      {!mostrarMarcador && (
+        <span className="absolute top-0 right-0 uppercase font-medium text-white" style={{ background: '#1e3a5f', fontSize: '0.6rem', letterSpacing: '0.06em', padding: '5px 14px', borderRadius: '0 12px 0 10px' }}>
+          Próximo partido
+        </span>
+      )}
       <div className="text-center uppercase font-bold mb-1 text-[#1e293b] text-[0.85rem] sm:text-[0.98rem]" style={{ letterSpacing: '0.04em' }}>
         {tituloTorneo}
       </div>
