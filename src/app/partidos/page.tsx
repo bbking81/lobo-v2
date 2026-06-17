@@ -62,6 +62,15 @@ export default async function PartidosPage({ searchParams }: Props) {
   // Nombre del torneo normalizado para mostrar (clon del original): si el torneo
   // crudo no trae año, se completa con el nombre oficial de la competencia
   // (ej: Torneo Federal → Torneo Federal "A") y el año del propio partido.
+  // Escudo del rival por nombre (igual que el Home); null → iniciales
+  const escudoDe = (nombre: string): string | null => {
+    const rl = nombre.toLowerCase()
+    const eqs = data.equipos as { nombre?: string; escudoUrl?: string }[]
+    let eq = eqs.find(e => (e.nombre || '').toLowerCase() === rl)
+    if (!eq) eq = eqs.find(e => rl.includes((e.nombre || '').toLowerCase()) || (e.nombre || '').toLowerCase().includes(rl))
+    return eq?.escudoUrl || null
+  }
+
   const comps = data.competencias ?? []
   const torneoLabel = (p: Partido): string => {
     const raw = p.torneo?.trim() || '—'
@@ -145,7 +154,7 @@ export default async function PartidosPage({ searchParams }: Props) {
               <span className="text-sm font-bold text-white">Total: <span className="text-blue-300">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
             </div>
             <div className="divide-y divide-[#f1f5f9]">
-              {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} />)}
+              {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} escudoRival={escudoDe(esGecLocal(p.local) ? p.visitante : p.local)} />)}
             </div>
           </div>
         )}
@@ -163,13 +172,26 @@ function Campo({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
-function PartidoFila({ partido: p, torneo }: { partido: Partido; torneo: string }) {
+const ini = (s: string) => s.trim().split(/\s+/).filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase() || s.substring(0, 2).toUpperCase()
+
+function Escudo({ src, nombre }: { src: string | null; nombre: string }) {
+  return src
+    // eslint-disable-next-line @next/next/no-img-element
+    ? <img src={src} alt={nombre} className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0" />
+    : <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#1e3a5f] flex items-center justify-center text-[0.55rem] sm:text-[0.6rem] font-extrabold text-white shrink-0">{ini(nombre)}</div>
+}
+
+function PartidoFila({ partido: p, torneo, escudoRival }: { partido: Partido; torneo: string; escudoRival: string | null }) {
   const gecLocal = esGecLocal(p.local)
   const rival = gecLocal ? p.visitante : p.local
   const golesGec = gecLocal ? p.gl : p.gv
   const golesRival = gecLocal ? p.gv : p.gl
   const res = calcRes(p.gecGF, p.gecGC)
   const s = RES_SOLID[res]
+  const escudoLocal = gecLocal ? '/api/escudo-gec' : escudoRival
+  const escudoVisit = gecLocal ? escudoRival : '/api/escudo-gec'
+  const nombreLocal = gecLocal ? 'Gimnasia y Esgrima' : rival
+  const nombreVisit = gecLocal ? rival : 'Gimnasia y Esgrima'
 
   const fecha = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
   // Detalle del torneo (como el original): "Fecha N · fase · subfase"
@@ -186,13 +208,19 @@ function PartidoFila({ partido: p, torneo }: { partido: Partido; torneo: string 
         </div>
         {/* Equipos + marcador */}
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-1 min-w-0">
-          <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] text-right truncate flex-1">{gecLocal ? 'Gimnasia y Esgrima' : rival}</p>
+          <div className="flex items-center justify-end gap-1.5 sm:gap-2 flex-1 min-w-0">
+            <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] text-right truncate">{nombreLocal}</p>
+            <Escudo src={escudoLocal} nombre={nombreLocal} />
+          </div>
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 px-1 sm:px-2">
             <span className="text-[1.05rem] sm:text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesGec}</span>
             <span className="text-[#94a3b8] text-sm">-</span>
             <span className="text-[1.05rem] sm:text-[1.15rem] font-bold text-[#151e22] tabular-nums">{golesRival}</span>
           </div>
-          <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] truncate flex-1">{gecLocal ? rival : 'Gimnasia y Esgrima'}</p>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+            <Escudo src={escudoVisit} nombre={nombreVisit} />
+            <p className="text-[0.8rem] sm:text-[0.87rem] font-medium text-[#151e22] truncate">{nombreVisit}</p>
+          </div>
         </div>
         {/* Torneo (desde md) + badge resultado */}
         <div className="flex items-center justify-end gap-2 shrink-0">
