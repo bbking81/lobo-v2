@@ -31,10 +31,20 @@ function CuentaRegresiva({ fecha, hora }: { fecha: string; hora?: string }) {
   const m = Math.floor((tot % 3600) / 60)
   const s = tot % 60
   const z = (n: number) => String(n).padStart(2, '0')
+  const Celda = ({ val, lbl }: { val: number; lbl: string }) => (
+    <div className="text-center">
+      <div className="bg-white border border-[#e2e8f0] rounded-lg tabular-nums font-medium text-[#1e3a5f] leading-none px-2 py-1.5 text-[1.3rem] sm:text-[1.6rem]">{z(val)}</div>
+      <div className="text-[0.55rem] sm:text-[0.6rem] text-[#64748b] mt-1 tracking-wide">{lbl}</div>
+    </div>
+  )
+  const Sep = () => <div className="text-[#4178a0] text-[1.3rem] sm:text-[1.6rem] font-medium pb-4 sm:pb-5">:</div>
   return (
-    <span className="tabular-nums font-medium text-[#1e293b] leading-none whitespace-nowrap text-[1.35rem] sm:text-[1.7rem]">
-      {d > 0 && <span className="text-[0.7em]">{d}d </span>}{z(h)}:{z(m)}:{z(s)}
-    </span>
+    <div className="inline-flex items-end gap-1.5 sm:gap-2">
+      {d > 0 && <><Celda val={d} lbl="DÍAS" /><Sep /></>}
+      <Celda val={h} lbl="HS" /><Sep />
+      <Celda val={m} lbl="MIN" /><Sep />
+      <Celda val={s} lbl="SEG" />
+    </div>
   )
 }
 
