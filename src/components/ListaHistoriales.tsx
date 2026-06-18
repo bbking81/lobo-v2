@@ -13,6 +13,9 @@ const GRID = 'minmax(0,1fr) 38px 38px 38px 38px minmax(110px,1.4fr) 52px'
 
 const ini = (s: string) => s.trim().split(/\s+/).filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase() || s.substring(0, 2).toUpperCase()
 
+// Normaliza para buscar sin importar tildes ni mayúsculas (María = Maria)
+const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+
 function EscudoMini({ src, nombre }: { src: string | null; nombre: string }) {
   return src
     // eslint-disable-next-line @next/next/no-img-element
@@ -28,8 +31,8 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
   const sort = (c: Col) => { if (col === c) setDir(d => (d === 1 ? -1 : 1)); else { setCol(c); setDir(c === 'rival' ? 1 : -1) } }
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
-    const arr = rivales.filter(r => !term || r.rival.toLowerCase().includes(term))
+    const term = norm(q.trim())
+    const arr = rivales.filter(r => !term || norm(r.rival).includes(term))
     const val = (r: RivalRow) => col === 'dif' ? (r.gf - r.gc) : (r[col] as number || 0)
     return [...arr].sort((a, b) =>
       col === 'rival' ? a.rival.localeCompare(b.rival) * dir : (val(a) - val(b)) * dir
