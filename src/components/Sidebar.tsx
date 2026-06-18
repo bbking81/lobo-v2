@@ -111,13 +111,13 @@ function NavItem({ link, active, onNav }: { link: { href: string; icon: React.Re
     <Link
       href={link.href}
       onClick={onNav}
-      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[1rem] font-normal transition-all ${
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[1rem] font-normal transition-all border-l-[3px] ${
         active
-          ? 'bg-[#1e3a5f] text-white font-semibold shadow-sm'
-          : 'text-[#1e293b] hover:bg-[#1e3a5f]/8 hover:text-[#1e3a5f]'
+          ? 'bg-[#007ad6]/10 text-[#0a6bb0] font-semibold border-[#007ad6]'
+          : 'border-transparent text-[#1e293b] hover:bg-[#007ad6]/[0.06] hover:text-[#0a6bb0]'
       }`}
     >
-      <span className={`w-5 flex items-center justify-center shrink-0 ${active ? 'text-white' : 'text-[#1e293b]'}`}>{link.icon}</span>
+      <span className={`w-5 flex items-center justify-center shrink-0 ${active ? 'text-[#007ad6]' : 'text-[#1e293b]'}`}>{link.icon}</span>
       <span>{link.label}</span>
     </Link>
   )
