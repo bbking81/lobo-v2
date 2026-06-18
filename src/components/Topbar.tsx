@@ -102,22 +102,20 @@ export default function Topbar() {
 
       {/* Buscador (estilo FBref) — corrido a la derecha, botón lupa */}
       <div ref={boxRef} className="hidden lg:block relative ml-auto" style={{ width: 460 }}>
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
-            <input
-              type="text"
-              placeholder="Buscar jugador, partido, equipo..."
-              value={q}
-              onChange={(e) => { loadIndex(); setQ(e.target.value); setOpen(true) }}
-              onFocus={() => { loadIndex(); setOpen(true) }}
-              onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setOpen(false) }}
-              autoComplete="off"
-              className="border-none bg-transparent text-[1.02rem] text-[#1e293b] outline-none w-full placeholder:text-[#94a3b8]"
-            />
-          </div>
-          <button onClick={submit} aria-label="Buscar" className="text-white cursor-pointer flex items-center justify-center shrink-0" style={{ height: 48, padding: '0 18px', background: '#1e3a5f', borderRadius: 9 }}>
-            <svg width="20" height="20" fill="none" stroke="#fff" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" /></svg>
+        <div className="flex items-center flex-1 bg-white" style={{ height: 48, border: '1.5px solid #cbd5e1', borderRadius: 9, padding: '0 16px' }}>
+          <button onClick={submit} aria-label="Buscar" className="cursor-pointer flex items-center justify-center shrink-0 mr-2.5" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+            <svg width="20" height="20" fill="none" stroke="#007ad6" strokeWidth="1.9" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5" /><path d="M21 21l-4.3-4.3" strokeLinecap="round" /></svg>
           </button>
+          <input
+            type="text"
+            placeholder="Buscar jugador, partido, equipo..."
+            value={q}
+            onChange={(e) => { loadIndex(); setQ(e.target.value); setOpen(true) }}
+            onFocus={() => { loadIndex(); setOpen(true) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') submit(); if (e.key === 'Escape') setOpen(false) }}
+            autoComplete="off"
+            className="border-none bg-transparent text-[1.02rem] text-[#1e293b] outline-none w-full placeholder:text-[#94a3b8]"
+          />
         </div>
 
         {/* Dropdown */}
@@ -171,8 +169,8 @@ export default function Topbar() {
         )}
       </div>
 
-      {/* Franja de color de marca (estilo StatsBomb) */}
-      <div className="absolute left-0 right-0 bottom-0" style={{ height: 4, background: 'linear-gradient(to right, #334155, #0193de)' }} />
+      {/* Línea fina de marca */}
+      <div className="absolute left-0 right-0 bottom-0" style={{ height: 2, background: '#007ad6' }} />
     </header>
   )
 }
