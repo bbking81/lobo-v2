@@ -87,7 +87,7 @@ export default function Topbar() {
         <img
           src="https://loboentrerriano.com/static/logo.png?v=gec8"
           alt="Gimnasia y Esgrima"
-          className="h-11 w-11 lg:h-20 lg:w-20 object-contain shrink-0"
+          className="h-[50px] w-[50px] lg:h-[92px] lg:w-[92px] object-contain shrink-0"
           onError={(e) => { (e.target as HTMLImageElement).src = 'https://loboentrerriano.com/static/favicon.png' }}
         />
         <div className="min-w-0" style={{ lineHeight: 1.1 }}>
