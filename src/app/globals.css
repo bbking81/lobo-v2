@@ -41,17 +41,17 @@ body {
 /* ── Scrollbars — finas, pizarra como el menú lateral ── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar-thumb { background: #9ec8ee; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #7fb4e6; }
 ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-* { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+* { scrollbar-width: thin; scrollbar-color: #9ec8ee transparent; }
 
 /* Leaflet usa z-index muy altos (hasta ~1000) en sus capas y controles, que
    tapaban el topbar sticky (z-200). Lo encerramos en su propio contexto de
    apilado a z-index 0 → nunca supera al topbar. */
 .leaflet-container { position: relative; z-index: 0; }
 
-/* Sidebar: thumb pizarra, igual que la barra de la página */
-aside::-webkit-scrollbar-thumb { background: #334155; }
-aside::-webkit-scrollbar-thumb:hover { background: #475569; }
-aside { scrollbar-color: #334155 transparent; }
+/* Sidebar: thumb azul suave, igual que la barra de la página */
+aside::-webkit-scrollbar-thumb { background: #9ec8ee; }
+aside::-webkit-scrollbar-thumb:hover { background: #7fb4e6; }
+aside { scrollbar-color: #9ec8ee transparent; }
