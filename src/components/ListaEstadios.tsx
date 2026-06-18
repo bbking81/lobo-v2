@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput, sortIcon } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { Estadio } from '@/types'
 
 type Col = 'nombre' | 'pj' | 'pg' | 'pe' | 'pp'
@@ -19,8 +20,8 @@ export default function ListaEstadios({ estadios }: { estadios: Estadio[] }) {
   const sort = (c: Col) => { if (col === c) setDir(d => (d === 1 ? -1 : 1)); else { setCol(c); setDir(c === 'nombre' ? 1 : -1) } }
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
-    let arr = estadios.filter(e => !term || `${e.nombre} ${e.ciudad ?? ''}`.toLowerCase().includes(term))
+    const term = norm(q.trim())
+    let arr = estadios.filter(e => !term || norm(`${e.nombre} ${e.ciudad ?? ''}`).includes(term))
     arr = [...arr].sort((a, b) =>
       col === 'nombre' ? a.nombre.localeCompare(b.nombre) * dir : ((a[col] || 0) - (b[col] || 0)) * dir
     )

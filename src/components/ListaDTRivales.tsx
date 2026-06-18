@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { SearchInput, AlphaBar } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { DTRival } from '@/types'
 
 export default function ListaDTRivales({ dts }: { dts: DTRival[] }) {
@@ -9,10 +10,10 @@ export default function ListaDTRivales({ dts }: { dts: DTRival[] }) {
   const [letra, setLetra] = useState('todos')
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     return dts.filter(d => {
       if (letra !== 'todos' && (d.apellido?.[0] || '').toUpperCase() !== letra) return false
-      if (term && !`${d.apellido} ${d.nombres ?? ''}`.toLowerCase().includes(term)) return false
+      if (term && !norm(`${d.apellido} ${d.nombres ?? ''}`).includes(term)) return false
       return true
     })
   }, [dts, q, letra])

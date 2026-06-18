@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput, AlphaBar, SortTh, sortIcon } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { Arbitro } from '@/types'
 
 type Col = 'nombre' | 'pj' | 'v' | 'e' | 'd'
@@ -18,10 +19,10 @@ export default function ListaArbitros({ arbitros }: { arbitros: Arbitro[] }) {
   const sort = (c: Col) => { if (col === c) setDir(d => (d === 1 ? -1 : 1)); else { setCol(c); setDir(c === 'nombre' ? 1 : -1) } }
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     let arr = arbitros.filter(a => {
       if (letra !== 'todos' && (a.apellido?.[0] || '').toUpperCase() !== letra) return false
-      if (term && !`${a.apellido} ${a.nombres ?? ''}`.toLowerCase().includes(term)) return false
+      if (term && !norm(`${a.apellido} ${a.nombres ?? ''}`).includes(term)) return false
       return true
     })
     arr = [...arr].sort((a, b) =>

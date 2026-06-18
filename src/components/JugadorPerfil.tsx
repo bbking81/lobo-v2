@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { norm } from '@/lib/norm'
 
 export interface PartidoRow {
   id: number
@@ -271,7 +272,7 @@ function ConxBloque({ titulo, items }: { titulo: string; items: ConxItem[] }) {
   const [expanded, setExpanded] = useState(false)
   const LIMIT = 5
   const filtered = useMemo(
-    () => items.filter(it => !q || it.nombre.toLowerCase().includes(q.toLowerCase())),
+    () => items.filter(it => !q || norm(it.nombre).includes(norm(q))),
     [items, q]
   )
   const visible = expanded || q ? filtered : filtered.slice(0, LIMIT)

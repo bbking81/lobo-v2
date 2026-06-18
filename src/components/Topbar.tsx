@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { IndexItem } from '@/app/api/search-index/route'
 import { toggleMobileNav, useMobileNav } from '@/lib/useMobileNav'
+import { norm } from '@/lib/norm'
 
 // Orden, etiqueta, tope de resultados e ícono de cada grupo
 const GROUPS: { key: string; label: string; max: number; bg: string; stroke: string; path: React.ReactNode }[] = [
@@ -42,11 +43,11 @@ export default function Topbar() {
 
   // Filtrado LOCAL instantáneo (a cada tecla, sin pedidos al servidor)
   const groups = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     if (term.length < 1 || !index) return []
     return GROUPS.map(g => ({
       ...g,
-      items: index.filter(it => it.group === g.key && it.q.includes(term)).slice(0, g.max),
+      items: index.filter(it => it.group === g.key && norm(it.q).includes(term)).slice(0, g.max),
     })).filter(g => g.items.length > 0)
   }, [q, index])
 

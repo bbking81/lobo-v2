@@ -7,6 +7,7 @@ import { fotoUrl } from '@/lib/api'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import Flag from '@/components/Flag'
 import { SearchInput } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { Jugador } from '@/types'
 
 type SortCol = 'nombre' | 'pj' | 'pg' | 'pe' | 'pp' | 'goles' | 'ta' | 'tr'
@@ -31,8 +32,8 @@ export default function ListaJugadores({ jugadores }: { jugadores: Jugador[] }) 
   const icon = (c: SortCol) => (col === c ? (dir === 1 ? '↑' : '↓') : '↕')
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
-    const arr = jugadores.filter(j => !term || `${j.apellido} ${j.nombres ?? ''} ${j.posicion ?? ''}`.toLowerCase().includes(term))
+    const term = norm(q.trim())
+    const arr = jugadores.filter(j => !term || norm(`${j.apellido} ${j.nombres ?? ''} ${j.posicion ?? ''}`).includes(term))
     return [...arr].sort((a, b) =>
       col === 'nombre' ? a.apellido.localeCompare(b.apellido) * dir : (((a[col] as number) || 0) - ((b[col] as number) || 0)) * dir
     )

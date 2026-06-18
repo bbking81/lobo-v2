@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput, SortTh, sortIcon } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 
 export interface RivalRow {
   rival: string; escudoUrl: string | null; pj: number; pg: number; pe: number; pp: number; gf: number; gc: number; ultimaFecha: string
@@ -12,9 +13,6 @@ type Col = 'rival' | 'pj' | 'pg' | 'pe' | 'pp' | 'dif'
 const GRID = 'minmax(0,1fr) 38px 38px 38px 38px minmax(110px,1.4fr) 52px'
 
 const ini = (s: string) => s.trim().split(/\s+/).filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join('').toUpperCase() || s.substring(0, 2).toUpperCase()
-
-// Normaliza para buscar sin importar tildes ni mayúsculas (María = Maria)
-const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 function EscudoMini({ src, nombre }: { src: string | null; nombre: string }) {
   return src

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { fotoUrl } from '@/lib/api'
 import { SearchInput } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { Jugador } from '@/types'
 
 export default function ListaGoleadores({ goleadores, totalGoles }: { goleadores: Jugador[]; totalGoles: number }) {
@@ -12,9 +13,9 @@ export default function ListaGoleadores({ goleadores, totalGoles }: { goleadores
   // Mantener el ranking original (posición en la lista completa)
   const conRank = useMemo(() => goleadores.slice(0, 30).map((j, i) => ({ j, rank: i })), [goleadores])
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     if (!term) return conRank
-    return conRank.filter(({ j }) => `${j.apellido} ${j.nombres ?? ''}`.toLowerCase().includes(term))
+    return conRank.filter(({ j }) => norm(`${j.apellido} ${j.nombres ?? ''}`).includes(term))
   }, [conRank, q])
 
   return (

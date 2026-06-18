@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 
 export interface TorneoResumen {
   nombre: string; slug: string; tipo: string
@@ -36,11 +37,11 @@ export default function ListaCompetencias({ torneos }: { torneos: TorneoResumen[
   }, [torneos])
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     return torneos.filter(t => {
       if (tipo && t.tipo !== tipo) return false
       if (decada) { const y = parseInt(t.ultimaFecha?.slice(0, 4) ?? ''); if (String(Math.floor(y / 10) * 10) !== decada) return false }
-      if (term && !t.nombre.toLowerCase().includes(term)) return false
+      if (term && !norm(t.nombre).includes(term)) return false
       return true
     })
   }, [torneos, q, tipo, decada])

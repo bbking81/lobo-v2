@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput, SortTh, sortIcon } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { DT } from '@/types'
 
 type Col = 'nombre' | 'pj' | 'pg' | 'pe' | 'pp'
@@ -16,8 +17,8 @@ export default function ListaDTs({ dts }: { dts: DT[] }) {
   const sort = (c: Col) => { if (col === c) setDir(d => (d === 1 ? -1 : 1)); else { setCol(c); setDir(c === 'nombre' ? 1 : -1) } }
 
   const visibles = useMemo(() => {
-    const term = q.trim().toLowerCase()
-    let arr = dts.filter(d => !term || `${d.apellido} ${d.nombres ?? ''}`.toLowerCase().includes(term))
+    const term = norm(q.trim())
+    let arr = dts.filter(d => !term || norm(`${d.apellido} ${d.nombres ?? ''}`).includes(term))
     arr = [...arr].sort((a, b) =>
       col === 'nombre' ? a.apellido.localeCompare(b.apellido) * dir : ((a[col] || 0) - (b[col] || 0)) * dir
     )

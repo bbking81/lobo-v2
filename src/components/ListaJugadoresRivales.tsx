@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { SearchInput, AlphaBar } from '@/components/listControls'
+import { norm } from '@/lib/norm'
 import type { JugadorRival } from '@/types'
 
 export default function ListaJugadoresRivales({ jugadores }: { jugadores: JugadorRival[] }) {
@@ -10,10 +11,10 @@ export default function ListaJugadoresRivales({ jugadores }: { jugadores: Jugado
   const [letra, setLetra] = useState('todos')
 
   const grupos = useMemo(() => {
-    const term = q.trim().toLowerCase()
+    const term = norm(q.trim())
     const filtrados = jugadores.filter(j => {
       if (letra !== 'todos' && (j.apellido?.[0] || '').toUpperCase() !== letra) return false
-      if (term && !`${j.apellido} ${j.nombres ?? ''} ${j.equipo ?? ''}`.toLowerCase().includes(term)) return false
+      if (term && !norm(`${j.apellido} ${j.nombres ?? ''} ${j.equipo ?? ''}`).includes(term)) return false
       return true
     })
     const map = new Map<string, JugadorRival[]>()
