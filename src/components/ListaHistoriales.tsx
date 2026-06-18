@@ -37,14 +37,15 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
   }, [rivales, q, col, dir])
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#e2e8f0]">
+    <div className="flex flex-col gap-3">
+      {/* Buscador (tarjeta propia) */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#e2e8f0] shadow-sm">
         <SearchInput value={q} onChange={setQ} placeholder="Buscar rival..." />
         <span className="ml-auto text-xs text-[#94a3b8] shrink-0">{visibles.length}{visibles.length !== rivales.length ? ` de ${rivales.length}` : ''} rivales</span>
       </div>
 
-      {/* Leyenda */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 bg-[#f8fafc] border-b border-[#e2e8f0] text-[11px] text-[#64748b]">
+      {/* Leyenda (entre el buscador y la lista) */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 bg-white rounded-xl border border-[#e2e8f0] text-[11px] text-[#64748b]">
         <span className="font-bold text-[#475569]">Leyenda:</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#16a34a]" />Ganados</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-[#ca8a04]" />Empatados</span>
@@ -55,21 +56,23 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
         </span>
       </div>
 
-      <div className="overflow-x-auto">
-        <div style={{ minWidth: 640 }}>
-          {/* Header */}
-          <div className="grid gap-x-2 px-4 py-2.5 bg-[#162032] text-[10px] font-bold text-white uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
-            <SortTh onClick={() => sort('rival')}>Equipo {sortIcon(col === 'rival', dir)}</SortTh>
-            <SortTh onClick={() => sort('pj')} className="text-center">PJ {sortIcon(col === 'pj', dir)}</SortTh>
-            <SortTh onClick={() => sort('pg')} className="text-center text-green-500">PG {sortIcon(col === 'pg', dir)}</SortTh>
-            <SortTh onClick={() => sort('pe')} className="text-center text-amber-500">PE {sortIcon(col === 'pe', dir)}</SortTh>
-            <SortTh onClick={() => sort('pp')} className="text-center text-red-500">PP {sortIcon(col === 'pp', dir)}</SortTh>
-            <span className="text-center self-center">Historial</span>
-            <SortTh onClick={() => sort('dif')} className="text-center">DIF {sortIcon(col === 'dif', dir)}</SortTh>
-          </div>
+      {/* Lista */}
+      <div className="bg-white rounded-xl border border-[#e2e8f0] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <div style={{ minWidth: 640 }}>
+            {/* Cabecera de columnas (navy) */}
+            <div className="grid gap-x-2 px-4 py-3 bg-[#1a2e4a] text-[12px] font-bold text-white uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
+              <SortTh onClick={() => sort('rival')}>Equipo {sortIcon(col === 'rival', dir)}</SortTh>
+              <SortTh onClick={() => sort('pj')} className="text-center">PJ {sortIcon(col === 'pj', dir)}</SortTh>
+              <SortTh onClick={() => sort('pg')} className="text-center text-green-400">PG {sortIcon(col === 'pg', dir)}</SortTh>
+              <SortTh onClick={() => sort('pe')} className="text-center text-amber-400">PE {sortIcon(col === 'pe', dir)}</SortTh>
+              <SortTh onClick={() => sort('pp')} className="text-center text-red-400">PP {sortIcon(col === 'pp', dir)}</SortTh>
+              <span className="text-center self-center">Historial</span>
+              <SortTh onClick={() => sort('dif')} className="text-center">DIF {sortIcon(col === 'dif', dir)}</SortTh>
+            </div>
 
-          {/* Filas */}
-          <div className="divide-y divide-gray-50">
+            {/* Filas */}
+            <div className="divide-y divide-gray-50">
             {visibles.length === 0 ? (
               <div className="py-10 text-center text-gray-400 text-sm">Sin rivales que coincidan</div>
             ) : visibles.map(r => {
@@ -104,6 +107,7 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
                 </Link>
               )
             })}
+            </div>
           </div>
         </div>
       </div>
