@@ -39,7 +39,7 @@ body {
 }
 
 /* ── Scrollbars — finas, pizarra como el menú lateral ── */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #9ec8ee; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #7fb4e6; }
