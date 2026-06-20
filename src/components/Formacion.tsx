@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { JugadorPlanilla } from '@/types'
 
 interface Props {
@@ -35,24 +35,41 @@ function distribuirJugadores(jugadores: JugadorPlanilla[], formacion: number[]):
 function calcularPosiciones(
   lineas: JugadorPlanilla[][],
   lado: 'left' | 'right',
+  orientacion: 'landscape' | 'portrait',
   w: number,
   h: number,
 ): { jugador: JugadorPlanilla; x: number; y: number }[] {
   const totalLineas = lineas.length
   const result: { jugador: JugadorPlanilla; x: number; y: number }[] = []
-  const margenX = 42
-  const campoAncho = (w / 2 - margenX) * 0.82
 
-  lineas.forEach((linea, li) => {
-    const xRatio = totalLineas > 1 ? li / (totalLineas - 1) : 0
-    let xBase = margenX + xRatio * campoAncho
-    if (lado === 'right') xBase = w - xBase
-    linea.forEach((jugador, ji) => {
-      const slots = linea.length + 1
-      const y = (h / slots) * (ji + 1)
-      result.push({ jugador, x: xBase, y })
+  if (orientacion === 'landscape') {
+    const margenX = 42
+    const campoAncho = (w / 2 - margenX) * 0.82
+    lineas.forEach((linea, li) => {
+      const xRatio = totalLineas > 1 ? li / (totalLineas - 1) : 0
+      let xBase = margenX + xRatio * campoAncho
+      if (lado === 'right') xBase = w - xBase
+      linea.forEach((jugador, ji) => {
+        const slots = linea.length + 1
+        const y = (h / slots) * (ji + 1)
+        result.push({ jugador, x: xBase, y })
+      })
     })
-  })
+  } else {
+    // Vertical: 'left' = equipo arriba, 'right' = equipo abajo
+    const margenY = 42
+    const campoAlto = (h / 2 - margenY) * 0.82
+    lineas.forEach((linea, li) => {
+      const yRatio = totalLineas > 1 ? li / (totalLineas - 1) : 0
+      let yBase = margenY + yRatio * campoAlto
+      if (lado === 'right') yBase = h - yBase
+      linea.forEach((jugador, ji) => {
+        const slots = linea.length + 1
+        const x = (w / slots) * (ji + 1)
+        result.push({ jugador, x, y: yBase })
+      })
+    })
+  }
   return result
 }
 
@@ -103,15 +120,23 @@ export default function Formacion({
   jugadoresGec, jugadoresRival, formacionGec, formacionRival,
   kitGec, kitRival, localNombre, visitanteNombre,
 }: Props) {
+  // Orientación automática: horizontal en PC, vertical en tablet/celular (<1024px)
   const [orientacion, setOrientacion] = useState<'landscape' | 'portrait'>('landscape')
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const update = () => setOrientacion(mq.matches ? 'portrait' : 'landscape')
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
 
-  const W = orientacion === 'landscape' ? 960 : 380
-  const H = orientacion === 'landscape' ? 480 : 720
+  const W = orientacion === 'landscape' ? 960 : 400
+  const H = orientacion === 'landscape' ? 480 : 760
 
   const lineasGec = distribuirJugadores(jugadoresGec, parsearFormacion(formacionGec))
   const lineasRival = distribuirJugadores(jugadoresRival, parsearFormacion(formacionRival))
-  const posGec = calcularPosiciones(lineasGec, 'left', W, H)
-  const posRival = calcularPosiciones(lineasRival, 'right', W, H)
+  const posGec = calcularPosiciones(lineasGec, 'left', orientacion, W, H)
+  const posRival = calcularPosiciones(lineasRival, 'right', orientacion, W, H)
 
   const colorGec = kitGec?.color1 ?? '#007ad6'
   const colorRival = kitRival?.color1 ?? '#cc2222'
@@ -125,22 +150,10 @@ export default function Formacion({
   return (
     <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
       {/* Header estilo pestaña */}
-      <div className="flex items-center justify-between px-5 pt-4" style={{ borderBottom: '1px solid #eef2f6' }}>
+      <div className="flex items-center px-5 pt-4" style={{ borderBottom: '1px solid #eef2f6' }}>
         <span className="inline-flex items-center gap-2 pb-3 text-[0.8rem] font-bold text-[#0f172a] uppercase" style={{ letterSpacing: '0.06em', borderBottom: '3px solid #007ad6', marginBottom: '-1px' }}>
           Formación
         </span>
-        <div className="flex gap-1.5 pb-2">
-          {(['landscape', 'portrait'] as const).map(o => (
-            <button key={o} onClick={() => setOrientacion(o)}
-              className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
-                orientacion === o
-                  ? 'bg-[#007ad6] text-white border-[#007ad6]'
-                  : 'text-[#64748b] border-[#e2e8f0] hover:bg-[#f8fafc]'
-              }`}>
-              {o === 'landscape' ? 'Horizontal' : 'Vertical'}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Equipos */}
