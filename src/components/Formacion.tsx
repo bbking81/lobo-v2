@@ -56,7 +56,7 @@ function calcularPosiciones(
   return result
 }
 
-function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: number; y: number; ring: string }) {
+function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y: number }) {
   const apellido = jugador.jugador?.split(',')[0]?.trim() ?? '?'
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
@@ -68,20 +68,25 @@ function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: num
 
   return (
     <g>
-      {/* aro blanco + color del club */}
-      <circle cx={x} cy={y} r={r + 2.5} fill="#fff" />
+      <circle cx={x} cy={y} r={r + 1.5} fill="#fff" />
       {foto ? (
         <>
           <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
           <circle cx={x} cy={y} r={r} fill="#e9eef3" />
           <image href={foto} x={x - r} y={y - r} width={r * 2} height={r * 2}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
-          <circle cx={x} cy={y} r={r} fill="none" stroke={ring} strokeWidth={2.5} />
+          <circle cx={x} cy={y} r={r} fill="none" stroke="#dde3ea" strokeWidth={1} />
         </>
       ) : (
         <>
-          <circle cx={x} cy={y} r={r} fill={ring} />
-          <text x={x} y={y + 5.5} textAnchor="middle" fill="#fff" fontSize={15} fontWeight="700">{num ?? ''}</text>
+          {/* avatar silueta genérico (estilo Flashscore sin foto) */}
+          <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
+          <g clipPath={`url(#${cid})`}>
+            <circle cx={x} cy={y} r={r} fill="#e6ebf1" />
+            <circle cx={x} cy={y - 3.5} r={6} fill="#9aa7b6" />
+            <ellipse cx={x} cy={y + 15} rx={10.5} ry={8.5} fill="#9aa7b6" />
+          </g>
+          <circle cx={x} cy={y} r={r} fill="none" stroke="#dde3ea" strokeWidth={1} />
         </>
       )}
 
@@ -174,8 +179,8 @@ export default function Formacion({
             </>
           )}
 
-          {posGec.map(({ jugador, x, y }, i) => <JugadorNode key={`g${i}`} jugador={jugador} x={x} y={y} ring={colorGec} />)}
-          {posRival.map(({ jugador, x, y }, i) => <JugadorNode key={`r${i}`} jugador={jugador} x={x} y={y} ring={colorRival} />)}
+          {posGec.map(({ jugador, x, y }, i) => <JugadorNode key={`g${i}`} jugador={jugador} x={x} y={y} />)}
+          {posRival.map(({ jugador, x, y }, i) => <JugadorNode key={`r${i}`} jugador={jugador} x={x} y={y} />)}
         </svg>
       </div>
     </div>
