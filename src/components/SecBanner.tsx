@@ -16,26 +16,22 @@ interface SecBannerProps {
 export default function SecBanner({ icon, title, subtitle, right }: SecBannerProps) {
   return (
     <div
-      className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 px-3.5 py-4 sm:px-6 sm:py-5 bg-white"
+      className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 bg-white"
       style={{ border: '0.5px solid #e2e8f0', borderLeft: '4px solid #007ad6', borderRadius: 12, marginBottom: 16, boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}
     >
-      <div className="flex items-center" style={{ gap: 14 }}>
-        <span
-          className="flex items-center justify-center shrink-0"
-          style={{ width: 50, height: 50, borderRadius: 12, background: 'rgba(0,122,214,.12)', color: '#007ad6' }}
-        >
-          <svg width="28" height="28" fill="none" stroke="#007ad6" strokeWidth="1.8" viewBox="0 0 24 24">
-            {icon}
-          </svg>
-        </span>
-        <div>
-          <div className="text-[1.3rem] sm:text-[1.8rem]" style={{ fontWeight: 700, color: '#0f172a', marginBottom: 2, lineHeight: 1.15 }}>
-            {title}
-          </div>
-          {subtitle && <div style={{ fontSize: '0.88rem', color: '#64748b' }}>{subtitle}</div>}
-        </div>
-      </div>
-      {right && <div className="shrink-0">{right}</div>}
+      <span
+        className="flex items-center justify-center shrink-0"
+        style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(0,122,214,.12)', color: '#007ad6' }}
+      >
+        <svg width="19" height="19" fill="none" stroke="#007ad6" strokeWidth="1.9" viewBox="0 0 24 24">
+          {icon}
+        </svg>
+      </span>
+      <span className="text-[1.05rem] sm:text-[1.2rem]" style={{ fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+        {title}
+      </span>
+      {subtitle && <span className="ml-auto text-right" style={{ fontSize: '0.82rem', color: '#64748b' }}>{subtitle}</span>}
+      {right && <span className="shrink-0 ml-auto">{right}</span>}
     </div>
   )
 }
