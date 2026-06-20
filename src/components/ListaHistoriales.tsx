@@ -61,13 +61,13 @@ export default function ListaHistoriales({ rivales }: { rivales: RivalRow[] }) {
       <div className="bg-white rounded-xl border border-[#e2e8f0] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <div style={{ minWidth: 640 }}>
-            {/* Cabecera de columnas (navy) */}
-            <div className="grid gap-x-2 px-4 py-3 bg-[#1a2e4a] text-[12px] font-bold text-white uppercase tracking-wide" style={{ gridTemplateColumns: GRID }}>
+            {/* Cabecera de columnas (blanca + línea azul) */}
+            <div className="grid gap-x-2 px-4 py-3 bg-white text-[12px] font-bold text-[#0f172a] uppercase tracking-wide" style={{ gridTemplateColumns: GRID, borderBottom: '2px solid #007ad6' }}>
               <SortTh onClick={() => sort('rival')}>Equipo {sortIcon(col === 'rival', dir)}</SortTh>
               <SortTh onClick={() => sort('pj')} className="text-center">PJ {sortIcon(col === 'pj', dir)}</SortTh>
-              <SortTh onClick={() => sort('pg')} className="text-center text-green-400">PG {sortIcon(col === 'pg', dir)}</SortTh>
-              <SortTh onClick={() => sort('pe')} className="text-center text-amber-400">PE {sortIcon(col === 'pe', dir)}</SortTh>
-              <SortTh onClick={() => sort('pp')} className="text-center text-red-400">PP {sortIcon(col === 'pp', dir)}</SortTh>
+              <SortTh onClick={() => sort('pg')} className="text-center text-green-600">PG {sortIcon(col === 'pg', dir)}</SortTh>
+              <SortTh onClick={() => sort('pe')} className="text-center text-amber-600">PE {sortIcon(col === 'pe', dir)}</SortTh>
+              <SortTh onClick={() => sort('pp')} className="text-center text-red-500">PP {sortIcon(col === 'pp', dir)}</SortTh>
               <span className="text-center self-center">Historial</span>
               <SortTh onClick={() => sort('dif')} className="text-center">DIF {sortIcon(col === 'dif', dir)}</SortTh>
             </div>
