@@ -149,7 +149,7 @@ export default async function PartidosPage({ searchParams }: Props) {
         {pj === 0 ? (
           <div className="bg-white rounded-xl border border-[#e2e8f0] py-12 text-center text-[#94a3b8] text-sm">No hay partidos con estos filtros</div>
         ) : (
-          <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ borderLeft: '4px solid #007ad6' }}>
+          <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ borderLeft: '4px solid #007ad6', boxShadow: '0 2px 8px rgba(15,23,42,.07)' }}>
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#eef2f6]">
               <span className="text-sm font-semibold text-[#0f172a]">Total: <span className="text-[#007ad6]">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
             </div>
