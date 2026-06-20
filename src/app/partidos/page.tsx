@@ -149,9 +149,9 @@ export default async function PartidosPage({ searchParams }: Props) {
         {pj === 0 ? (
           <div className="bg-white rounded-xl border border-[#e2e8f0] py-12 text-center text-[#94a3b8] text-sm">No hay partidos con estos filtros</div>
         ) : (
-          <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
-              <span className="text-sm font-bold text-white">Total: <span className="text-blue-300">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
+          <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ borderLeft: '4px solid #007ad6' }}>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-[#eef2f6]">
+              <span className="text-sm font-semibold text-[#0f172a]">Total: <span className="text-[#007ad6]">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
             </div>
             <div className="divide-y divide-[#f1f5f9]">
               {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} escudoRival={escudoDe(esGecLocal(p.local) ? p.visitante : p.local)} />)}
