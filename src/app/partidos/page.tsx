@@ -5,7 +5,7 @@ import SecBanner from '@/components/SecBanner'
 import type { Partido } from '@/types'
 
 interface Props {
-  searchParams: Promise<{ resultado?: string; condicion?: string; año?: string; torneo?: string; rival?: string }>
+  searchParams: Promise<{ resultado?: string; condicion?: string; año?: string; torneo?: string; rival?: string; pagina?: string }>
 }
 
 function calcRes(gecGF: number, gecGC: number): 'V' | 'E' | 'D' {
@@ -58,6 +58,24 @@ export default async function PartidosPage({ searchParams }: Props) {
   const pg = filtrados.filter(p => p.gecGF > p.gecGC).length
   const pe = filtrados.filter(p => p.gecGF === p.gecGC).length
   const pp = filtrados.filter(p => p.gecGF < p.gecGC).length
+
+  // Paginación (la lista es de 1088 partidos; renderizar todo de una hacía la página
+  // pesadísima y lenta). Mostramos de a POR_PAGINA y navegamos por ?pagina=N.
+  const POR_PAGINA = 60
+  const totalPag = Math.max(1, Math.ceil(pj / POR_PAGINA))
+  const pagina = Math.min(totalPag, Math.max(1, parseInt(sp.pagina ?? '1') || 1))
+  const pageRows = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+  const qsBase = (p: number) => {
+    const params = new URLSearchParams()
+    if (fRes) params.set('resultado', fRes)
+    if (fCond) params.set('condicion', fCond)
+    if (fAño) params.set('año', fAño)
+    if (fTorneo) params.set('torneo', fTorneo)
+    if (fRival) params.set('rival', fRival)
+    if (p > 1) params.set('pagina', String(p))
+    const s = params.toString()
+    return s ? `/partidos?${s}` : '/partidos'
+  }
 
   // Nombre del torneo normalizado para mostrar (clon del original): si el torneo
   // crudo no trae año, se completa con el nombre oficial de la competencia
@@ -152,10 +170,22 @@ export default async function PartidosPage({ searchParams }: Props) {
           <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ borderLeft: '4px solid #007ad6', boxShadow: '0 2px 8px rgba(15,23,42,.07)' }}>
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#eef2f6]">
               <span className="text-sm font-semibold text-[#0f172a]">Total: <span className="text-[#007ad6]">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
+              {totalPag > 1 && <span className="ml-auto text-xs text-[#94a3b8]">Página {pagina} de {totalPag}</span>}
             </div>
             <div className="divide-y divide-[#f1f5f9]">
-              {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} escudoRival={escudoDe(esGecLocal(p.local) ? p.visitante : p.local)} />)}
+              {pageRows.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} escudoRival={escudoDe(esGecLocal(p.local) ? p.visitante : p.local)} />)}
             </div>
+            {totalPag > 1 && (
+              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-[#eef2f6]">
+                {pagina > 1
+                  ? <Link href={qsBase(pagina - 1)} className="text-sm font-semibold text-[#007ad6] hover:text-[#0067b5] px-3 py-1.5 rounded-lg border border-[#e2e8f0]">← Anteriores</Link>
+                  : <span />}
+                <span className="text-xs text-[#94a3b8]">Mostrando {(pagina - 1) * POR_PAGINA + 1}–{Math.min(pagina * POR_PAGINA, pj)} de {pj}</span>
+                {pagina < totalPag
+                  ? <Link href={qsBase(pagina + 1)} className="text-sm font-semibold text-[#007ad6] hover:text-[#0067b5] px-3 py-1.5 rounded-lg border border-[#e2e8f0]">Siguientes →</Link>
+                  : <span />}
+              </div>
+            )}
           </div>
         )}
       </div>
