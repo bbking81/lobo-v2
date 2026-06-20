@@ -89,7 +89,7 @@ export default async function PartidosPage({ searchParams }: Props) {
       <div className="px-5 py-5">
         <SecBanner
           title="Partidos"
-          subtitle={`${pj} partido${pj !== 1 ? 's' : ''}${(fRes || fCond || fAño || fTorneo || fRival) ? ' filtrados' : ' en total'}`}
+          subtitle="Todos los partidos oficiales de Gimnasia y Esgrima"
           icon={<><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></>}
         />
 
@@ -150,6 +150,9 @@ export default async function PartidosPage({ searchParams }: Props) {
           <div className="bg-white rounded-xl border border-[#e2e8f0] py-12 text-center text-[#94a3b8] text-sm">No hay partidos con estos filtros</div>
         ) : (
           <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1a2e4a]">
+              <span className="text-sm font-bold text-white">Total: <span className="text-blue-300">{pj}</span> partido{pj !== 1 ? 's' : ''}</span>
+            </div>
             <div className="divide-y divide-[#f1f5f9]">
               {filtrados.map(p => <PartidoFila key={p.id} partido={p} torneo={torneoLabel(p)} escudoRival={escudoDe(esGecLocal(p.local) ? p.visitante : p.local)} />)}
             </div>
