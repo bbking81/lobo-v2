@@ -61,7 +61,7 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   const num = jugador.camiseta
-  const r = 19
+  const r = 17
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(42, label.length * 6 + 14)
@@ -108,8 +108,8 @@ export default function Formacion({
 }: Props) {
   const [orientacion, setOrientacion] = useState<'landscape' | 'portrait'>('landscape')
 
-  const W = orientacion === 'landscape' ? 880 : 380
-  const H = orientacion === 'landscape' ? 400 : 720
+  const W = orientacion === 'landscape' ? 960 : 380
+  const H = orientacion === 'landscape' ? 480 : 720
 
   const lineasGec = distribuirJugadores(jugadoresGec, parsearFormacion(formacionGec))
   const lineasRival = distribuirJugadores(jugadoresRival, parsearFormacion(formacionRival))
