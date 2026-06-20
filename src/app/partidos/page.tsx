@@ -121,7 +121,7 @@ export default async function PartidosPage({ searchParams }: Props) {
             </select>
           </Campo>
           <div className="col-span-2 sm:col-span-3 lg:col-span-5 flex gap-2">
-            <button type="submit" className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg px-5 py-2 text-sm font-semibold transition-colors">Filtrar</button>
+            <button type="submit" className="bg-[#007ad6] hover:bg-[#0067b5] text-white rounded-lg px-5 py-2 text-sm font-semibold transition-colors">Filtrar</button>
             {(fRes || fCond || fAño || fTorneo || fRival) && (
               <Link href="/partidos" className="text-[#64748b] hover:text-[#1e293b] rounded-lg px-4 py-2 text-sm font-semibold border border-[#e2e8f0] transition-colors">Limpiar</Link>
             )}
@@ -132,14 +132,14 @@ export default async function PartidosPage({ searchParams }: Props) {
         {pj > 0 && (
           <div className="grid grid-cols-4 gap-3 mb-4">
             {[
-              { num: pj, label: 'Jugados', color: '#2563eb', bg: '#dbeafe' },
-              { num: pg, label: `Ganados ${((pg / pj) * 100).toFixed(0)}%`, color: '#16a34a', bg: '#dcfce7' },
-              { num: pe, label: `Empatados ${((pe / pj) * 100).toFixed(0)}%`, color: '#ca8a04', bg: '#fef9c3' },
-              { num: pp, label: `Perdidos ${((pp / pj) * 100).toFixed(0)}%`, color: '#dc2626', bg: '#fee2e2' },
+              { num: pj, label: 'Jugados', accent: '#007ad6', numColor: '#0f172a' },
+              { num: pg, label: `Ganados ${((pg / pj) * 100).toFixed(0)}%`, accent: '#16a34a', numColor: '#16a34a' },
+              { num: pe, label: `Empatados ${((pe / pj) * 100).toFixed(0)}%`, accent: '#ca8a04', numColor: '#ca8a04' },
+              { num: pp, label: `Perdidos ${((pp / pj) * 100).toFixed(0)}%`, accent: '#dc2626', numColor: '#dc2626' },
             ].map(s => (
-              <div key={s.label} className="rounded-xl p-4 text-center" style={{ background: s.bg }}>
-                <p className="text-2xl font-black" style={{ color: s.color }}>{s.num}</p>
-                <p className="text-[0.72rem] font-semibold mt-0.5" style={{ color: s.color }}>{s.label}</p>
+              <div key={s.label} className="bg-white rounded-[10px] border border-[#e2e8f0] p-2.5 text-center" style={{ borderTop: `3px solid ${s.accent}`, boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
+                <p className="text-xl font-black" style={{ color: s.numColor }}>{s.num}</p>
+                <p className="text-[0.7rem] font-semibold mt-0.5 text-[#64748b]">{s.label}</p>
               </div>
             ))}
           </div>
