@@ -19,260 +19,162 @@ function parsearFormacion(f: string): number[] {
   return (f ?? '').split('-').map(Number).filter(Boolean)
 }
 
-// Distribuye jugadores por líneas según formación
-// El arco (índice 0) va solo, luego las líneas
+// Distribuye jugadores por líneas según formación (índice 0 = arquero)
 function distribuirJugadores(jugadores: JugadorPlanilla[], formacion: number[]): JugadorPlanilla[][] {
   const titulares = jugadores.filter(j => j.titular !== false).slice(0, 11)
   const resultado: JugadorPlanilla[][] = []
-
-  // Arquero
-  resultado.push(titulares.slice(0, 1))
-
+  resultado.push(titulares.slice(0, 1)) // arquero
   let idx = 1
   for (const cantidad of formacion) {
     resultado.push(titulares.slice(idx, idx + cantidad))
     idx += cantidad
   }
-
   return resultado
 }
 
-// Posiciones X,Y en campo landscape 780×440
-// GEC a la izquierda, rival a la derecha
 function calcularPosiciones(
   lineas: JugadorPlanilla[][],
   lado: 'left' | 'right',
-  w = 780,
-  h = 440,
+  w: number,
+  h: number,
 ): { jugador: JugadorPlanilla; x: number; y: number }[] {
-  const totalLineas = lineas.length // arco + líneas
+  const totalLineas = lineas.length
   const result: { jugador: JugadorPlanilla; x: number; y: number }[] = []
-
-  const margenX = 32
-  const campoAncho = w / 2 - margenX * 1.5
+  const margenX = 46
+  const campoAncho = w / 2 - margenX * 1.4
 
   lineas.forEach((linea, li) => {
-    // Proporción de izquierda a derecha (arco en x mínimo)
     const xRatio = totalLineas > 1 ? li / (totalLineas - 1) : 0
     let xBase = margenX + xRatio * campoAncho
     if (lado === 'right') xBase = w - xBase
-
     linea.forEach((jugador, ji) => {
       const slots = linea.length + 1
       const y = (h / slots) * (ji + 1)
       result.push({ jugador, x: xBase, y })
     })
   })
-
   return result
 }
 
-interface JugadorNodeProps {
-  jugador: JugadorPlanilla
-  x: number
-  y: number
-  kitColor: string
-  invertido?: boolean
-}
-
-function JugadorNode({ jugador, x, y, kitColor, invertido = false }: JugadorNodeProps) {
+function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: number; y: number; ring: string }) {
   const apellido = jugador.jugador?.split(',')[0]?.trim() ?? '?'
-  const apellidoCorto = apellido.length > 10 ? apellido.slice(0, 9) + '…' : apellido
-  const fotoUrl = (jugador as { foto?: string | null }).foto ?? null
-
-  const imgSize = 44
-  const halfImg = imgSize / 2
+  const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
+  const foto = (jugador as { foto?: string | null }).foto ?? null
+  const num = jugador.camiseta
+  const r = 21
+  const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
+  const label = `${num ? `${num} ` : ''}${apellidoCorto}`
+  const pillW = Math.max(40, label.length * 5.4 + 12)
 
   return (
     <g>
-      {/* Foto o círculo de color */}
-      {fotoUrl ? (
+      {/* aro blanco + color del club */}
+      <circle cx={x} cy={y} r={r + 2.5} fill="#fff" />
+      {foto ? (
         <>
-          <defs>
-            <clipPath id={`clip-${jugador.jugador_id ?? x}-${y}`}>
-              <rect
-                x={x - halfImg}
-                y={y - halfImg}
-                width={imgSize}
-                height={imgSize}
-                rx={4}
-              />
-            </clipPath>
-          </defs>
-          <image
-            href={fotoUrl}
-            x={x - halfImg}
-            y={y - halfImg}
-            width={imgSize}
-            height={imgSize}
-            clipPath={`url(#clip-${jugador.jugador_id ?? x}-${y})`}
-            preserveAspectRatio="xMidYMid slice"
-          />
+          <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
+          <circle cx={x} cy={y} r={r} fill={ring} />
+          <image href={foto} x={x - r} y={y - r} width={r * 2} height={r * 2}
+            clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
+          <circle cx={x} cy={y} r={r} fill="none" stroke={ring} strokeWidth={2.5} />
         </>
       ) : (
-        <circle cx={x} cy={y} r={18} fill={kitColor} />
+        <>
+          <circle cx={x} cy={y} r={r} fill={ring} />
+          <text x={x} y={y + 5.5} textAnchor="middle" fill="#fff" fontSize={15} fontWeight="700">{num ?? ''}</text>
+        </>
       )}
 
-      {/* Número sobre foto */}
-      {!fotoUrl && (
-        <text x={x} y={y + 5} textAnchor="middle" fill="white" fontSize={13} fontWeight="bold">
-          {jugador.camiseta ?? '?'}
-        </text>
-      )}
+      {/* pill nombre */}
+      <rect x={x - pillW / 2} y={y + r + 5} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} />
+      <text x={x} y={y + r + 16.5} textAnchor="middle" fill="#0f172a" fontSize={9.5} fontWeight="600">{label}</text>
 
-      {/* Badge nombre */}
-      <rect
-        x={x - 28}
-        y={y + halfImg - 2}
-        width={56}
-        height={15}
-        rx={3}
-        fill="rgba(255,255,255,0.88)"
-      />
-      <text
-        x={x}
-        y={y + halfImg + 10}
-        textAnchor="middle"
-        fill="#1a1a1a"
-        fontSize={9}
-        fontWeight="600"
-      >
-        {jugador.camiseta ? `${jugador.camiseta} ` : ''}{apellidoCorto}
-      </text>
-
-
-      {/* Iconos de eventos */}
-      {jugador.goles ? (
-        <text x={x - halfImg + 2} y={y - halfImg + 10} fontSize={9}>⚽</text>
-      ) : null}
-      {jugador.amarillas ? (
-        <text x={x + halfImg - 10} y={y - halfImg + 10} fontSize={9}>🟨</text>
-      ) : null}
-      {jugador.rojas ? (
-        <text x={x + halfImg - 10} y={y - halfImg + 10} fontSize={9}>🟥</text>
-      ) : null}
+      {/* eventos */}
+      {jugador.goles ? <text x={x - r - 4} y={y - r + 6} fontSize={12}>⚽</text> : null}
+      {jugador.rojas ? <rect x={x + r - 5} y={y - r - 3} width={8} height={11} rx={1.5} fill="#dc2626" />
+        : jugador.amarillas ? <rect x={x + r - 5} y={y - r - 3} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
     </g>
   )
 }
 
 export default function Formacion({
-  jugadoresGec,
-  jugadoresRival,
-  formacionGec,
-  formacionRival,
-  kitGec,
-  kitRival,
-  localNombre,
-  visitanteNombre,
+  jugadoresGec, jugadoresRival, formacionGec, formacionRival,
+  kitGec, kitRival, localNombre, visitanteNombre,
 }: Props) {
   const [orientacion, setOrientacion] = useState<'landscape' | 'portrait'>('landscape')
 
-  const W = orientacion === 'landscape' ? 780 : 370
-  const H = orientacion === 'landscape' ? 440 : 750
+  const W = orientacion === 'landscape' ? 820 : 380
+  const H = orientacion === 'landscape' ? 460 : 760
 
   const lineasGec = distribuirJugadores(jugadoresGec, parsearFormacion(formacionGec))
   const lineasRival = distribuirJugadores(jugadoresRival, parsearFormacion(formacionRival))
+  const posGec = calcularPosiciones(lineasGec, 'left', W, H)
+  const posRival = calcularPosiciones(lineasRival, 'right', W, H)
 
-  const posGec = calcularPosiciones(lineasGec, orientacion === 'landscape' ? 'left' : 'left', W, H)
-  const posRival = calcularPosiciones(lineasRival, orientacion === 'landscape' ? 'right' : 'right', W, H)
-
-  const colorGec = kitGec?.color1 ?? '#1e3a5f'
-  const colorRival = kitRival?.color1 ?? '#cc0000'
+  const colorGec = kitGec?.color1 ?? '#007ad6'
+  const colorRival = kitRival?.color1 ?? '#cc2222'
 
   if (!jugadoresGec?.length && !jugadoresRival?.length) return null
 
+  const FIELD = '#eef2f6'
+  const LINE = '#d4dae2'
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Formación</h2>
-        <div className="flex gap-1">
+    <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
+      {/* Header estilo pestaña */}
+      <div className="flex items-center justify-between px-5 pt-4" style={{ borderBottom: '1px solid #eef2f6' }}>
+        <span className="inline-flex items-center gap-2 pb-3 text-[0.8rem] font-bold text-[#0f172a] uppercase" style={{ letterSpacing: '0.06em', borderBottom: '3px solid #007ad6', marginBottom: '-1px' }}>
+          Formación
+        </span>
+        <div className="flex gap-1.5 pb-2">
           {(['landscape', 'portrait'] as const).map(o => (
-            <button
-              key={o}
-              onClick={() => setOrientacion(o)}
-              className={`text-xs px-2 py-1 rounded border ${
+            <button key={o} onClick={() => setOrientacion(o)}
+              className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                 orientacion === o
-                  ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]'
-                  : 'text-gray-500 border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {o === 'landscape' ? '⬛ Horizontal' : '▬ Vertical'}
+                  ? 'bg-[#007ad6] text-white border-[#007ad6]'
+                  : 'text-[#64748b] border-[#e2e8f0] hover:bg-[#f8fafc]'
+              }`}>
+              {o === 'landscape' ? 'Horizontal' : 'Vertical'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Leyenda */}
-      <div className="flex justify-between text-xs px-6 pt-2 font-semibold">
-        <span style={{ color: colorGec }}>{localNombre} ({formacionGec})</span>
-        <span style={{ color: colorRival }}>{visitanteNombre} ({formacionRival})</span>
+      {/* Equipos */}
+      <div className="flex justify-between text-[0.78rem] px-5 pt-3 font-bold">
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: colorGec }} />{localNombre} <span className="text-[#94a3b8] font-semibold">({formacionGec})</span></span>
+        <span className="flex items-center gap-1.5">{visitanteNombre} <span className="text-[#94a3b8] font-semibold">({formacionRival})</span><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: colorRival }} /></span>
       </div>
 
-      {/* SVG campo */}
-      <div className="overflow-x-auto px-2 pb-4">
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          width="100%"
-          style={{ maxWidth: W, display: 'block', margin: '0 auto' }}
-        >
-          {/* Fondo */}
-          <rect width={W} height={H} fill="#f5f5f5" rx={8} />
+      <div className="overflow-x-auto px-3 py-3">
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W, display: 'block', margin: '0 auto' }}>
+          <rect width={W} height={H} fill="#f7f9fb" rx={10} />
+          <rect x={16} y={16} width={W - 32} height={H - 32} fill={FIELD} rx={6} stroke={LINE} strokeWidth={1.5} />
 
-          {/* Campo interior */}
-          <rect x={20} y={20} width={W - 40} height={H - 40} fill="#efefef" rx={4}
-            stroke="#c8c8c8" strokeWidth={1.5} />
-
-          {/* Línea del medio */}
-          {orientacion === 'landscape' ? (
-            <line x1={W / 2} y1={20} x2={W / 2} y2={H - 20} stroke="#c8c8c8" strokeWidth={1.5} />
-          ) : (
-            <line x1={20} y1={H / 2} x2={W - 20} y2={H / 2} stroke="#c8c8c8" strokeWidth={1.5} />
-          )}
-
-          {/* Círculo central */}
-          <circle
-            cx={W / 2} cy={H / 2}
-            r={orientacion === 'landscape' ? 50 : 40}
-            fill="none" stroke="#c8c8c8" strokeWidth={1.5}
-          />
-
-          {/* Áreas */}
           {orientacion === 'landscape' ? (
             <>
-              {/* Área GEC (izquierda) */}
-              <rect x={20} y={H / 2 - 70} width={80} height={140} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <rect x={20} y={H / 2 - 35} width={35} height={70} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              {/* D-arco GEC */}
-              <ellipse cx={100} cy={H / 2} rx={22} ry={32} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              {/* Área Rival (derecha) */}
-              <rect x={W - 100} y={H / 2 - 70} width={80} height={140} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <rect x={W - 55} y={H / 2 - 35} width={35} height={70} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              {/* D-arco Rival */}
-              <ellipse cx={W - 100} cy={H / 2} rx={22} ry={32} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
+              <line x1={W / 2} y1={16} x2={W / 2} y2={H - 16} stroke={LINE} strokeWidth={1.5} />
+              <circle cx={W / 2} cy={H / 2} r={52} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <circle cx={W / 2} cy={H / 2} r={2.5} fill={LINE} />
+              <rect x={16} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={16} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W - 98} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W - 50} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={1.5} />
             </>
           ) : (
             <>
-              {/* Área GEC (arriba) */}
-              <rect x={W / 2 - 70} y={20} width={140} height={80} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <rect x={W / 2 - 35} y={20} width={70} height={35} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <ellipse cx={W / 2} cy={100} rx={32} ry={22} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              {/* Área Rival (abajo) */}
-              <rect x={W / 2 - 70} y={H - 100} width={140} height={80} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <rect x={W / 2 - 35} y={H - 55} width={70} height={35} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
-              <ellipse cx={W / 2} cy={H - 100} rx={32} ry={22} fill="none" stroke="#c8c8c8" strokeWidth={1.5} />
+              <line x1={16} y1={H / 2} x2={W - 16} y2={H / 2} stroke={LINE} strokeWidth={1.5} />
+              <circle cx={W / 2} cy={H / 2} r={46} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <circle cx={W / 2} cy={H / 2} r={2.5} fill={LINE} />
+              <rect x={W / 2 - 74} y={16} width={148} height={82} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W / 2 - 36} y={16} width={72} height={34} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W / 2 - 74} y={H - 98} width={148} height={82} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W / 2 - 36} y={H - 50} width={72} height={34} fill="none" stroke={LINE} strokeWidth={1.5} />
             </>
           )}
 
-          {/* Jugadores GEC */}
-          {posGec.map(({ jugador, x, y }, i) => (
-            <JugadorNode key={i} jugador={jugador} x={x} y={y} kitColor={colorGec} />
-          ))}
-
-          {/* Jugadores Rival */}
-          {posRival.map(({ jugador, x, y }, i) => (
-            <JugadorNode key={i} jugador={jugador} x={x} y={y} kitColor={colorRival} invertido />
-          ))}
+          {posGec.map(({ jugador, x, y }, i) => <JugadorNode key={`g${i}`} jugador={jugador} x={x} y={y} ring={colorGec} />)}
+          {posRival.map(({ jugador, x, y }, i) => <JugadorNode key={`r${i}`} jugador={jugador} x={x} y={y} ring={colorRival} />)}
         </svg>
       </div>
     </div>
