@@ -137,9 +137,9 @@ export default async function PartidosPage({ searchParams }: Props) {
               { num: pe, label: `Empatados ${((pe / pj) * 100).toFixed(0)}%`, accent: '#ca8a04', numColor: '#ca8a04' },
               { num: pp, label: `Perdidos ${((pp / pj) * 100).toFixed(0)}%`, accent: '#dc2626', numColor: '#dc2626' },
             ].map(s => (
-              <div key={s.label} className="bg-white rounded-[10px] border border-[#e2e8f0] p-2.5 text-center" style={{ borderTop: `3px solid ${s.accent}`, boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
-                <p className="text-xl font-black" style={{ color: s.numColor }}>{s.num}</p>
-                <p className="text-[0.7rem] font-semibold mt-0.5 text-[#64748b]">{s.label}</p>
+              <div key={s.label} className="bg-white rounded-[10px] border border-[#e2e8f0] px-2.5 py-1.5 text-center" style={{ borderTop: `3px solid ${s.accent}`, boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
+                <p className="text-lg font-black leading-tight" style={{ color: s.numColor }}>{s.num}</p>
+                <p className="text-[0.68rem] font-semibold text-[#64748b]">{s.label}</p>
               </div>
             ))}
           </div>
