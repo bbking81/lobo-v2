@@ -78,7 +78,8 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   const num = jugador.camiseta
-  const r = 23
+  const AW = 42, AH = 48, RX = 6
+  const hw = AW / 2, hh = AH / 2
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(42, label.length * 6 + 14)
@@ -87,31 +88,31 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
     <g>
       {foto ? (
         <>
-          <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
-          <circle cx={x} cy={y} r={r} fill="#e9eef3" />
-          <image href={foto} x={x - r} y={y - r} width={r * 2} height={r * 2}
+          <clipPath id={cid}><rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} /></clipPath>
+          <rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} fill="#e9eef3" />
+          <image href={foto} x={x - hw} y={y - hh} width={AW} height={AH}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
         </>
       ) : (
         <>
-          {/* avatar silueta genérico (estilo Flashscore sin foto) */}
-          <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
+          {/* avatar silueta genérico (sin foto) */}
+          <clipPath id={cid}><rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} /></clipPath>
           <g clipPath={`url(#${cid})`}>
-            <circle cx={x} cy={y} r={r} fill="#e6ebf1" />
-            <circle cx={x} cy={y - 4} r={7.5} fill="#9aa7b6" />
-            <ellipse cx={x} cy={y + 18} rx={13} ry={10.5} fill="#9aa7b6" />
+            <rect x={x - hw} y={y - hh} width={AW} height={AH} fill="#e6ebf1" />
+            <circle cx={x} cy={y - 5} r={9} fill="#9aa7b6" />
+            <ellipse cx={x} cy={y + 22} rx={16} ry={14} fill="#9aa7b6" />
           </g>
         </>
       )}
 
       {/* pill nombre */}
-      <rect x={x - pillW / 2} y={y + r + 5} width={pillW} height={18} rx={9} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} />
-      <text x={x} y={y + r + 17.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
+      <rect x={x - pillW / 2} y={y + hh + 4} width={pillW} height={18} rx={9} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} />
+      <text x={x} y={y + hh + 16.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
 
       {/* eventos */}
-      {jugador.goles ? <text x={x - r - 4} y={y - r + 6} fontSize={12}>⚽</text> : null}
-      {jugador.rojas ? <rect x={x + r - 5} y={y - r - 3} width={8} height={11} rx={1.5} fill="#dc2626" />
-        : jugador.amarillas ? <rect x={x + r - 5} y={y - r - 3} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
+      {jugador.goles ? <text x={x - hw - 3} y={y - hh + 9} fontSize={12}>⚽</text> : null}
+      {jugador.rojas ? <rect x={x + hw - 5} y={y - hh - 2} width={8} height={11} rx={1.5} fill="#dc2626" />
+        : jugador.amarillas ? <rect x={x + hw - 5} y={y - hh - 2} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
     </g>
   )
 }
