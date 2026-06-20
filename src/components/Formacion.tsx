@@ -61,21 +61,19 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   const num = jugador.camiseta
-  const r = 17
+  const r = 23
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(42, label.length * 6 + 14)
 
   return (
     <g>
-      <circle cx={x} cy={y} r={r + 1.5} fill="#fff" />
       {foto ? (
         <>
           <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
           <circle cx={x} cy={y} r={r} fill="#e9eef3" />
           <image href={foto} x={x - r} y={y - r} width={r * 2} height={r * 2}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
-          <circle cx={x} cy={y} r={r} fill="none" stroke="#dde3ea" strokeWidth={1} />
         </>
       ) : (
         <>
@@ -83,10 +81,9 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
           <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
           <g clipPath={`url(#${cid})`}>
             <circle cx={x} cy={y} r={r} fill="#e6ebf1" />
-            <circle cx={x} cy={y - 3.5} r={6} fill="#9aa7b6" />
-            <ellipse cx={x} cy={y + 15} rx={10.5} ry={8.5} fill="#9aa7b6" />
+            <circle cx={x} cy={y - 4} r={7.5} fill="#9aa7b6" />
+            <ellipse cx={x} cy={y + 18} rx={13} ry={10.5} fill="#9aa7b6" />
           </g>
-          <circle cx={x} cy={y} r={r} fill="none" stroke="#dde3ea" strokeWidth={1} />
         </>
       )}
 
@@ -166,6 +163,16 @@ export default function Formacion({
               <rect x={16} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={LW} />
               <rect x={W - 98} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={LW} />
               <rect x={W - 50} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={LW} />
+              {/* Puntos de penal + semicírculo del área ("D") */}
+              <circle cx={70} cy={H / 2} r={2} fill={LINE} />
+              <circle cx={W - 70} cy={H / 2} r={2} fill={LINE} />
+              <path d={`M 98 ${H / 2 - 36.5} A 46 46 0 0 1 98 ${H / 2 + 36.5}`} fill="none" stroke={LINE} strokeWidth={LW} />
+              <path d={`M ${W - 98} ${H / 2 - 36.5} A 46 46 0 0 0 ${W - 98} ${H / 2 + 36.5}`} fill="none" stroke={LINE} strokeWidth={LW} />
+              {/* Arcos de córner */}
+              <path d={`M 25 16 A 9 9 0 0 1 16 25`} fill="none" stroke={LINE} strokeWidth={LW} />
+              <path d={`M ${W - 25} 16 A 9 9 0 0 0 ${W - 16} 25`} fill="none" stroke={LINE} strokeWidth={LW} />
+              <path d={`M 16 ${H - 25} A 9 9 0 0 1 25 ${H - 16}`} fill="none" stroke={LINE} strokeWidth={LW} />
+              <path d={`M ${W - 16} ${H - 25} A 9 9 0 0 0 ${W - 25} ${H - 16}`} fill="none" stroke={LINE} strokeWidth={LW} />
             </>
           ) : (
             <>
