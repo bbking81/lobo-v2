@@ -121,7 +121,7 @@ export default function Formacion({
 
   if (!jugadoresGec?.length && !jugadoresRival?.length) return null
 
-  const FIELD = '#eef2f6'
+  const FIELD = '#eeeeee'
   const LINE = '#c2cbd6'
   const LW = 2.4
 
@@ -154,7 +154,7 @@ export default function Formacion({
 
       <div className="overflow-x-auto px-3 py-3">
         <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W, display: 'block', margin: '0 auto' }}>
-          <rect width={W} height={H} fill="#f7f9fb" rx={10} />
+          <rect width={W} height={H} fill="#f7f7f7" rx={10} />
           <rect x={16} y={16} width={W - 32} height={H - 32} fill={FIELD} rx={6} stroke={LINE} strokeWidth={LW} />
 
           {orientacion === 'landscape' ? (
