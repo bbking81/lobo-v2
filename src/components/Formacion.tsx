@@ -40,8 +40,8 @@ function calcularPosiciones(
 ): { jugador: JugadorPlanilla; x: number; y: number }[] {
   const totalLineas = lineas.length
   const result: { jugador: JugadorPlanilla; x: number; y: number }[] = []
-  const margenX = 46
-  const campoAncho = w / 2 - margenX * 1.4
+  const margenX = 42
+  const campoAncho = (w / 2 - margenX) * 0.82
 
   lineas.forEach((linea, li) => {
     const xRatio = totalLineas > 1 ? li / (totalLineas - 1) : 0
@@ -61,10 +61,10 @@ function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: num
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   const num = jugador.camiseta
-  const r = 21
+  const r = 19
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
-  const pillW = Math.max(40, label.length * 5.4 + 12)
+  const pillW = Math.max(42, label.length * 6 + 14)
 
   return (
     <g>
@@ -73,7 +73,7 @@ function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: num
       {foto ? (
         <>
           <clipPath id={cid}><circle cx={x} cy={y} r={r} /></clipPath>
-          <circle cx={x} cy={y} r={r} fill={ring} />
+          <circle cx={x} cy={y} r={r} fill="#e9eef3" />
           <image href={foto} x={x - r} y={y - r} width={r * 2} height={r * 2}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
           <circle cx={x} cy={y} r={r} fill="none" stroke={ring} strokeWidth={2.5} />
@@ -86,8 +86,8 @@ function JugadorNode({ jugador, x, y, ring }: { jugador: JugadorPlanilla; x: num
       )}
 
       {/* pill nombre */}
-      <rect x={x - pillW / 2} y={y + r + 5} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} />
-      <text x={x} y={y + r + 16.5} textAnchor="middle" fill="#0f172a" fontSize={9.5} fontWeight="600">{label}</text>
+      <rect x={x - pillW / 2} y={y + r + 5} width={pillW} height={18} rx={9} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} />
+      <text x={x} y={y + r + 17.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
 
       {/* eventos */}
       {jugador.goles ? <text x={x - r - 4} y={y - r + 6} fontSize={12}>⚽</text> : null}
@@ -103,8 +103,8 @@ export default function Formacion({
 }: Props) {
   const [orientacion, setOrientacion] = useState<'landscape' | 'portrait'>('landscape')
 
-  const W = orientacion === 'landscape' ? 820 : 380
-  const H = orientacion === 'landscape' ? 460 : 760
+  const W = orientacion === 'landscape' ? 880 : 380
+  const H = orientacion === 'landscape' ? 400 : 720
 
   const lineasGec = distribuirJugadores(jugadoresGec, parsearFormacion(formacionGec))
   const lineasRival = distribuirJugadores(jugadoresRival, parsearFormacion(formacionRival))
@@ -117,7 +117,8 @@ export default function Formacion({
   if (!jugadoresGec?.length && !jugadoresRival?.length) return null
 
   const FIELD = '#eef2f6'
-  const LINE = '#d4dae2'
+  const LINE = '#c2cbd6'
+  const LW = 2.4
 
   return (
     <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
@@ -149,27 +150,27 @@ export default function Formacion({
       <div className="overflow-x-auto px-3 py-3">
         <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W, display: 'block', margin: '0 auto' }}>
           <rect width={W} height={H} fill="#f7f9fb" rx={10} />
-          <rect x={16} y={16} width={W - 32} height={H - 32} fill={FIELD} rx={6} stroke={LINE} strokeWidth={1.5} />
+          <rect x={16} y={16} width={W - 32} height={H - 32} fill={FIELD} rx={6} stroke={LINE} strokeWidth={LW} />
 
           {orientacion === 'landscape' ? (
             <>
-              <line x1={W / 2} y1={16} x2={W / 2} y2={H - 16} stroke={LINE} strokeWidth={1.5} />
-              <circle cx={W / 2} cy={H / 2} r={52} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <line x1={W / 2} y1={16} x2={W / 2} y2={H - 16} stroke={LINE} strokeWidth={LW} />
+              <circle cx={W / 2} cy={H / 2} r={52} fill="none" stroke={LINE} strokeWidth={LW} />
               <circle cx={W / 2} cy={H / 2} r={2.5} fill={LINE} />
-              <rect x={16} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={16} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={W - 98} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={W - 50} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={16} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={16} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={W - 98} y={H / 2 - 74} width={82} height={148} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={W - 50} y={H / 2 - 36} width={34} height={72} fill="none" stroke={LINE} strokeWidth={LW} />
             </>
           ) : (
             <>
-              <line x1={16} y1={H / 2} x2={W - 16} y2={H / 2} stroke={LINE} strokeWidth={1.5} />
-              <circle cx={W / 2} cy={H / 2} r={46} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <line x1={16} y1={H / 2} x2={W - 16} y2={H / 2} stroke={LINE} strokeWidth={LW} />
+              <circle cx={W / 2} cy={H / 2} r={46} fill="none" stroke={LINE} strokeWidth={LW} />
               <circle cx={W / 2} cy={H / 2} r={2.5} fill={LINE} />
-              <rect x={W / 2 - 74} y={16} width={148} height={82} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={W / 2 - 36} y={16} width={72} height={34} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={W / 2 - 74} y={H - 98} width={148} height={82} fill="none" stroke={LINE} strokeWidth={1.5} />
-              <rect x={W / 2 - 36} y={H - 50} width={72} height={34} fill="none" stroke={LINE} strokeWidth={1.5} />
+              <rect x={W / 2 - 74} y={16} width={148} height={82} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={W / 2 - 36} y={16} width={72} height={34} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={W / 2 - 74} y={H - 98} width={148} height={82} fill="none" stroke={LINE} strokeWidth={LW} />
+              <rect x={W / 2 - 36} y={H - 50} width={72} height={34} fill="none" stroke={LINE} strokeWidth={LW} />
             </>
           )}
 
