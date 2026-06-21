@@ -68,12 +68,14 @@ const ORG_JSONLD = {
   },
 };
 
-// Todas las páginas se renderizan por request (nada se prerenderiza en el
-// build): el build de Vercel NO llama al API de loboentrerriano.com, que
-// tira 500/cuelgues esporádicos y venía tumbando deploys. La caché de DATOS
-// de 5 min de getApiData (revalidate explícito en el fetch) sigue vigente,
-// así que el rendimiento se mantiene.
-export const dynamic = "force-dynamic";
+// ISR: las páginas se prerenderizan y se sirven desde la caché de ruta de Next,
+// regenerándose cada 60s. Esto hace que cada visita NO re-renderice SSR de cero
+// (antes con force-dynamic), y emite `Cache-Control: s-maxage=60` para que
+// Cloudflare pueda cachear el HTML en el borde (~50ms desde CDN). El build corre
+// EN el VPS con el API local (127.0.0.1:8000), confiable; y si aun así fallara,
+// getApiData devuelve datos vacíos en build para no tumbar el deploy (la página
+// se auto-regenera al primer revalidate). Dato nuevo del admin: hasta ~1min.
+export const revalidate = 60;
 
 export default function RootLayout({
   children,

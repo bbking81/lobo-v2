@@ -32,12 +32,30 @@ export async function getApiData(): Promise<ApiData> {
       // Si el fetch falla pero tenemos un memo viejo, lo servimos (stale) antes
       // que tirar un error y romper la página.
       if (_memoData) return _memoData
+      // Durante el BUILD (prerender ISR) un fallo del API tumbaría el deploy
+      // entero. Antes se evitaba con force-dynamic (todo se renderizaba por
+      // request). Ahora prerenderizamos con ISR; si el API no responde EN EL
+      // BUILD, devolvemos datos vacíos para que el build no se caiga: la página
+      // queda vacía pero se auto-regenera al primer revalidate (60s) con datos
+      // reales. En runtime (request real) seguimos tirando el error.
+      if (process.env.NEXT_PHASE === 'phase-production-build') {
+        console.warn('[getApiData] API no respondió en build; usando datos vacíos (ISR los regenera):', e)
+        return EMPTY_API_DATA
+      }
       throw e
     } finally {
       _memoInFlight = null
     }
   })()
   return _memoInFlight
+}
+
+// Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
+// durante el prerender (ver arriba). Nunca se cachea en el memo.
+const EMPTY_API_DATA: ApiData = {
+  partidos: [], jugadores: [], equipos: [], competencias: [],
+  dts: [], dtRivales: [], jugadoresRivales: [], estadios: [],
+  arbitros: [], config: {},
 }
 
 async function _fetchApiData(): Promise<ApiData> {
