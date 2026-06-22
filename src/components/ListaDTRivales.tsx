@@ -35,7 +35,7 @@ export default function ListaDTRivales({ dts }: { dts: DTRival[] }) {
             <div className="shrink-0 w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center text-gray-400 font-black">
               {d.foto
                 // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={d.foto} alt={d.apellido} className="w-full h-full object-cover" />
+                ? <img src={d.foto} alt={d.apellido} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 : d.apellido.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">

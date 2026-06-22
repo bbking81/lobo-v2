@@ -38,7 +38,7 @@ export default function MediaPartido({ fotos, videos, audios }: Props) {
                 <div key={i} className="flex flex-col gap-[7px]">
                   <div onClick={() => setLightbox(i)} className="cursor-zoom-in rounded-[10px] overflow-hidden border border-[#e2e8f0] bg-[#f1f5f9]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={f.src} alt={f.leyenda ?? f.nombre ?? ''} className="w-full h-auto block" />
+                    <img src={f.src} alt={f.leyenda ?? f.nombre ?? ''} loading="lazy" decoding="async" className="w-full h-auto block" />
                   </div>
                   {f.leyenda && <div className="text-[0.78rem] text-[#64748b] text-center italic px-1">{f.leyenda}</div>}
                 </div>

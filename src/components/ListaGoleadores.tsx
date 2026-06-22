@@ -42,7 +42,7 @@ export default function ListaGoleadores({ goleadores, totalGoles }: { goleadores
               <span className="w-7 text-center shrink-0 font-bold tabular-nums" style={{ color: rankColor, fontSize: rankSize }}>{rank + 1}</span>
               <div className="w-14 h-14 rounded-full bg-[#e2e8f0] border-2 border-[#e2e8f0] shrink-0 flex items-center justify-center overflow-hidden">
                 {foto
-                  ? <img src={foto} alt={j.apellido} className="w-full h-full object-cover" /> // eslint-disable-line @next/next/no-img-element
+                  ? <img src={foto} alt={j.apellido} loading="lazy" decoding="async" className="w-full h-full object-cover" /> // eslint-disable-line @next/next/no-img-element
                   : <span className="text-[1.1rem] font-bold text-[#64748b]">{j.apellido.charAt(0)}</span>}
               </div>
               <div className="flex-1 min-w-0">

@@ -288,11 +288,11 @@ function FormaCard({ partido: p, escudoRival }: { partido: Partido; escudoRival:
     <Link href={`/partido/partido-${p.id}`} className="flex flex-col items-center gap-1.5 pt-2.5 bg-white border border-[#e2e8f0] rounded-xl shrink-0 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ width: 110 }}>
       <div className="flex items-center justify-center gap-1.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/api/escudo-gec" alt="GEC" className="w-8 h-8 object-contain" />
+        <img src="/api/escudo-gec" alt="GEC" loading="lazy" decoding="async" className="w-8 h-8 object-contain" />
         <span className="text-[0.6rem] text-[#cbd5e1] font-bold">vs</span>
         {escudoRival
           // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={escudoRival} alt={rival} className="w-8 h-8 object-contain" />
+          ? <img src={escudoRival} alt={rival} loading="lazy" decoding="async" className="w-8 h-8 object-contain" />
           : <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-[0.7rem] font-extrabold text-white">{ini(rival)}</div>}
       </div>
       <div className="text-[1.35rem] font-black text-[#1e293b] leading-none" style={{ letterSpacing: '1px' }}>{gf}-{gc}</div>
@@ -324,7 +324,7 @@ function Podio({ titulo, icon, jugadores, campo, sufijo, tema, verHref, verTxt }
                 <div className="relative inline-block mb-2.5">
                   {j.foto && j.foto.startsWith('http')
                     // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={j.foto} alt={j.apellido} className="w-[72px] h-[72px] rounded-full object-cover" style={{ border: `3px solid ${ring}` }} />
+                    ? <img src={j.foto} alt={j.apellido} loading="lazy" decoding="async" className="w-[72px] h-[72px] rounded-full object-cover" style={{ border: `3px solid ${ring}` }} />
                     : <div className="w-[72px] h-[72px] rounded-full flex items-center justify-center text-[1.1rem] font-extrabold" style={{ background: phBg, border: `3px solid ${ring}`, color: phColor }}>{j.apellido.charAt(0)}</div>}
                   <div className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full text-white text-[0.72rem] font-extrabold flex items-center justify-center border-2 border-white" style={{ background: RANK_COL[i] }}>{i + 1}</div>
                 </div>

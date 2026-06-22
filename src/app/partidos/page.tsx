@@ -207,7 +207,7 @@ const ini = (s: string) => s.trim().split(/\s+/).filter(w => w.length > 2).slice
 function Escudo({ src, nombre }: { src: string | null; nombre: string }) {
   return src
     // eslint-disable-next-line @next/next/no-img-element
-    ? <img src={src} alt={nombre} className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0" />
+    ? <img src={src} alt={nombre} loading="lazy" decoding="async" className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0" />
     : <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#1e3a5f] flex items-center justify-center text-[0.55rem] sm:text-[0.6rem] font-extrabold text-white shrink-0">{ini(nombre)}</div>
 }
 

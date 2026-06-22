@@ -323,7 +323,7 @@ function RankingJugadores({ jugMap, metrica, topN, jugadores }: { jugMap: Map<st
               <>
                 <span className={`text-sm font-black w-6 text-center shrink-0 ${medal}`}>{i + 1}</span>
                 <div className="shrink-0 w-9 h-9 rounded-full overflow-hidden bg-[#1a2e4a] flex items-center justify-center text-white text-xs font-bold">
-                  {foto ? <img src={foto} alt="" className="w-full h-full object-cover object-top" /> : (a.nombre[0] ?? '?')}{/* eslint-disable-line @next/next/no-img-element */}
+                  {foto ? <img src={foto} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover object-top" /> : (a.nombre[0] ?? '?')}{/* eslint-disable-line @next/next/no-img-element */}
                 </div>
                 <div className="flex-1 min-w-0"><p className="text-sm font-bold text-gray-800 truncate">{a.nombre}</p></div>
                 <span className="text-xl font-black text-gray-800 tabular-nums shrink-0">{a[field] as number}</span>

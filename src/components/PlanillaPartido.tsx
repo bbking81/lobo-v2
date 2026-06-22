@@ -24,7 +24,7 @@ export default function PlanillaPartido({ jugadores, esGec, nombreEquipo, escudo
         <div className="flex items-center justify-center shrink-0 overflow-hidden" style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(255,255,255,0.15)' }}>
           {escudoUrl
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={escudoUrl} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            ? <img src={escudoUrl} alt="" loading="lazy" decoding="async" style={{ width: 32, height: 32, objectFit: 'contain' }} />
             : <span className="text-white font-extrabold text-[0.6rem]">{(nombreEquipo || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
         </div>
         <span className="text-white font-bold" style={{ fontSize: '1.035rem' }}>{nombreEquipo}</span>

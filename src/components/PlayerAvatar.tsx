@@ -33,6 +33,8 @@ export function PlayerAvatar({
       src={src}
       alt={apellido}
       onError={() => setError(true)}
+      loading="lazy"
+      decoding="async"
       className="rounded-full object-cover shrink-0 bg-gray-100"
       style={{ width: size, height: size }}
     />

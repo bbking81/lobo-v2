@@ -164,7 +164,7 @@ export default async function CompetenciaDetallePage({ params }: Props) {
                     <div className="flex items-center justify-center overflow-hidden shrink-0" style={{ width: 32, height: 32, borderRadius: '50%', background: '#162032', color: '#93c5fd', fontSize: '0.7rem', fontWeight: 700 }}>
                       {ps.foto
                         // eslint-disable-next-line @next/next/no-img-element
-                        ? <img src={ps.foto} alt={ps.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ? <img src={ps.foto} alt={ps.nombre} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : ps.nombre.charAt(0)}
                     </div>
                     <span className="flex-1 min-w-0 truncate font-semibold text-[#1e293b]">{ps.nombre}</span>
