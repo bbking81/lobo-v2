@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getApiData, fotoUrl } from '@/lib/api'
+import { getApiData, getJugadorRivalPartidos, fotoUrl } from '@/lib/api'
 import { PerfilAvatar, FichaPartidoLista, PartidosTitle } from '@/components/ficha'
 import Flag from '@/components/Flag'
 import type { Metadata } from 'next'
@@ -8,32 +8,34 @@ interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
   const j = data.jugadoresRivales.find(x => x.id === parseInt(id))
   return { title: j ? `${j.nombre}` : 'Jugador rival no encontrado' }
 }
 
 export default async function JugadorRivalPage({ params }: Props) {
   const { id } = await params
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
   const jugador = data.jugadoresRivales.find(x => x.id === parseInt(id))
   if (!jugador) notFound()
 
   const nombre = jugador.nombre.toLowerCase()
+  // Partidos donde jugó este rival, ya filtrados y ordenados por fecha desc del
+  // lado del backend (/api/jugador-rival/{id}). Antes se bajaban TODAS las
+  // planillas rivales de TODOS los partidos vía /api/db y se filtraban acá.
+  const partidos = await getJugadorRivalPartidos(jugador.id)
+
+  if (partidos.length === 0) notFound()
+
   let totalGoles = 0, totalTA = 0, totalTR = 0
-  const partidos = data.partidos
-    .filter(p => {
-      if (!p.publicado) return false
-      const fila = (p.planillaRival ?? []).find(r => (r.jugador || '').toLowerCase() === nombre)
-      if (!fila) return false
+  for (const p of partidos) {
+    const fila = (p.planillaRival ?? []).find(r => (r.jugador || '').toLowerCase() === nombre)
+    if (fila) {
       totalGoles += fila.goles ?? 0
       totalTA += fila.amarillas ?? 0
       totalTR += fila.rojas ?? 0
-      return true
-    })
-    .sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))
-
-  if (partidos.length === 0) notFound()
+    }
+  }
 
   const foto = fotoUrl(jugador.foto)
   const initials = (jugador.apellido || jugador.nombre).slice(0, 2).toUpperCase()

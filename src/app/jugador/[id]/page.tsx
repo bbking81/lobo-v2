@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getApiData, fotoUrl } from '@/lib/api'
+import { getApiData, getJugadorPartidos, fotoUrl } from '@/lib/api'
 import { pageMeta } from '@/lib/seo'
 import type { Metadata } from 'next'
 import Flag from '@/components/Flag'
@@ -18,7 +18,7 @@ interface TorneoStat {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
   const jugador = data.jugadores.find(j => j.id === parseInt(id))
   if (!jugador) return { title: 'Jugador no encontrado' }
   const partes = [jugador.posicion, jugador.pj ? `${jugador.pj} partidos` : '', jugador.goles ? `${jugador.goles} goles` : ''].filter(Boolean).join(' · ')
@@ -32,17 +32,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function JugadorPage({ params }: Props) {
   const { id } = await params
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
   const jugador = data.jugadores.find(j => j.id === parseInt(id))
 
   if (!jugador || !jugador.apellido) notFound()
 
   const foto = fotoUrl(jugador.foto)
 
-  // Partidos en los que participó (todos), ordenados por fecha desc
-  const partidosTodos = data.partidos
-    .filter(p => p.publicado && p.planillaGec?.some(pj => pj.jugador_id === jugador.id))
-    .sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))
+  // Partidos en los que participó (todos), ya filtrados y ordenados por fecha
+  // desc del lado del backend (/api/jugador/{id}). Antes se bajaban TODAS las
+  // planillas de TODOS los partidos vía /api/db y se filtraban acá.
+  const partidosTodos = await getJugadorPartidos(jugador.id)
 
   // ── Stats por Torneo (clonado de .pjug-stats-wrap del original) ──
   const torneoMap = new Map<string, TorneoStat>()

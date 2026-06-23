@@ -71,6 +71,37 @@ export async function getPartido(id: number): Promise<Partido | null> {
   }
 }
 
+/** Los partidos COMPLETOS (con planillas) en los que participó el jugador GEC
+ * `id`, vía /api/jugador/{id}. La ficha de jugador lo usa para NO bajar toda la
+ * base con todas las planillas. Devuelve [] si falla (la ficha decide qué hacer). */
+export async function getJugadorPartidos(id: number): Promise<Partido[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/jugador/${id}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return (await res.json()).partidos ?? []
+    return []
+  } catch {
+    return []
+  }
+}
+
+/** Ídem para un jugador RIVAL, vía /api/jugador-rival/{id} (matchea por nombre
+ * en planilla_rival del lado del backend). */
+export async function getJugadorRivalPartidos(id: number): Promise<Partido[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/jugador-rival/${id}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return (await res.json()).partidos ?? []
+    return []
+  } catch {
+    return []
+  }
+}
+
 // Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
 // durante el prerender (ver arriba). Nunca se cachea en el memo.
 const EMPTY_API_DATA: ApiData = {
