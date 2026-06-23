@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getApiData, slugToId } from '@/lib/api'
+import { getApiData, getPartido, slugToId } from '@/lib/api'
 import Link from 'next/link'
 import Timeline from '@/components/Timeline'
 import Formacion from '@/components/Formacion'
@@ -15,8 +15,7 @@ const esGecLocalFn = (local: string) => (local || '').toLowerCase().includes('gi
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const data = await getApiData()
-  const p = data.partidos.find(x => x.id === slugToId(slug))
+  const p = await getPartido(slugToId(slug))
   if (!p) return { title: 'Partido no encontrado' }
   const fechaTxt = p.fecha ? new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''
   const title = `${p.local} ${p.gl} - ${p.gv} ${p.visitante}`
@@ -28,7 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const data = await getApiData()
+  // Solo necesita ids/slugs → versión liviana (sin planillas).
+  const data = await getApiData({ light: true })
   return data.partidos.filter(p => p.publicado).map(p => ({ slug: `partido-${p.id}` }))
 }
 
@@ -74,8 +74,13 @@ function derivarEventos(p: Partido, gecLocal: boolean): Evento[] {
 
 export default async function PartidoPage({ params }: Props) {
   const { slug } = await params
-  const data = await getApiData()
-  const p = data.partidos.find(x => x.id === slugToId(slug))
+  // El partido completo (con planillas/eventos/multimedia) por su endpoint
+  // dedicado; los datos de referencia (equipos/jugadores/etc.) desde la base
+  // liviana. Así esta ficha NO baja las planillas de los 1088 partidos.
+  const [p, data] = await Promise.all([
+    getPartido(slugToId(slug)),
+    getApiData({ light: true }),
+  ])
   if (!p) notFound()
 
   const gecLocal = esGecLocalFn(p.local)

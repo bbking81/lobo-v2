@@ -5,33 +5,38 @@ import type { ApiData, Partido } from '@/types'
 const BASE_URL = process.env.GEC_API_URL || 'https://loboentrerriano.com'
 
 // Memo en memoria del JSON YA PARSEADO. El fetch de Next cachea la RESPUESTA
-// (revalidate:60), pero `res.json()` igual re-parsea ~1,5 MB en CADA request, y
+// (revalidate:60), pero `res.json()` igual re-parsea el JSON en CADA request, y
 // cada página llama a getApiData. Guardando el objeto parseado a nivel módulo,
 // dentro de la ventana TTL servimos el mismo objeto sin re-parsear ni re-fetchear.
 // El proceso SSR es de larga vida en el VPS, así que el memo persiste entre requests.
+// Hay DOS variantes con caché separada: 'full' (con planillas/eventos/multimedia)
+// y 'light' (?light=1: partidos sin los campos pesados, ~850 KB vs ~1,5 MB). Las
+// páginas que NO necesitan el detalle de cada partido piden la liviana.
 const MEMO_TTL_MS = 60_000
-let _memoData: ApiData | null = null
-let _memoAt = 0
-let _memoInFlight: Promise<ApiData> | null = null
+const _memo = new Map<string, { data: ApiData; at: number }>()
+const _inflight = new Map<string, Promise<ApiData>>()
 
-export async function getApiData(): Promise<ApiData> {
+export async function getApiData(opts?: { light?: boolean }): Promise<ApiData> {
+  const key = opts?.light ? 'light' : 'full'
   const ahora = Date.now()
   // Dato fresco en memoria: lo devolvemos al instante (sin fetch ni parseo).
-  if (_memoData && ahora - _memoAt < MEMO_TTL_MS) return _memoData
-  // Si otra request ya está pidiendo el dato, nos colgamos de la misma promesa
-  // (evita estampida: 10 visitas simultáneas no disparan 10 fetch+parseo).
-  if (_memoInFlight) return _memoInFlight
+  const hit = _memo.get(key)
+  if (hit && ahora - hit.at < MEMO_TTL_MS) return hit.data
+  // Si otra request ya está pidiendo esta variante, nos colgamos de la misma
+  // promesa (evita estampida: 10 visitas simultáneas no disparan 10 fetch+parseo).
+  const flight = _inflight.get(key)
+  if (flight) return flight
 
-  _memoInFlight = (async () => {
+  const p = (async () => {
     try {
-      const data = await _fetchApiData()
-      _memoData = data
-      _memoAt = Date.now()
+      const data = await _fetchApiData(!!opts?.light)
+      _memo.set(key, { data, at: Date.now() })
       return data
     } catch (e) {
       // Si el fetch falla pero tenemos un memo viejo, lo servimos (stale) antes
       // que tirar un error y romper la página.
-      if (_memoData) return _memoData
+      const stale = _memo.get(key)
+      if (stale) return stale.data
       // Durante el BUILD (prerender ISR) un fallo del API tumbaría el deploy
       // entero. Antes se evitaba con force-dynamic (todo se renderizaba por
       // request). Ahora prerenderizamos con ISR; si el API no responde EN EL
@@ -44,10 +49,26 @@ export async function getApiData(): Promise<ApiData> {
       }
       throw e
     } finally {
-      _memoInFlight = null
+      _inflight.delete(key)
     }
   })()
-  return _memoInFlight
+  _inflight.set(key, p)
+  return p
+}
+
+/** Un partido COMPLETO (con planillas/eventos/multimedia) por id, vía
+ * /api/partido/{id}. La ficha de partido lo usa para NO bajar toda la base. */
+export async function getPartido(id: number): Promise<Partido | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/partido/${id}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return res.json()
+    return null
+  } catch {
+    return null
+  }
 }
 
 // Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
@@ -58,16 +79,17 @@ const EMPTY_API_DATA: ApiData = {
   arbitros: [], config: {},
 }
 
-async function _fetchApiData(): Promise<ApiData> {
+async function _fetchApiData(light: boolean): Promise<ApiData> {
   // Caché de 1 minuto (ISR): guarda el JSON y lo sirve al instante; pasados 60s
   // lo vuelve a pedir fresco. Un dato nuevo cargado en el admin tarda hasta 1 min
   // en verse. Para volver a "siempre fresco": cache:'no-store'.
   // Con reintentos: el API a veces tira 500 transitorios, y un fallo durante
   // el build de Vercel tumbaría el deploy entero.
+  const url = `${BASE_URL}/api/db${light ? '?light=1' : ''}`
   let lastError: unknown
   for (let intento = 1; intento <= 3; intento++) {
     try {
-      const res = await fetch(`${BASE_URL}/api/db`, {
+      const res = await fetch(url, {
         next: { revalidate: 60 },
         // Tope de 15s por intento: si el API se cuelga, cortamos y reintentamos
         // en vez de dejar colgado el build/request.
