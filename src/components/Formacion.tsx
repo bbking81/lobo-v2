@@ -88,21 +88,24 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
 
   const goalW = goles > 1 ? 22 : 14    // se ensancha para alojar el número de goles
 
-  // nombre con recuadro (píldora) abajo
+  // nombre con recuadro (píldora) abajo · se RESERVA espacio en los extremos para los íconos (que no tapen el texto)
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
-  const pillW = Math.max(40, label.length * 6 + 12)
-
-  // Marcadores SOBRE la píldora del nombre, en sus extremos (estilo Flashscore):
-  // IZQUIERDA (extremo izq) = cambio + gol; DERECHA (extremo der) = tarjetas.
+  const textW = label.length * 6
+  const leftW = (salio ? 14 : 0) + (goles ? goalW : 0) + (salio && goles ? 2 : 0)
+  const rightW = (amarillas ? 7 : 0) + (rojas ? 7 : 0) + (amarillas && rojas ? 2 : 0)
+  const Lpad = leftW ? leftW + 5 : 9   // padding izq de la píldora (aloja cambio/gol)
+  const Rpad = rightW ? rightW + 6 : 9 // padding der de la píldora (aloja tarjetas)
+  const pillW = Math.max(40, textW + Lpad + Rpad)
   const pillL = x - pillW / 2, pillR = x + pillW / 2
-  const mY = y + R + 2                  // top de los badges (14 de alto) montados sobre la píldora
-  const lAnchor = pillL + 9             // borde derecho del badge más interno (sobre el extremo izq)
-  const subBx = lAnchor - 14            // x del cambio (si hay)
-  const goalBx = (salio ? subBx - 2 : lAnchor) - goalW   // x del gol (a la izq del cambio si hay ambos)
-  const rAnchor = pillR - 9             // borde izq de la 1ª tarjeta (sobre el extremo der)
-  const card1L = rAnchor
-  const card2L = rAnchor + 9
-  const cardY = y + R + 4
+  const textCX = x + (Lpad - Rpad) / 2 // texto centrado en el espacio libre entre los pads
+
+  // Marcadores SOBRE los extremos de la píldora (estilo Flashscore), centrados en su alto:
+  const mY = y + R + 4.5                // top de los badges (14 de alto)
+  const cardY = y + R + 6.5             // top de las tarjetas (10 de alto)
+  const subBx = pillL + Lpad - 2 - 14   // cambio (extremo izq, el más interno)
+  const goalBx = (salio ? subBx - 2 : pillL + Lpad - 2) - goalW
+  const card1L = pillR - Rpad + 2       // 1ª tarjeta (extremo der)
+  const card2L = card1L + 9
 
   const content = (
     <>
@@ -129,8 +132,8 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
       <title>{`${num ? num + ' ' : ''}${jugador.jugador ?? ''}`}</title>
 
       {/* nombre con RECUADRO (píldora) abajo · número gris + apellido negro · subraya azul en hover */}
-      <rect x={x - pillW / 2} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-      <text x={x} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
+      <rect x={pillL} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+      <text x={textCX} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
         {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
         <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
       </text>
