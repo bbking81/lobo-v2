@@ -199,10 +199,11 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
     </>
   )
 
+  const cls = `jnode${isTrunc ? ' jtrunc' : ''}`
   return jugador.jugador_id ? (
-    <a className="jnode" href={`/jugador/${jugador.jugador_id}`}>{content}</a>
+    <a className={cls} href={`/jugador/${jugador.jugador_id}`}>{content}</a>
   ) : (
-    <g className="jnode">{content}</g>
+    <g className={cls}>{content}</g>
   )
 }
 
@@ -262,9 +263,9 @@ export default function Formacion({
               a.jnode { cursor: pointer; }
               a.jnode text.jname { transition: fill .12s; }
               a.jnode:hover text.jname { fill: #007ad6; text-decoration: underline; }
-              .jnode .jp-full { display: none; }
-              .jnode:hover .jp-full { display: block; }
-              .jnode:hover .jp-short { display: none; }
+              .jp-full { display: none; }
+              .jtrunc:hover .jp-full { display: block; }
+              .jtrunc:hover .jp-short { display: none; }
             `}</style>
           </defs>
           <rect width={W} height={H} fill="#f7f7f7" rx={10} />
