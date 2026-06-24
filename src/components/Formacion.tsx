@@ -104,7 +104,6 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
           <circle cx={x} cy={y} r={R} fill="#e9eef3" />
           <image href={foto} x={x - R} y={y - R} width={R * 2} height={R * 2}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
-          <circle cx={x} cy={y} r={R} fill="none" stroke="#fff" strokeWidth={1.5} />
         </>
       ) : (
         <>
@@ -115,7 +114,6 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
             <circle cx={x} cy={y - 4} r={9} fill="#9aa7b6" />
             <ellipse cx={x} cy={y + 20} rx={15} ry={13} fill="#9aa7b6" />
           </g>
-          <circle cx={x} cy={y} r={R} fill="none" stroke="#fff" strokeWidth={1.5} />
         </>
       )}
 
