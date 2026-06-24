@@ -86,9 +86,10 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
 
   const goles = jugador.goles ?? 0
-  const salio = Boolean(jugador.titular && jugador.minS) // titular que fue reemplazado
   const amarillas = jugador.amarillas ?? 0
   const rojas = jugador.rojas ?? 0
+  // titular reemplazado: tiene minuto de salida PERO no por expulsión (un expulsado no se sustituye)
+  const salio = Boolean(jugador.titular && jugador.minS && !rojas)
 
   const goalW = goles > 1 ? 22 : 14    // se ensancha para alojar el número de goles
 
