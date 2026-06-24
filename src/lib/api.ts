@@ -16,8 +16,15 @@ const MEMO_TTL_MS = 60_000
 const _memo = new Map<string, { data: ApiData; at: number }>()
 const _inflight = new Map<string, Promise<ApiData>>()
 
+// FASE 4 (flip): el default es AHORA `light`. Tras mover todas las agregaciones
+// que leían planillas al backend (rankings, plantel de torneo, buscador,
+// search-index) y las fichas a endpoints dedicados (getPartido/getJugadorPartidos/
+// getJugadorRivalPartidos), NINGUNA página necesita los campos pesados del bulk.
+// El bulk /api/db baja de ~1,5 MB a ~850 KB y DEJA DE CRECER con las planillas.
+// Para pedir la variante completa (hoy nadie la usa) hay que pasar { light: false }.
 export async function getApiData(opts?: { light?: boolean }): Promise<ApiData> {
-  const key = opts?.light ? 'light' : 'full'
+  const light = opts?.light !== false
+  const key = light ? 'light' : 'full'
   const ahora = Date.now()
   // Dato fresco en memoria: lo devolvemos al instante (sin fetch ni parseo).
   const hit = _memo.get(key)
@@ -29,7 +36,7 @@ export async function getApiData(opts?: { light?: boolean }): Promise<ApiData> {
 
   const p = (async () => {
     try {
-      const data = await _fetchApiData(!!opts?.light)
+      const data = await _fetchApiData(light)
       _memo.set(key, { data, at: Date.now() })
       return data
     } catch (e) {
