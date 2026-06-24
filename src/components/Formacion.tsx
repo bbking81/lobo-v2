@@ -84,8 +84,23 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(42, label.length * 6 + 14)
 
-  return (
-    <g>
+  const goles = jugador.goles ?? 0
+  const salio = Boolean(jugador.titular && jugador.minS) // titular que fue reemplazado
+  const amarillas = jugador.amarillas ?? 0
+  const rojas = jugador.rojas ?? 0
+
+  // Columna IZQUIERDA (con aire respecto a la cara): gol arriba, cambio abajo
+  const REdge = x - hw - 5            // borde derecho de la columna izquierda
+  const goalW = goles > 1 ? 27 : 16   // se ensancha para alojar el número de goles
+  const golY = y - hh - 1
+  const subY = goles > 0 ? golY + 18 : y - hh - 1
+
+  // Columna DERECHA (con aire): tarjetas. Si hay amarilla y roja, amarilla arriba.
+  const LEdge = x + hw + 5
+  const cardY = y - hh - 1
+
+  const content = (
+    <>
       {foto ? (
         <>
           <clipPath id={cid}><rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} /></clipPath>
@@ -108,13 +123,22 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
       {/* tooltip nombre completo al pasar el mouse */}
       <title>{`${num ? num + ' ' : ''}${jugador.jugador ?? ''}`}</title>
 
-      {/* pill nombre con sombra */}
+      {/* pill nombre con sombra (se subraya en hover si es clickeable) */}
       <rect x={x - pillW / 2} y={y + hh + 4} width={pillW} height={18} rx={9} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-      <text x={x} y={y + hh + 16.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
+      <text className="jname" x={x} y={y + hh + 16.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
 
-      {/* ícono de cambio (salió) abajo-izquierda */}
-      {jugador.titular && jugador.minS ? (() => {
-        const bx = x - hw - 4, by = y + hh - 14
+      {/* IZQUIERDA · GOL (arriba). Con número si convirtió 2+ */}
+      {goles > 0 ? (
+        <g>
+          <rect x={REdge - goalW} y={golY} width={goalW} height={16} rx={4} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+          <text x={REdge - goalW + 8} y={golY + 12} textAnchor="middle" fontSize={10}>⚽</text>
+          {goles > 1 ? <text x={REdge - 7} y={golY + 12} textAnchor="middle" fontSize={9.5} fontWeight="700" fill="#0f172a">{goles}</text> : null}
+        </g>
+      ) : null}
+
+      {/* IZQUIERDA · CAMBIO (abajo) */}
+      {salio ? (() => {
+        const bx = REdge - 16, by = subY
         return (
           <g>
             <rect x={bx} y={by} width={16} height={16} rx={4} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
@@ -128,11 +152,16 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         )
       })() : null}
 
-      {/* eventos */}
-      {jugador.goles ? <text x={x - hw - 3} y={y - hh + 9} fontSize={12}>⚽</text> : null}
-      {jugador.rojas ? <rect x={x + hw - 5} y={y - hh - 2} width={8} height={11} rx={1.5} fill="#dc2626" />
-        : jugador.amarillas ? <rect x={x + hw - 5} y={y - hh - 2} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
-    </g>
+      {/* DERECHA · TARJETAS (amarilla arriba, roja debajo si hay ambas) */}
+      {amarillas ? <rect x={LEdge} y={cardY} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
+      {rojas ? <rect x={LEdge} y={amarillas ? cardY + 13 : cardY} width={8} height={11} rx={1.5} fill="#dc2626" /> : null}
+    </>
+  )
+
+  return jugador.jugador_id ? (
+    <a className="jnode" href={`/jugador/${jugador.jugador_id}`}>{content}</a>
+  ) : (
+    <g>{content}</g>
   )
 }
 
@@ -188,6 +217,11 @@ export default function Formacion({
             <filter id="pillSh" x="-20%" y="-30%" width="140%" height="180%">
               <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#0f172a" floodOpacity="0.18" />
             </filter>
+            <style>{`
+              a.jnode { cursor: pointer; }
+              a.jnode text.jname { transition: fill .12s; }
+              a.jnode:hover text.jname { fill: #007ad6; text-decoration: underline; }
+            `}</style>
           </defs>
           <rect width={W} height={H} fill="#f7f7f7" rx={10} />
           <rect x={16} y={16} width={W - 32} height={H - 32} fill={FIELD} rx={6} stroke={LINE} strokeWidth={LW} />
