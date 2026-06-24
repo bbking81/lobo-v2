@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getApiData, slugToTorneo, fotoUrl } from '@/lib/api'
+import { getApiData, getPlantelTorneo, slugToTorneo, fotoUrl } from '@/lib/api'
 import Link from 'next/link'
 import { DarkStatGrid, FichaPartidoLista, PartidosTitle } from '@/components/ficha'
 import type { Metadata } from 'next'
@@ -18,7 +18,7 @@ interface PlantelRow { id?: number; nombre: string; foto: string | null; pj: num
 export default async function CompetenciaDetallePage({ params }: Props) {
   const { slug } = await params
   const torneo = slugToTorneo(slug)
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
 
   const partidos = data.partidos
     .filter(p => p.publicado && p.torneo?.trim() === torneo)
@@ -37,31 +37,17 @@ export default async function CompetenciaDetallePage({ params }: Props) {
   const pj = partidos.length
   const pts = pg * 3 + pe
 
-  // Plantel del Torneo (jugadores que efectivamente jugaron)
+  // Plantel del Torneo (jugadores que efectivamente jugaron): ya agregado por el
+  // backend (/api/plantel-torneo). Antes se recorrían las planillaGec del bulk
+  // acá. La ficha solo resuelve foto/id contra la lista de jugadores (light).
   const jugById = new Map(data.jugadores.map(j => [j.id, j]))
   const jugByNombre = new Map(data.jugadores.map(j => [j.nombre, j]))
-  const plantelMap = new Map<string, PlantelRow>()
-  for (const p of partidos) {
-    for (const row of p.planillaGec ?? []) {
-      if (!row.jugador) continue
-      const jugo = row.titular === true || (row.titular === false && !!row.minE)
-      if (!jugo) continue
-      let ps = plantelMap.get(row.jugador)
-      if (!ps) {
-        const j = (row.jugador_id ? jugById.get(row.jugador_id) : undefined) ?? jugByNombre.get(row.jugador)
-        ps = { id: j?.id ?? row.jugador_id, nombre: row.jugador, foto: fotoUrl(j?.foto), pj: 0, goles: 0, ta: 0, tr: 0 }
-        plantelMap.set(row.jugador, ps)
-      }
-      ps.pj++
-      let g = 0
-      if (row.goles !== undefined && row.goles !== null) g = row.goles
-      else if (row.minGoles) g = String(row.minGoles).trim().split(/\s+/).filter(Boolean).length
-      ps.goles += g
-      ps.ta += row.amarillas ?? 0
-      ps.tr += row.rojas ?? 0
-    }
-  }
-  const plantel = Array.from(plantelMap.values()).sort((a, b) => b.pj - a.pj || b.goles - a.goles)
+  const plantel: PlantelRow[] = (await getPlantelTorneo(torneo))
+    .map(row => {
+      const j = (row.jugador_id ? jugById.get(row.jugador_id) : undefined) ?? jugByNombre.get(row.nombre)
+      return { id: j?.id ?? row.jugador_id, nombre: row.nombre, foto: fotoUrl(j?.foto), pj: row.pj, goles: row.goles, ta: row.ta, tr: row.tr }
+    })
+    .sort((a, b) => b.pj - a.pj || b.goles - a.goles)
 
   // Tabla de posiciones (desde competencias estructuradas)
   const competencia = data.competencias?.find(c =>

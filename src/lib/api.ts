@@ -127,6 +127,27 @@ export async function getRankingJugadores(f: { temporada?: string; torneo?: stri
   }
 }
 
+export interface PlantelTorneoRow {
+  nombre: string; jugador_id?: number; pj: number; goles: number; ta: number; tr: number
+}
+
+/** Jugadores que jugaron en un torneo, ya agregados por el backend
+ * (/api/plantel-torneo). Reemplaza el recorrido de planillas de competencias/[slug];
+ * la ficha resuelve foto/id contra la lista de jugadores (que viene en light). */
+export async function getPlantelTorneo(torneo: string): Promise<PlantelTorneoRow[]> {
+  const qs = new URLSearchParams({ torneo }).toString()
+  try {
+    const res = await fetch(`${BASE_URL}/api/plantel-torneo?${qs}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return (await res.json()).plantel ?? []
+    return []
+  } catch {
+    return []
+  }
+}
+
 // Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
 // durante el prerender (ver arriba). Nunca se cachea en el memo.
 const EMPTY_API_DATA: ApiData = {
