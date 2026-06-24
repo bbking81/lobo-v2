@@ -78,83 +78,85 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   const num = jugador.camiseta
-  const AW = 42, AH = 48, RX = 6
-  const hw = AW / 2, hh = AH / 2
+  const R = 22                          // radio de la foto circular
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
-  const label = `${num ? `${num} ` : ''}${apellidoCorto}`
-  const pillW = Math.max(42, label.length * 6 + 14)
 
   const goles = jugador.goles ?? 0
   const salio = Boolean(jugador.titular && jugador.minS) // titular que fue reemplazado
   const amarillas = jugador.amarillas ?? 0
   const rojas = jugador.rojas ?? 0
 
-  // Columna IZQUIERDA (con aire respecto a la cara): gol arriba, cambio abajo
-  const REdge = x - hw - 5            // borde derecho de la columna izquierda
-  const goalW = goles > 1 ? 27 : 16   // se ensancha para alojar el número de goles
-  const golY = y - hh - 1
-  const subY = goles > 0 ? golY + 18 : y - hh - 1
+  // Columna IZQUIERDA · gol arriba, cambio abajo · íconos MONTADOS sobre el borde sup-izq del círculo (estilo Flashscore)
+  const REdge = x - 6                  // borde derecho de la columna izquierda
+  const goalW = goles > 1 ? 22 : 14    // se ensancha para alojar el número de goles
+  const golY = y - 22
+  const subY = goles > 0 ? golY + 16 : y - 22
 
-  // Columna DERECHA (con aire): tarjetas. Si hay amarilla y roja, amarilla arriba.
-  const LEdge = x + hw + 5
-  const cardY = y - hh - 1
+  // Columna DERECHA · tarjetas montadas sobre el borde sup-der. Amarilla arriba si hay ambas.
+  const LEdge = x + 8
+  const cardY = y - 21
 
   const content = (
     <>
       {foto ? (
         <>
-          <clipPath id={cid}><rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} /></clipPath>
-          <rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} fill="#e9eef3" />
-          <image href={foto} x={x - hw} y={y - hh} width={AW} height={AH}
+          <clipPath id={cid}><circle cx={x} cy={y} r={R} /></clipPath>
+          <circle cx={x} cy={y} r={R} fill="#e9eef3" />
+          <image href={foto} x={x - R} y={y - R} width={R * 2} height={R * 2}
             clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
+          <circle cx={x} cy={y} r={R} fill="none" stroke="#fff" strokeWidth={1.5} />
         </>
       ) : (
         <>
           {/* avatar silueta genérico (sin foto) */}
-          <clipPath id={cid}><rect x={x - hw} y={y - hh} width={AW} height={AH} rx={RX} /></clipPath>
+          <clipPath id={cid}><circle cx={x} cy={y} r={R} /></clipPath>
           <g clipPath={`url(#${cid})`}>
-            <rect x={x - hw} y={y - hh} width={AW} height={AH} fill="#e6ebf1" />
-            <circle cx={x} cy={y - 5} r={9} fill="#9aa7b6" />
-            <ellipse cx={x} cy={y + 22} rx={16} ry={14} fill="#9aa7b6" />
+            <circle cx={x} cy={y} r={R} fill="#e6ebf1" />
+            <circle cx={x} cy={y - 4} r={9} fill="#9aa7b6" />
+            <ellipse cx={x} cy={y + 20} rx={15} ry={13} fill="#9aa7b6" />
           </g>
+          <circle cx={x} cy={y} r={R} fill="none" stroke="#fff" strokeWidth={1.5} />
         </>
       )}
 
       {/* tooltip nombre completo al pasar el mouse */}
       <title>{`${num ? num + ' ' : ''}${jugador.jugador ?? ''}`}</title>
 
-      {/* pill nombre con sombra (se subraya en hover si es clickeable) */}
-      <rect x={x - pillW / 2} y={y + hh + 4} width={pillW} height={18} rx={9} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-      <text className="jname" x={x} y={y + hh + 16.5} textAnchor="middle" fill="#0f172a" fontSize={11} fontWeight="600">{label}</text>
+      {/* nombre: número gris + apellido negro, SIN píldora (estilo Flashscore). Halo claro para legibilidad sobre la cancha */}
+      <text x={x} y={y + R + 13} textAnchor="middle" fontSize={11}
+        style={{ paintOrder: 'stroke', stroke: '#eeeeee', strokeWidth: 2.6, strokeLinejoin: 'round' }}>
+        {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
+        <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
+      </text>
 
       {/* IZQUIERDA · GOL (arriba). Con número si convirtió 2+ */}
       {goles > 0 ? (
         <g>
-          <rect x={REdge - goalW} y={golY} width={goalW} height={16} rx={4} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-          <text x={REdge - goalW + 8} y={golY + 12} textAnchor="middle" fontSize={10}>⚽</text>
-          {goles > 1 ? <text x={REdge - 7} y={golY + 12} textAnchor="middle" fontSize={9.5} fontWeight="700" fill="#0f172a">{goles}</text> : null}
+          <rect x={REdge - goalW} y={golY} width={goalW} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+          <text x={REdge - goalW + 7} y={golY + 11} textAnchor="middle" fontSize={9}>⚽</text>
+          {goles > 1 ? <text x={REdge - 6} y={golY + 11} textAnchor="middle" fontSize={9} fontWeight="700" fill="#0f172a">{goles}</text> : null}
         </g>
       ) : null}
 
-      {/* IZQUIERDA · CAMBIO (abajo) */}
+      {/* IZQUIERDA · CAMBIO (abajo) · swap rojo (salió ←) + verde (entró →) estilo Flashscore */}
       {salio ? (() => {
-        const bx = REdge - 16, by = subY
+        const bx = REdge - 14, by = subY
         return (
           <g>
-            <rect x={bx} y={by} width={16} height={16} rx={4} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-            <g stroke="#16a34a" strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <path d={`M ${bx + 4} ${by + 6} h7`} />
-              <path d={`M ${bx + 9} ${by + 4} l2 2 l-2 2`} />
-              <path d={`M ${bx + 12} ${by + 10} h-7`} />
-              <path d={`M ${bx + 7} ${by + 8} l-2 2 l2 2`} />
+            <rect x={bx} y={by} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+            <g strokeWidth={1.25} fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path d={`M ${bx + 10} ${by + 5} h-6`} stroke="#dc2626" />
+              <path d={`M ${bx + 6} ${by + 3} l-2 2 l2 2`} stroke="#dc2626" />
+              <path d={`M ${bx + 4} ${by + 9} h6`} stroke="#16a34a" />
+              <path d={`M ${bx + 8} ${by + 7} l2 2 l-2 2`} stroke="#16a34a" />
             </g>
           </g>
         )
       })() : null}
 
       {/* DERECHA · TARJETAS (amarilla arriba, roja debajo si hay ambas) */}
-      {amarillas ? <rect x={LEdge} y={cardY} width={8} height={11} rx={1.5} fill="#eab308" /> : null}
-      {rojas ? <rect x={LEdge} y={amarillas ? cardY + 13 : cardY} width={8} height={11} rx={1.5} fill="#dc2626" /> : null}
+      {amarillas ? <rect x={LEdge} y={cardY} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
+      {rojas ? <rect x={LEdge} y={amarillas ? cardY + 12 : cardY} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
     </>
   )
 
