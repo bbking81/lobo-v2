@@ -75,7 +75,8 @@ function calcularPosiciones(
 
 function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y: number }) {
   const apellido = jugador.jugador?.split(',')[0]?.trim() ?? '?'
-  const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
+  const isTrunc = apellido.length > 11
+  const apellidoCorto = isTrunc ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
   // Las fotos "_nobg"/.png son recortes con fondo TRANSPARENTE (como Flashscore) → se muestran SIN círculo.
   // Las .jpg viejas tienen fondo → se muestran enmascaradas en círculo para que queden prolijas.
@@ -91,9 +92,10 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
 
   const goalW = goles > 1 ? 22 : 14    // se ensancha para alojar el número de goles
 
-  // nombre con recuadro (píldora) abajo, limpio (sin íconos adentro)
-  const label = `${num ? `${num} ` : ''}${apellidoCorto}`
-  const pillW = Math.max(40, label.length * 6 + 12)
+  // nombre con recuadro (píldora) abajo · si el apellido no entra, al hover se extiende y muestra el completo
+  const numPref = num ? `${num} ` : ''
+  const pillW = Math.max(40, (numPref + apellidoCorto).length * 6 + 12)
+  const pillWFull = Math.max(40, (numPref + apellido).length * 6 + 12)
 
   // Marcadores al COSTADO de la foto, APENAS POR FUERA del borde del círculo (no tocan la cara) — proporción medida del Flashscore real.
   // FS: foto Ø36, ícono 15, centro del ícono ~2px fuera del borde, a altura baja-media. Con R=22 → ~x±25, y+14.
@@ -132,11 +134,23 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
       <title>{`${num ? num + ' ' : ''}${jugador.jugador ?? ''}`}</title>
 
       {/* nombre con RECUADRO (píldora) abajo · número gris + apellido negro · subraya azul en hover */}
-      <rect x={x - pillW / 2} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-      <text x={x} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
-        {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
-        <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
-      </text>
+      <g className="jp-short">
+        <rect x={x - pillW / 2} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+        <text x={x} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
+          {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
+          <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
+        </text>
+      </g>
+      {/* píldora extendida con el apellido COMPLETO, sólo visible al hover (estilo Flashscore) */}
+      {isTrunc ? (
+        <g className="jp-full">
+          <rect x={x - pillWFull / 2} y={y + R + 3} width={pillWFull} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+          <text x={x} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
+            {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
+            <tspan className="jname" fill="#0f172a" fontWeight="700">{apellido}</tspan>
+          </text>
+        </g>
+      ) : null}
 
       {/* COSTADO INF-IZQ de la foto · GOL (arriba si también salió; con número si convirtió 2+) */}
       {goles > 0 ? (() => {
@@ -166,16 +180,29 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         )
       })() : null}
 
-      {/* COSTADO INF-DER de la foto · TARJETAS (amarilla abajo, roja arriba si hay ambas) */}
-      {amarillas ? <rect x={rcx - 3.5} y={botY - 5} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
-      {rojas ? <rect x={rcx - 3.5} y={(amarillas ? upY : botY) - 5} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
+      {/* COSTADO INF-DER de la foto · TARJETAS en recuadrito blanco (amarilla abajo, roja arriba si hay ambas) */}
+      {amarillas ? (
+        <g>
+          <rect x={rcx - 7} y={botY - 7} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+          <rect x={rcx - 3} y={botY - 4.5} width={6} height={9} rx={1.2} fill="#eab308" />
+        </g>
+      ) : null}
+      {rojas ? (() => {
+        const cy = amarillas ? upY : botY
+        return (
+          <g>
+            <rect x={rcx - 7} y={cy - 7} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+            <rect x={rcx - 3} y={cy - 4.5} width={6} height={9} rx={1.2} fill="#dc2626" />
+          </g>
+        )
+      })() : null}
     </>
   )
 
   return jugador.jugador_id ? (
     <a className="jnode" href={`/jugador/${jugador.jugador_id}`}>{content}</a>
   ) : (
-    <g>{content}</g>
+    <g className="jnode">{content}</g>
   )
 }
 
@@ -235,6 +262,9 @@ export default function Formacion({
               a.jnode { cursor: pointer; }
               a.jnode text.jname { transition: fill .12s; }
               a.jnode:hover text.jname { fill: #007ad6; text-decoration: underline; }
+              .jnode .jp-full { display: none; }
+              .jnode:hover .jp-full { display: block; }
+              .jnode:hover .jp-short { display: none; }
             `}</style>
           </defs>
           <rect width={W} height={H} fill="#f7f7f7" rx={10} />
