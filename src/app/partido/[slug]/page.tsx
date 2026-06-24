@@ -5,6 +5,7 @@ import Timeline from '@/components/Timeline'
 import Formacion from '@/components/Formacion'
 import PlanillaPartido from '@/components/PlanillaPartido'
 import MediaPartido from '@/components/MediaPartido'
+import StickyMarcador from '@/components/StickyMarcador'
 import type { Metadata } from 'next'
 import { pageMeta, SITE_URL } from '@/lib/seo'
 import type { JugadorPlanilla, Partido, Evento } from '@/types'
@@ -127,6 +128,19 @@ export default async function PartidoPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventoJsonLd) }} />
+
+      {/* Mini-marcador sticky (aparece al scrollear, estilo Flashscore) */}
+      <StickyMarcador
+        local={p.local}
+        visitante={p.visitante}
+        escudoLocal={escudoDe(p.local, gecLocal)}
+        escudoVisit={escudoDe(p.visitante, !gecLocal)}
+        gl={p.gl}
+        gv={p.gv}
+        resLabel={resLabel}
+        resBg={resBg}
+      />
+
       <div className="max-w-5xl mx-auto px-4 py-5 flex flex-col gap-5">
 
         {/* ── CABEZAL ── */}
@@ -157,6 +171,10 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Sentinel para el mini-marcador sticky: cuando este punto pasa el
+            tope, el cabezal ya se fue y aparece la barra (estilo Flashscore). */}
+        <div id="ficha-sentinel" aria-hidden style={{ height: 0 }} />
 
         {/* ── PLANILLAS ── */}
         {(planillaGec.length > 0 || planillaRival.length > 0) && (
