@@ -88,24 +88,15 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
 
   const goalW = goles > 1 ? 22 : 14    // se ensancha para alojar el número de goles
 
-  // nombre con recuadro (píldora) abajo · se RESERVA espacio en los extremos para los íconos (que no tapen el texto)
+  // nombre con recuadro (píldora) abajo, limpio (sin íconos adentro)
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
-  const textW = label.length * 6
-  const leftW = (salio ? 14 : 0) + (goles ? goalW : 0) + (salio && goles ? 2 : 0)
-  const rightW = (amarillas ? 7 : 0) + (rojas ? 7 : 0) + (amarillas && rojas ? 2 : 0)
-  const Lpad = leftW ? leftW + 5 : 9   // padding izq de la píldora (aloja cambio/gol)
-  const Rpad = rightW ? rightW + 6 : 9 // padding der de la píldora (aloja tarjetas)
-  const pillW = Math.max(40, textW + Lpad + Rpad)
-  const pillL = x - pillW / 2, pillR = x + pillW / 2
-  const textCX = x + (Lpad - Rpad) / 2 // texto centrado en el espacio libre entre los pads
+  const pillW = Math.max(40, label.length * 6 + 12)
 
-  // Marcadores SOBRE los extremos de la píldora (estilo Flashscore), centrados en su alto:
-  const mY = y + R + 4.5                // top de los badges (14 de alto)
-  const cardY = y + R + 6.5             // top de las tarjetas (10 de alto)
-  const subBx = pillL + Lpad - 2 - 14   // cambio (extremo izq, el más interno)
-  const goalBx = (salio ? subBx - 2 : pillL + Lpad - 2) - goalW
-  const card1L = pillR - Rpad + 2       // 1ª tarjeta (extremo der)
-  const card2L = card1L + 9
+  // Marcadores al COSTADO de la foto, sobre el borde INFERIOR del círculo y ARRIBA de la píldora (estilo Flashscore):
+  // costado izq = cambio (abajo) + gol (arriba); costado der = tarjetas.
+  const lcx = x - 16, rcx = x + 16     // centros de columna sobre el borde inf-izq / inf-der
+  const botY = y + 15                  // slot inferior (sobre el borde de abajo de la foto)
+  const upY = y                        // slot superior (apilando hacia arriba)
 
   const content = (
     <>
@@ -132,24 +123,27 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
       <title>{`${num ? num + ' ' : ''}${jugador.jugador ?? ''}`}</title>
 
       {/* nombre con RECUADRO (píldora) abajo · número gris + apellido negro · subraya azul en hover */}
-      <rect x={pillL} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-      <text x={textCX} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
+      <rect x={x - pillW / 2} y={y + R + 3} width={pillW} height={17} rx={8.5} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+      <text x={x} y={y + R + 14.5} textAnchor="middle" fontSize={11}>
         {num ? <tspan fill="#64748b" fontWeight="600">{num} </tspan> : null}
         <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
       </text>
 
-      {/* SOBRE el extremo IZQ de la píldora · GOL (con número si convirtió 2+) */}
-      {goles > 0 ? (
-        <g>
-          <rect x={goalBx} y={mY} width={goalW} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-          <text x={goles > 1 ? goalBx + 7 : goalBx + goalW / 2} y={mY + 11} textAnchor="middle" fontSize={9}>⚽</text>
-          {goles > 1 ? <text x={goalBx + goalW - 6} y={mY + 11} textAnchor="middle" fontSize={9} fontWeight="700" fill="#0f172a">{goles}</text> : null}
-        </g>
-      ) : null}
+      {/* COSTADO INF-IZQ de la foto · GOL (arriba si también salió; con número si convirtió 2+) */}
+      {goles > 0 ? (() => {
+        const cy = salio ? upY : botY
+        return (
+          <g>
+            <rect x={lcx - goalW / 2} y={cy - 7} width={goalW} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+            <text x={goles > 1 ? lcx - 4 : lcx} y={cy + 4} textAnchor="middle" fontSize={9}>⚽</text>
+            {goles > 1 ? <text x={lcx + 6} y={cy + 4} textAnchor="middle" fontSize={9} fontWeight="700" fill="#0f172a">{goles}</text> : null}
+          </g>
+        )
+      })() : null}
 
-      {/* SOBRE el extremo IZQ de la píldora · CAMBIO · swap rojo (salió ←) + verde (entró →) */}
+      {/* COSTADO INF-IZQ de la foto (abajo) · CAMBIO · swap rojo (salió ←) + verde (entró →) */}
       {salio ? (() => {
-        const bx = subBx, by = mY
+        const bx = lcx - 7, by = botY - 7
         return (
           <g>
             <rect x={bx} y={by} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
@@ -163,9 +157,9 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         )
       })() : null}
 
-      {/* SOBRE el extremo DER de la píldora · TARJETAS (amarilla primero, roja al lado si hay ambas) */}
-      {amarillas ? <rect x={card1L} y={cardY} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
-      {rojas ? <rect x={amarillas ? card2L : card1L} y={cardY} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
+      {/* COSTADO INF-DER de la foto · TARJETAS (amarilla abajo, roja arriba si hay ambas) */}
+      {amarillas ? <rect x={rcx - 3.5} y={botY - 5} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
+      {rojas ? <rect x={rcx - 3.5} y={(amarillas ? upY : botY) - 5} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
     </>
   )
 
