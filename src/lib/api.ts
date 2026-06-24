@@ -102,6 +102,31 @@ export async function getJugadorRivalPartidos(id: number): Promise<Partido[]> {
   }
 }
 
+export interface RankingJugAcc {
+  id?: number; nombre: string; goles: number; pj: number
+  dobletes: number; tripletes: number; pokers: number; cincoplus: number
+  rojas: number; amarillas: number; local: number; visitante: number
+}
+
+/** Ranking de jugadores GEC ya AGREGADO por el backend (/api/ranking-jugadores),
+ * respetando los filtros temporada/torneo/cond. Reemplaza el recorrido de TODAS
+ * las planillas que hacía rankings/page.tsx; el cliente recibe solo los agregados. */
+export async function getRankingJugadores(f: { temporada?: string; torneo?: string; cond?: string }): Promise<RankingJugAcc[]> {
+  const qs = new URLSearchParams({
+    temporada: f.temporada ?? '', torneo: f.torneo ?? '', cond: f.cond ?? '',
+  }).toString()
+  try {
+    const res = await fetch(`${BASE_URL}/api/ranking-jugadores?${qs}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return (await res.json()).jugadores ?? []
+    return []
+  } catch {
+    return []
+  }
+}
+
 // Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
 // durante el prerender (ver arriba). Nunca se cachea en el memo.
 const EMPTY_API_DATA: ApiData = {

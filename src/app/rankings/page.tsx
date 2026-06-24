@@ -1,4 +1,4 @@
-import { getApiData, fotoUrl } from '@/lib/api'
+import { getApiData, getRankingJugadores, fotoUrl } from '@/lib/api'
 import { pageMeta } from '@/lib/seo'
 import Link from 'next/link'
 import SecBanner from '@/components/SecBanner'
@@ -173,7 +173,7 @@ export const metadata = pageMeta({
 
 export default async function RankingsPage({ searchParams }: Props) {
   const sp = await searchParams
-  const data = await getApiData()
+  const data = await getApiData({ light: true })
   const tab = sp.tab === 'dt' ? 'dt' : sp.tab === 'eq' ? 'eq' : 'jug'
   const metrica = sp.metrica ?? (tab === 'dt' ? 'pg' : tab === 'eq' ? 'eq_vic_torneo' : 'goles')
   const topN = parseInt(sp.topN ?? '20') || 20
@@ -198,20 +198,17 @@ export default async function RankingsPage({ searchParams }: Props) {
   })
 
   // ── Acumular ──
+  // Jugadores: ya agregados por el backend (/api/ranking-jugadores), respetando
+  // los filtros. Antes se recorrían TODAS las planillas del bulk acá. Solo se
+  // pide para la pestaña de jugadores. DTs/Equipos usan campos que vienen en light.
   const jugMap = new Map<string | number, JugAcc>()
+  if (tab === 'jug') {
+    const jugList = await getRankingJugadores({ temporada: fTemporada, torneo: fTorneo, cond: fCond })
+    for (const a of jugList) jugMap.set(a.id ?? a.nombre, a)
+  }
   const dtMap = new Map<string, DTAcc>()
   for (const p of partidos) {
     const gecLocal = esGecLocal(p)
-    for (const r of p.planillaGec ?? []) {
-      const key = r.jugador_id ?? r.jugador
-      if (key == null || key === '') continue
-      let a = jugMap.get(key)
-      if (!a) { a = { id: r.jugador_id, nombre: r.jugador, goles: 0, pj: 0, dobletes: 0, tripletes: 0, pokers: 0, cincoplus: 0, rojas: 0, amarillas: 0, local: 0, visitante: 0 }; jugMap.set(key, a) }
-      const g = r.goles ?? 0
-      a.pj++; a.goles += g; a.amarillas += r.amarillas ?? 0; a.rojas += r.rojas ?? 0
-      if (g === 2) a.dobletes++; else if (g === 3) a.tripletes++; else if (g === 4) a.pokers++; else if (g >= 5) a.cincoplus++
-      if (gecLocal) a.local++; else a.visitante++
-    }
     const dtsList = (p.dtsGimnasia && p.dtsGimnasia.length)
       ? p.dtsGimnasia
       : (p.dtGimnasia?.trim() ? [{ id: 0, nombre: p.dtGimnasia.trim() }] : [])
