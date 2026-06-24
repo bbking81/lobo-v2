@@ -77,8 +77,11 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const apellido = jugador.jugador?.split(',')[0]?.trim() ?? '?'
   const apellidoCorto = apellido.length > 11 ? apellido.slice(0, 10) + '…' : apellido
   const foto = (jugador as { foto?: string | null }).foto ?? null
+  // Las fotos "_nobg"/.png son recortes con fondo TRANSPARENTE (como Flashscore) → se muestran SIN círculo.
+  // Las .jpg viejas tienen fondo → se muestran enmascaradas en círculo para que queden prolijas.
+  const esCutout = !!foto && /(_nobg|\.png)(\?|$)/i.test(foto)
   const num = jugador.camiseta
-  const R = 22                          // radio de la foto circular
+  const R = 22                          // radio de la foto (círculo para jpg / caja de referencia para cutout)
   const cid = `c-${jugador.jugador_id ?? `${Math.round(x)}-${Math.round(y)}`}`
 
   const goles = jugador.goles ?? 0
@@ -102,12 +105,17 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const content = (
     <>
       {foto ? (
-        <>
-          <clipPath id={cid}><circle cx={x} cy={y} r={R} /></clipPath>
-          <circle cx={x} cy={y} r={R} fill="#e9eef3" />
-          <image href={foto} x={x - R} y={y - R} width={R * 2} height={R * 2}
-            clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
-        </>
+        esCutout ? (
+          /* recorte transparente (estilo Flashscore): sin círculo, sin fondo, retrato encuadrado */
+          <image href={foto} x={x - 22} y={y - 26} width={44} height={50} preserveAspectRatio="xMidYMid meet" />
+        ) : (
+          <>
+            <clipPath id={cid}><circle cx={x} cy={y} r={R} /></clipPath>
+            <circle cx={x} cy={y} r={R} fill="#e9eef3" />
+            <image href={foto} x={x - R} y={y - R} width={R * 2} height={R * 2}
+              clipPath={`url(#${cid})`} preserveAspectRatio="xMidYMid slice" />
+          </>
+        )
       ) : (
         <>
           {/* avatar silueta genérico (sin foto) */}
