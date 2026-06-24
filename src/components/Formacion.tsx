@@ -92,11 +92,12 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(40, label.length * 6 + 12)
 
-  // Marcadores al COSTADO de la foto, sobre el borde INFERIOR del círculo y ARRIBA de la píldora (estilo Flashscore):
+  // Marcadores al COSTADO de la foto, APENAS POR FUERA del borde del círculo (no tocan la cara) — proporción medida del Flashscore real.
+  // FS: foto Ø36, ícono 15, centro del ícono ~2px fuera del borde, a altura baja-media. Con R=22 → ~x±25, y+14.
   // costado izq = cambio (abajo) + gol (arriba); costado der = tarjetas.
-  const lcx = x - 16, rcx = x + 16     // centros de columna sobre el borde inf-izq / inf-der
-  const botY = y + 15                  // slot inferior (sobre el borde de abajo de la foto)
-  const upY = y                        // slot superior (apilando hacia arriba)
+  const lcx = x - 25, rcx = x + 25     // centros de columna, justo afuera del borde izq/der
+  const botY = y + 14                  // slot inferior (altura baja-media)
+  const upY = y - 2                    // slot superior (apilando hacia arriba)
 
   const content = (
     <>
