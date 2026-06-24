@@ -92,15 +92,17 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   const label = `${num ? `${num} ` : ''}${apellidoCorto}`
   const pillW = Math.max(40, label.length * 6 + 12)
 
-  // Marcadores en la MISMA FILA del nombre (ABAJO), a los costados de la píldora (estilo Flashscore):
-  // IZQUIERDA = gol + cambio (hacia afuera), DERECHA = tarjetas.
-  const rowCY = y + R + 11.5            // centro vertical de la fila del nombre
+  // Marcadores SOBRE la píldora del nombre, en sus extremos (estilo Flashscore):
+  // IZQUIERDA (extremo izq) = cambio + gol; DERECHA (extremo der) = tarjetas.
   const pillL = x - pillW / 2, pillR = x + pillW / 2
-  const subBx = pillL - 3 - 14         // x del cambio (pegado al borde izq de la píldora)
-  const goalRight = salio ? subBx - 2 : pillL - 3   // borde derecho del gol
-  const goalBx = goalRight - goalW
-  const card1L = pillR + 3             // borde izq de la 1ª tarjeta (pegada a la der de la píldora)
-  const card2L = pillR + 3 + 9
+  const mY = y + R + 2                  // top de los badges (14 de alto) montados sobre la píldora
+  const lAnchor = pillL + 9             // borde derecho del badge más interno (sobre el extremo izq)
+  const subBx = lAnchor - 14            // x del cambio (si hay)
+  const goalBx = (salio ? subBx - 2 : lAnchor) - goalW   // x del gol (a la izq del cambio si hay ambos)
+  const rAnchor = pillR - 9             // borde izq de la 1ª tarjeta (sobre el extremo der)
+  const card1L = rAnchor
+  const card2L = rAnchor + 9
+  const cardY = y + R + 4
 
   const content = (
     <>
@@ -133,18 +135,18 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         <tspan className="jname" fill="#0f172a" fontWeight="700">{apellidoCorto}</tspan>
       </text>
 
-      {/* IZQUIERDA del nombre (abajo) · GOL (con número si convirtió 2+) */}
+      {/* SOBRE el extremo IZQ de la píldora · GOL (con número si convirtió 2+) */}
       {goles > 0 ? (
         <g>
-          <rect x={goalBx} y={rowCY - 7} width={goalW} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-          <text x={goles > 1 ? goalBx + 7 : goalBx + goalW / 2} y={rowCY + 4} textAnchor="middle" fontSize={9}>⚽</text>
-          {goles > 1 ? <text x={goalBx + goalW - 6} y={rowCY + 4} textAnchor="middle" fontSize={9} fontWeight="700" fill="#0f172a">{goles}</text> : null}
+          <rect x={goalBx} y={mY} width={goalW} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
+          <text x={goles > 1 ? goalBx + 7 : goalBx + goalW / 2} y={mY + 11} textAnchor="middle" fontSize={9}>⚽</text>
+          {goles > 1 ? <text x={goalBx + goalW - 6} y={mY + 11} textAnchor="middle" fontSize={9} fontWeight="700" fill="#0f172a">{goles}</text> : null}
         </g>
       ) : null}
 
-      {/* IZQUIERDA del nombre (abajo, pegado a la píldora) · CAMBIO · swap rojo (salió ←) + verde (entró →) */}
+      {/* SOBRE el extremo IZQ de la píldora · CAMBIO · swap rojo (salió ←) + verde (entró →) */}
       {salio ? (() => {
-        const bx = subBx, by = rowCY - 7
+        const bx = subBx, by = mY
         return (
           <g>
             <rect x={bx} y={by} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
@@ -158,9 +160,9 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         )
       })() : null}
 
-      {/* DERECHA del nombre (abajo) · TARJETAS (amarilla primero, roja al lado si hay ambas) */}
-      {amarillas ? <rect x={card1L} y={rowCY - 5} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
-      {rojas ? <rect x={amarillas ? card2L : card1L} y={rowCY - 5} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
+      {/* SOBRE el extremo DER de la píldora · TARJETAS (amarilla primero, roja al lado si hay ambas) */}
+      {amarillas ? <rect x={card1L} y={cardY} width={7} height={10} rx={1.5} fill="#eab308" stroke="#fff" strokeWidth={0.5} /> : null}
+      {rojas ? <rect x={amarillas ? card2L : card1L} y={cardY} width={7} height={10} rx={1.5} fill="#dc2626" stroke="#fff" strokeWidth={0.5} /> : null}
     </>
   )
 
