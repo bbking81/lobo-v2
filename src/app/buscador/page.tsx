@@ -1,4 +1,4 @@
-import { getApiData } from '@/lib/api'
+import { getApiData, getBuscadorJugadores } from '@/lib/api'
 import { pageMeta } from '@/lib/seo'
 import SecBanner from '@/components/SecBanner'
 import Link from 'next/link'
@@ -28,8 +28,16 @@ export const metadata = pageMeta({
 
 export default async function BuscadorPage({ searchParams }: Props) {
   const sp = await searchParams
-  const data = await getApiData()
+  // Datos en variante light (sin planillas del bulk). Lo planillero (nombres de
+  // jugadores para los dropdowns + qué partidos contienen al jugador/jugRival
+  // filtrado) viene del backend (/api/buscador-jugadores).
+  const [data, busqJug] = await Promise.all([
+    getApiData({ light: true }),
+    getBuscadorJugadores(sp.jugador ?? '', sp.jugRival ?? ''),
+  ])
   const partidos = data.partidos.filter(p => p.publicado)
+  const gecIdSet = busqJug.gecIds ? new Set(busqJug.gecIds) : null
+  const rivalIdSet = busqJug.rivalIds ? new Set(busqJug.rivalIds) : null
 
   // ── Opciones para los selects (desde los propios partidos) ──
   const sortUniq = (arr: (string | undefined | null)[]) =>
@@ -38,8 +46,8 @@ export default async function BuscadorPage({ searchParams }: Props) {
   const rivales = sortUniq(partidos.map(p => (esGecLocal(p) ? p.visitante : p.local)))
   const torneos = sortUniq(partidos.map(p => p.torneo))
   const estadios = sortUniq(partidos.map(p => p.estadio))
-  const jugadores = sortUniq(partidos.flatMap(p => (p.planillaGec ?? []).map(r => r.jugador)))
-  const jugadoresRivales = sortUniq(partidos.flatMap(p => (p.planillaRival ?? []).map(r => r.jugador)))
+  const jugadores = busqJug.gecNombres
+  const jugadoresRivales = busqJug.rivalNombres
   const dtsGec = sortUniq(partidos.map(p => p.dtGimnasia))
   const dtsRival = sortUniq(partidos.map(p => p.dtRival))
 
@@ -95,8 +103,8 @@ export default async function BuscadorPage({ searchParams }: Props) {
     if (estadio && p.estadio !== estadio) return false
     if (cond === 'local' && !gecLocal) return false
     if (cond === 'visitante' && gecLocal) return false
-    if (jugador && !(p.planillaGec ?? []).some(r => (r.jugador || '').toLowerCase() === jugador.toLowerCase())) return false
-    if (jugRival && !(p.planillaRival ?? []).some(r => (r.jugador || '').toLowerCase() === jugRival.toLowerCase())) return false
+    if (jugador && !(gecIdSet?.has(p.id) ?? false)) return false
+    if (jugRival && !(rivalIdSet?.has(p.id) ?? false)) return false
     if (dtGec && (p.dtGimnasia || '').toLowerCase() !== dtGec.toLowerCase()) return false
     if (dtRival && (p.dtRival || '').toLowerCase() !== dtRival.toLowerCase()) return false
     return true

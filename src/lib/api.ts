@@ -148,6 +148,39 @@ export async function getPlantelTorneo(torneo: string): Promise<PlantelTorneoRow
   }
 }
 
+export interface BuscadorJugadores {
+  gecNombres: string[]; rivalNombres: string[]
+  gecIds: number[] | null; rivalIds: number[] | null
+}
+
+/** Para el buscador avanzado: nombres distintos de las planillas (dropdowns) +
+ * ids de partidos que contienen al jugador/jugRival elegido (filtro). Reemplaza
+ * el recorrido de planillas de buscador/page.tsx. */
+export async function getBuscadorJugadores(jugador: string, jugRival: string): Promise<BuscadorJugadores> {
+  const qs = new URLSearchParams({ jugador, jugRival }).toString()
+  try {
+    const res = await fetch(`${BASE_URL}/api/buscador-jugadores?${qs}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return await res.json()
+  } catch { /* fallthrough */ }
+  return { gecNombres: [], rivalNombres: [], gecIds: null, rivalIds: null }
+}
+
+/** Cantidad de partidos publicados por jugador GEC (id → nº), para el índice de
+ * búsqueda. Reemplaza el conteo por planillas de api/search-index. */
+export async function getJugadoresConteo(): Promise<Record<string, number>> {
+  try {
+    const res = await fetch(`${BASE_URL}/api/jugadores-conteo`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(15000),
+    })
+    if (res.ok) return (await res.json()).counts ?? {}
+  } catch { /* fallthrough */ }
+  return {}
+}
+
 // Datos vacíos de respaldo SOLO para que el build no se caiga si el API falla
 // durante el prerender (ver arriba). Nunca se cachea en el memo.
 const EMPTY_API_DATA: ApiData = {

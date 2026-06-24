@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getApiData, fotoUrl } from '@/lib/api'
+import { getApiData, getJugadoresConteo, fotoUrl } from '@/lib/api'
 
 export interface IndexItem {
   group: string
@@ -20,7 +20,9 @@ const initialsOf = (nombre: string) =>
  * El filtrado se hace local en el navegador, instantáneo a cada tecla.
  */
 export async function GET() {
-  const data = await getApiData()
+  // Datos de referencia en variante light (sin planillas del bulk); el conteo de
+  // partidos por jugador viene ya agregado del backend (/api/jugadores-conteo).
+  const [data, conteo] = await Promise.all([getApiData({ light: true }), getJugadoresConteo()])
   const items: IndexItem[] = []
 
   for (const j of data.jugadores) {
@@ -30,7 +32,7 @@ export async function GET() {
       nombre: j.nombre,
       sub: [j.posicion || 'Jugador', j.pais].filter(Boolean).join(' · '),
       foto: fotoUrl(j.foto), initials: initialsOf(j.nombre),
-      count: data.partidos.filter(p => p.planillaGec?.some(r => r.jugador_id === j.id)).length,
+      count: conteo[String(j.id)] ?? 0,
       href: `/jugador/${j.id}`,
     })
   }
