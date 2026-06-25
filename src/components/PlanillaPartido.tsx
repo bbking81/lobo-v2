@@ -19,15 +19,15 @@ export default function PlanillaPartido({ jugadores, esGec, nombreEquipo, escudo
 
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
-      {/* Header equipo */}
-      <div className="flex items-center gap-2.5" style={{ background: '#1e3a5f', padding: '14px 16px' }}>
-        <div className="flex items-center justify-center shrink-0 overflow-hidden" style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(255,255,255,0.15)' }}>
+      {/* Header equipo — estilo pestaña (blanco + subrayado azul de marca) */}
+      <div className="flex items-center gap-2.5" style={{ background: '#fff', padding: '14px 16px', borderBottom: '3px solid #007ad6' }}>
+        <div className="flex items-center justify-center shrink-0 overflow-hidden" style={{ width: 36, height: 36, borderRadius: 9, background: '#f1f5f9' }}>
           {escudoUrl
             // eslint-disable-next-line @next/next/no-img-element
             ? <img src={escudoUrl} alt="" loading="lazy" decoding="async" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-            : <span className="text-white font-extrabold text-[0.6rem]">{(nombreEquipo || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
+            : <span className="font-extrabold text-[0.6rem]" style={{ color: '#007ad6' }}>{(nombreEquipo || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
         </div>
-        <span className="text-white font-bold" style={{ fontSize: '1.035rem' }}>{nombreEquipo}</span>
+        <span className="font-bold" style={{ fontSize: '1.035rem', color: '#0f172a' }}>{nombreEquipo}</span>
       </div>
 
       {jugadores.length === 0 ? (

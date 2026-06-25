@@ -22,9 +22,9 @@ export default function MediaPartido({ fotos, videos, audios }: Props) {
 
   return (
     <div className="rounded-xl overflow-hidden border border-[#e2e8f0]">
-      {/* Cabecera */}
-      <div className="flex items-center gap-2 text-white" style={{ background: '#1e3a5f', padding: '13px 18px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+      {/* Cabecera — estilo pestaña (blanco + subrayado azul de marca) */}
+      <div className="flex items-center gap-2" style={{ background: '#fff', padding: '13px 18px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#0f172a', borderBottom: '3px solid #007ad6' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007ad6" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
         Multimedia
       </div>
 

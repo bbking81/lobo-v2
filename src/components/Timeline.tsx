@@ -43,12 +43,12 @@ export default function Timeline({ eventos }: Props) {
 
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
-      {/* Header con gradiente igual al original */}
-      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ background: 'linear-gradient(to right, #0f1e35, #1e4a8a)' }}>
-        <svg width="16" height="16" fill="none" stroke="#60a5fa" strokeWidth="2" viewBox="0 0 24 24">
+      {/* Header — estilo pestaña (blanco + subrayado azul de marca) */}
+      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ background: '#fff', borderBottom: '3px solid #007ad6' }}>
+        <svg width="16" height="16" fill="none" stroke="#007ad6" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        <span className="text-xs font-bold text-white uppercase tracking-widest">Eventos del Partido</span>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a' }}>Eventos del Partido</span>
       </div>
 
       {/* Filas — grid 1fr 48px 1fr igual al .tl-row del original */}
