@@ -137,8 +137,6 @@ export default async function PartidoPage({ params }: Props) {
         escudoVisit={escudoDe(p.visitante, !gecLocal)}
         gl={p.gl}
         gv={p.gv}
-        resLabel={resLabel}
-        resBg={resBg}
       />
 
       <div className="max-w-5xl mx-auto px-4 py-5 flex flex-col gap-5">
