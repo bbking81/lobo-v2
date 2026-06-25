@@ -37,10 +37,13 @@ export default function StickyMarcador({
 
   return (
     <>
+      {/* Ancho = SOLO la columna del contenido (arranca después del sidebar de
+          262px en desktop; full-width en móvil donde el sidebar es drawer).
+          Altura = la del Topbar (64/100px) para taparlo del todo (que no asome
+          por debajo). */}
       <div
-        className="fixed left-0 right-0 top-0 z-[500] bg-white"
+        className="fixed left-0 lg:left-[262px] right-0 top-0 z-[500] bg-white h-[64px] lg:h-[100px]"
         style={{
-          height: 56,
           borderBottom: '2px solid #007ad6',
           boxShadow: visible ? '0 4px 14px rgba(0,0,0,0.12)' : 'none',
           transform: visible ? 'translateY(0)' : 'translateY(-100%)',
