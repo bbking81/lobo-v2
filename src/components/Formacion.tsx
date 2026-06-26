@@ -241,10 +241,10 @@ export default function Formacion({
 
   return (
     <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
-      {/* Header estilo pestaña */}
-      <div className="flex items-center px-5 pt-4" style={{ borderBottom: '1px solid #eef2f6' }}>
-        <span className="inline-flex items-center gap-2 pb-3 text-[0.8rem] font-bold text-[#0f172a] uppercase" style={{ letterSpacing: '0.06em', borderBottom: '3px solid #007ad6', marginBottom: '-1px' }}>
-          Formación
+      {/* Header — estilo pestaña full-width (igual a Eventos/Multimedia) */}
+      <div className="flex items-center px-5 py-3.5" style={{ borderBottom: '3px solid #007ad6' }}>
+        <span className="text-[0.8rem] font-bold text-[#0f172a] uppercase" style={{ letterSpacing: '0.06em' }}>
+          Formaciones
         </span>
       </div>
 
