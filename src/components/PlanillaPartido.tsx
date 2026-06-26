@@ -54,12 +54,12 @@ function SectionLabel({ label, titular }: { label: string; titular?: boolean }) 
   // Titulares = azul de marca · Suplentes = gris sobrio (estilo "opción D")
   const style = titular
     ? { color: '#1d4ed8', background: '#eff6ff', borderBottom: '1px solid #dbeafe' }
-    : { color: '#475569', background: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }
+    : { color: '#1e293b', background: '#f1f5f9', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }
   return (
     <div className="flex items-center gap-1.5 uppercase" style={{ padding: '8px 16px', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.1em', ...style }}>
       {titular
         ? <svg width="15" height="15" viewBox="0 0 24 24" fill="#007ad6" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-        : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><circle cx="9" cy="7" r="4" /><path d="M3 21v-2a4 4 0 0 1 4-4h4" /><circle cx="19" cy="11" r="3" /><path d="M17 21v-1a3 3 0 0 1 3-3" /></svg>}
+        : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="2"><circle cx="9" cy="7" r="4" /><path d="M3 21v-2a4 4 0 0 1 4-4h4" /><circle cx="19" cy="11" r="3" /><path d="M17 21v-1a3 3 0 0 1 3-3" /></svg>}
       {label}
     </div>
   )
