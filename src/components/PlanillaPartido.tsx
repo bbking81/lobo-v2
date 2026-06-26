@@ -37,11 +37,11 @@ export default function PlanillaPartido({ jugadores, esGec, nombreEquipo, escudo
           {titulares.length > 0 && <><SectionLabel label="Titulares" titular /><div>{titulares.map((r, i) => <Fila key={i} r={r} esTitular esGec={esGec} />)}</div></>}
           {suplentes.length > 0 && <><SectionLabel label="Suplentes" /><div>{suplentes.map((r, i) => <Fila key={i} r={r} esTitular={false} esGec={esGec} />)}</div></>}
           {dtNombre && (
-            <div className="flex items-center gap-2.5" style={{ padding: '10px 16px 10px 13px', background: '#f0fdf4', borderTop: '2px solid #bbf7d0', borderLeft: '4px solid #16a34a' }}>
-              <div className="flex items-center justify-center shrink-0 text-white font-extrabold text-[0.7rem]" style={{ width: 26, height: 26, borderRadius: 8, background: '#16a34a' }}>DT</div>
+            <div className="flex items-center gap-2.5" style={{ padding: '10px 16px 10px 13px', background: '#f0f6fc', borderLeft: '4px solid #007ad6' }}>
+              <div className="flex items-center justify-center shrink-0 text-white font-extrabold text-[0.7rem]" style={{ width: 26, height: 26, borderRadius: 8, background: '#007ad6' }}>DT</div>
               {esGec && dtId
-                ? <Link href={`/dt/${dtId}`} className="flex-1 font-bold text-[#166534] hover:opacity-70" style={{ fontSize: '0.85rem' }}>{dtNombre}</Link>
-                : <span className="flex-1 font-bold text-[#166534]" style={{ fontSize: '0.85rem' }}>{dtNombre}</span>}
+                ? <Link href={`/dt/${dtId}`} className="flex-1 font-bold text-[#0c447c] hover:opacity-70" style={{ fontSize: '0.85rem' }}>{dtNombre}</Link>
+                : <span className="flex-1 font-bold text-[#0c447c]" style={{ fontSize: '0.85rem' }}>{dtNombre}</span>}
             </div>
           )}
         </>
