@@ -46,30 +46,32 @@ function goleadores(planilla: JugadorPlanilla[]): Goleador[] {
   return out
 }
 
-// Deriva los eventos del partido desde las planillas (la API no trae `eventos`)
-function derivarEventos(p: Partido, gecLocal: boolean): Evento[] {
+// Deriva los eventos del partido desde las planillas (la API no trae `eventos`).
+// `hrefDe(nombre, esGec)` resuelve la ficha del jugador (GEC → /jugador/{id},
+// rival → /jugador-rival/{id}) matcheando por nombre.
+function derivarEventos(p: Partido, gecLocal: boolean, hrefDe: (n: string | undefined, esGec: boolean) => string | undefined): Evento[] {
   const ev: Evento[] = []
   const ladoGec = gecLocal ? 'local' : 'visitante'
   const ladoRiv = gecLocal ? 'visitante' : 'local'
-  const goles = (pl: JugadorPlanilla[], lado: 'local' | 'visitante') => {
+  const goles = (pl: JugadorPlanilla[], lado: 'local' | 'visitante', esGec: boolean) => {
     for (const r of pl ?? []) {
       const mins = String(r.minGoles ?? '').trim().split(/\s+/).filter(Boolean)
-      for (const m of mins) ev.push({ min: parseInt(m) || 0, tipo: 'gol', jugador: r.jugador, equipo: lado })
+      for (const m of mins) ev.push({ min: parseInt(m) || 0, tipo: 'gol', jugador: r.jugador, equipo: lado, href: hrefDe(r.jugador, esGec) })
     }
   }
-  const cambios = (pl: JugadorPlanilla[], lado: 'local' | 'visitante') => {
+  const cambios = (pl: JugadorPlanilla[], lado: 'local' | 'visitante', esGec: boolean) => {
     for (const r of pl ?? []) {
-      if (r.titular === false && r.minE) ev.push({ min: parseInt(r.minE) || 0, tipo: 'cambio', jugador: r.jugador, jugador2: r.reemplazaA, equipo: lado })
+      if (r.titular === false && r.minE) ev.push({ min: parseInt(r.minE) || 0, tipo: 'cambio', jugador: r.jugador, jugador2: r.reemplazaA, equipo: lado, href: hrefDe(r.jugador, esGec), href2: hrefDe(r.reemplazaA, esGec) })
     }
   }
-  const rojas = (pl: JugadorPlanilla[], lado: 'local' | 'visitante') => {
+  const rojas = (pl: JugadorPlanilla[], lado: 'local' | 'visitante', esGec: boolean) => {
     for (const r of pl ?? []) {
-      if ((r.rojas ?? 0) > 0) ev.push({ min: parseInt(r.minS ?? '') || 0, tipo: 'tarjeta-roja', jugador: r.jugador, equipo: lado })
+      if ((r.rojas ?? 0) > 0) ev.push({ min: parseInt(r.minS ?? '') || 0, tipo: 'tarjeta-roja', jugador: r.jugador, equipo: lado, href: hrefDe(r.jugador, esGec) })
     }
   }
-  goles(p.planillaGec, ladoGec); goles(p.planillaRival, ladoRiv)
-  cambios(p.planillaGec, ladoGec); cambios(p.planillaRival, ladoRiv)
-  rojas(p.planillaGec, ladoGec); rojas(p.planillaRival, ladoRiv)
+  goles(p.planillaGec, ladoGec, true); goles(p.planillaRival, ladoRiv, false)
+  cambios(p.planillaGec, ladoGec, true); cambios(p.planillaRival, ladoRiv, false)
+  rojas(p.planillaGec, ladoGec, true); rojas(p.planillaRival, ladoRiv, false)
   return ev
 }
 
@@ -104,7 +106,18 @@ export default async function PartidoPage({ params }: Props) {
   const planillaGec = enriquecer(p.planillaGec ?? [])
   const planillaRival = enriquecer(p.planillaRival ?? [])
 
-  const eventos = derivarEventos(p, gecLocal)
+  // Mapas nombre("Apellido, Nombres")→id para linkear los nombres del Resumen
+  // a la ficha de cada jugador (GEC o rival).
+  const gecIdByNombre = new Map(data.jugadores.map(j => [(j.nombre || '').trim().toLowerCase(), j.id]))
+  const rivalIdByNombre = new Map((data.jugadoresRivales as { id: number; nombre: string }[]).map(j => [(j.nombre || '').trim().toLowerCase(), j.id]))
+  const hrefDe = (nombre: string | undefined, esGec: boolean): string | undefined => {
+    if (!nombre) return undefined
+    const key = nombre.trim().toLowerCase()
+    const id = esGec ? gecIdByNombre.get(key) : rivalIdByNombre.get(key)
+    return id ? (esGec ? `/jugador/${id}` : `/jugador-rival/${id}`) : undefined
+  }
+
+  const eventos = derivarEventos(p, gecLocal, hrefDe)
   const tieneFormacion = !!(p.formacion || p.formacionRival) && (planillaGec.length > 0 || planillaRival.length > 0)
 
   const estadioId = findId(data.estadios, p.estadio)

@@ -5,6 +5,8 @@ export interface Evento {
   jugador2?: string
   equipo: 'local' | 'visitante'
   detalle?: string
+  href?: string   // ficha del jugador principal (si se pudo resolver)
+  href2?: string  // ficha de jugador2 (reemplazo)
 }
 
 export interface JugadorPlanilla {

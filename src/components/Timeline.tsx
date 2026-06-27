@@ -1,9 +1,18 @@
+import Link from 'next/link'
 import type { Evento } from '@/types'
 
 interface Props {
   eventos: Evento[]
   local: string
   visitante: string
+}
+
+// Nombre de jugador: link a su ficha (con subrayado en hover) si se resolvió
+// el href; si no, texto plano.
+function Nombre({ nombre, href, style }: { nombre?: string; href?: string; style: React.CSSProperties }) {
+  if (!nombre) return null
+  if (href) return <Link href={href} style={style} className="hover:underline hover:text-[#007ad6] transition-colors">{nombre}</Link>
+  return <span style={style}>{nombre}</span>
 }
 
 /* Iconos CSS puros igual al original (.ev-icon-amarilla / roja / cambio) */
@@ -97,11 +106,9 @@ export default function Timeline({ eventos }: Props) {
                 {esLocal && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ minWidth: 0, textAlign: 'right' }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
-                        {ev.jugador}
-                      </span>
+                      <Nombre nombre={ev.jugador} href={ev.href} style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }} />
                       {ev.tipo === 'cambio' && ev.jugador2 && (
-                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ {ev.jugador2}</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ <Nombre nombre={ev.jugador2} href={ev.href2} style={{ color: 'inherit' }} /></span>
                       )}
                       {ev.detalle && ev.tipo !== 'cambio' && (
                         <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>{ev.detalle}</span>
@@ -127,11 +134,9 @@ export default function Timeline({ eventos }: Props) {
                     {parciales[i] && <ScorePill score={parciales[i]!} />}
                     {evIcon(ev.tipo)}
                     <div style={{ minWidth: 0 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
-                        {ev.jugador}
-                      </span>
+                      <Nombre nombre={ev.jugador} href={ev.href} style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }} />
                       {ev.tipo === 'cambio' && ev.jugador2 && (
-                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ {ev.jugador2}</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>↑ <Nombre nombre={ev.jugador2} href={ev.href2} style={{ color: 'inherit' }} /></span>
                       )}
                       {ev.detalle && ev.tipo !== 'cambio' && (
                         <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>{ev.detalle}</span>
