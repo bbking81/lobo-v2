@@ -165,18 +165,16 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
         )
       })() : null}
 
-      {/* COSTADO INF-IZQ de la foto (abajo) · CAMBIO · swap rojo (salió ←) + verde (entró →) */}
+      {/* COSTADO INF-IZQ de la foto (abajo) · CAMBIO · refresh azul circular de doble flecha */}
       {salio ? (() => {
         const bx = lcx - 7, by = botY - 7
         return (
           <g>
             <rect x={bx} y={by} width={14} height={14} rx={3} fill="#fff" stroke="#e6e9ee" strokeWidth={0.75} filter="url(#pillSh)" />
-            <g strokeWidth={1.25} fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <path d={`M ${bx + 10} ${by + 5} h-6`} stroke="#dc2626" />
-              <path d={`M ${bx + 6} ${by + 3} l-2 2 l2 2`} stroke="#dc2626" />
-              <path d={`M ${bx + 4} ${by + 9} h6`} stroke="#16a34a" />
-              <path d={`M ${bx + 8} ${by + 7} l2 2 l-2 2`} stroke="#16a34a" />
-            </g>
+            <svg x={bx + 1.5} y={by + 1.5} width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#007ad6" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+            </svg>
           </g>
         )
       })() : null}
