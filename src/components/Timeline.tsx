@@ -25,7 +25,15 @@ function IconRoja() {
   )
 }
 function IconCambio() {
-  return <span style={{ fontSize: 15, lineHeight: 1 }}>🔄</span>
+  // Swap rojo (salió ←) + verde (entró →), igual al de la cancha
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 5 H6" stroke="#dc2626" />
+      <path d="M8 3 L6 5 L8 7" stroke="#dc2626" />
+      <path d="M4 11 H10" stroke="#16a34a" />
+      <path d="M8 9 L10 11 L8 13" stroke="#16a34a" />
+    </svg>
+  )
 }
 
 function evIcon(tipo: string) {
