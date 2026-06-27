@@ -36,6 +36,14 @@ function IconCambio() {
   )
 }
 
+function ScorePill({ score }: { score: string }) {
+  return (
+    <span className="tabular-nums" style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: 6, padding: '1px 7px', fontSize: 12, fontWeight: 800, color: '#1e293b', whiteSpace: 'nowrap', flexShrink: 0 }}>
+      {score}
+    </span>
+  )
+}
+
 function evIcon(tipo: string) {
   if (tipo === 'gol') return <IconGol />
   if (tipo === 'tarjeta-amarilla') return <IconAmarilla />
@@ -48,6 +56,14 @@ export default function Timeline({ eventos }: Props) {
   if (!eventos || eventos.length === 0) return null
 
   const sorted = [...eventos].sort((a, b) => a.min - b.min)
+
+  // Marcador parcial acumulado en cada gol (estilo Flashscore: 1-0, 1-1, ...)
+  let _gl = 0, _gv = 0
+  const parciales = sorted.map(ev => {
+    if (ev.tipo !== 'gol') return null
+    if (ev.equipo === 'local') _gl++; else _gv++
+    return `${_gl} - ${_gv}`
+  })
 
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
@@ -90,6 +106,7 @@ export default function Timeline({ eventos }: Props) {
                       )}
                     </div>
                     {evIcon(ev.tipo)}
+                    {parciales[i] && <ScorePill score={parciales[i]!} />}
                   </div>
                 )}
               </div>
@@ -105,6 +122,7 @@ export default function Timeline({ eventos }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px 8px 10px' }}>
                 {!esLocal && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {parciales[i] && <ScorePill score={parciales[i]!} />}
                     {evIcon(ev.tipo)}
                     <div style={{ minWidth: 0 }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline' }}>
