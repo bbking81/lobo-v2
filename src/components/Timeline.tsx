@@ -27,7 +27,7 @@ function IconRoja() {
 function IconCambio() {
   // Swap rojo (salió ←) + verde (entró →), igual al de la cancha
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
       <path d="M12 5 H6" stroke="#dc2626" />
       <path d="M8 3 L6 5 L8 7" stroke="#dc2626" />
       <path d="M4 11 H10" stroke="#16a34a" />
