@@ -190,37 +190,37 @@ export default async function PartidoPage({ params }: Props) {
         {/* ── LÍNEA DE TIEMPO ── */}
         {eventos.length > 0 && <Timeline eventos={eventos} local={p.local} visitante={p.visitante} />}
 
-        {/* ── DATOS DEL PARTIDO (chips) ── */}
+        {/* ── DATOS DEL PARTIDO (chips dentro de card) ── */}
         {(p.estadio || p.arbitro || p.asistente1 || p.asistente2 || p.cuarto || p.var || p.avar) && (
-          <div className="flex flex-wrap gap-2.5">
-            <Chip label="Estadio" valor={p.estadio} href={estadioId ? `/estadio/${estadioId}` : undefined} />
-            <Chip label="Árbitro" valor={p.arbitro} href={arbitroId ? `/arbitro/${arbitroId}` : undefined} />
-            <Chip label="Asistente 1" valor={p.asistente1} />
-            <Chip label="Asistente 2" valor={p.asistente2} />
-            <Chip label="4° Árbitro" valor={p.cuarto} />
-            <Chip label="VAR" valor={p.var} />
-            <Chip label="AVAR" valor={p.avar} />
-          </div>
+          <SeccionCard titulo="Datos del partido" icon={
+            <svg width="16" height="16" fill="none" stroke="#007ad6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 12h6" /><path d="M9 16h6" /></svg>
+          }>
+            <div className="flex flex-wrap gap-2.5 p-4">
+              <Chip label="Estadio" valor={p.estadio} href={estadioId ? `/estadio/${estadioId}` : undefined} />
+              <Chip label="Árbitro" valor={p.arbitro} href={arbitroId ? `/arbitro/${arbitroId}` : undefined} />
+              <Chip label="Asistente 1" valor={p.asistente1} />
+              <Chip label="Asistente 2" valor={p.asistente2} />
+              <Chip label="4° Árbitro" valor={p.cuarto} />
+              <Chip label="VAR" valor={p.var} />
+              <Chip label="AVAR" valor={p.avar} />
+            </div>
+          </SeccionCard>
         )}
 
-        {/* ── INCIDENCIAS / NOTAS ── */}
+        {/* ── INCIDENCIAS / NOTAS (cards unificadas) ── */}
         {p.incidencias && (
-          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '12px 16px' }}>
-            <div className="uppercase flex items-center gap-1.5" style={{ fontSize: '0.64rem', fontWeight: 700, letterSpacing: '0.07em', color: '#92400e', marginBottom: 4 }}>
-              <svg width="11" height="11" fill="none" stroke="#f59e0b" strokeWidth="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-              Incidencias
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#92400e', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{p.incidencias}</div>
-          </div>
+          <SeccionCard titulo="Incidencias" icon={
+            <svg width="16" height="16" fill="none" stroke="#f59e0b" strokeWidth="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          }>
+            <div className="px-5 py-4" style={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{p.incidencias}</div>
+          </SeccionCard>
         )}
         {p.notas && (
-          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '12px 16px' }}>
-            <div className="uppercase flex items-center gap-1.5" style={{ fontSize: '0.64rem', fontWeight: 700, letterSpacing: '0.07em', color: '#1d4ed8', marginBottom: 4 }}>
-              <svg width="11" height="11" fill="none" stroke="#3b82f6" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
-              Notas
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#1e3a5f', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{p.notas}</div>
-          </div>
+          <SeccionCard titulo="Notas" icon={
+            <svg width="16" height="16" fill="none" stroke="#007ad6" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+          }>
+            <div className="px-5 py-4" style={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{p.notas}</div>
+          </SeccionCard>
         )}
 
         {/* ── MULTIMEDIA (al final) ── */}
@@ -258,6 +258,18 @@ function EquipoCol({ nombre, cond, escudo, goles }: { nombre: string; cond: stri
   )
 }
 
+function SeccionCard({ titulo, icon, children }: { titulo: string; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ borderBottom: '3px solid #007ad6' }}>
+        {icon}
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a' }}>{titulo}</span>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 function Chip({ label, valor, href }: { label: string; valor?: string; href?: string }) {
   if (!valor) return null
   const inner = (
@@ -266,7 +278,7 @@ function Chip({ label, valor, href }: { label: string; valor?: string; href?: st
       <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1e293b' }}>{valor}</div>
     </>
   )
-  const cls = 'bg-white border border-[#e2e8f0] rounded-[10px]'
+  const cls = 'bg-[#f8fafc] border border-[#eef2f6] rounded-[10px]'
   const style = { padding: '12px 16px', flex: '1 1 150px', minWidth: 150 } as const
   return href
     ? <Link href={href} className={`${cls} hover:border-[#bfdbfe] transition-colors`} style={style}>{inner}</Link>
