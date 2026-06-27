@@ -48,7 +48,7 @@ export default function Timeline({ eventos }: Props) {
         <svg width="16" height="16" fill="none" stroke="#007ad6" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a' }}>Eventos del Partido</span>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a' }}>Resumen</span>
       </div>
 
       {/* Filas — grid 1fr 48px 1fr igual al .tl-row del original */}

@@ -242,7 +242,10 @@ export default function Formacion({
   return (
     <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(15,23,42,.05)' }}>
       {/* Header — estilo pestaña full-width (igual a Eventos/Multimedia) */}
-      <div className="flex items-center px-5 py-3.5" style={{ borderBottom: '3px solid #007ad6' }}>
+      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ borderBottom: '3px solid #007ad6' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007ad6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="1.5" /><line x1="12" y1="4" x2="12" y2="20" /><circle cx="12" cy="12" r="3" /><path d="M2 9h3v6H2" /><path d="M22 9h-3v6h3" />
+        </svg>
         <span className="text-[0.8rem] font-bold text-[#0f172a] uppercase" style={{ letterSpacing: '0.06em' }}>
           Formaciones
         </span>
