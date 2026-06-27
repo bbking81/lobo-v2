@@ -20,14 +20,16 @@ export default function PlanillaPartido({ jugadores, esGec, nombreEquipo, escudo
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
       {/* Header equipo — estilo pestaña (blanco + subrayado azul de marca) */}
-      <div className="flex items-center gap-2.5" style={{ background: '#fff', padding: '14px 16px', borderBottom: '3px solid #007ad6' }}>
-        <div className="flex items-center justify-center shrink-0 overflow-hidden" style={{ width: 36, height: 36, borderRadius: 9, background: '#f1f5f9' }}>
-          {escudoUrl
-            // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={escudoUrl} alt="" loading="lazy" decoding="async" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-            : <span className="font-extrabold text-[0.6rem]" style={{ color: '#007ad6' }}>{(nombreEquipo || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
+      <div className="flex items-center px-4 pt-3.5" style={{ background: '#fff', borderBottom: '1px solid #eef2f6' }}>
+        <div className="inline-flex items-center gap-2.5 pb-3" style={{ borderBottom: '3px solid #007ad6', marginBottom: '-1px' }}>
+          <div className="flex items-center justify-center shrink-0 overflow-hidden" style={{ width: 36, height: 36, borderRadius: 9, background: '#f1f5f9' }}>
+            {escudoUrl
+              // eslint-disable-next-line @next/next/no-img-element
+              ? <img src={escudoUrl} alt="" loading="lazy" decoding="async" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+              : <span className="font-extrabold text-[0.6rem]" style={{ color: '#007ad6' }}>{(nombreEquipo || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
+          </div>
+          <span className="font-bold" style={{ fontSize: '1.035rem', color: '#0f172a' }}>{nombreEquipo}</span>
         </div>
-        <span className="font-bold" style={{ fontSize: '1.035rem', color: '#0f172a' }}>{nombreEquipo}</span>
       </div>
 
       {jugadores.length === 0 ? (

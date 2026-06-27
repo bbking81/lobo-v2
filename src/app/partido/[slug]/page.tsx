@@ -261,9 +261,10 @@ function EquipoCol({ nombre, cond, escudo, goles }: { nombre: string; cond: stri
 function SeccionCard({ titulo, icon, children }: { titulo: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ borderBottom: '3px solid #007ad6' }}>
-        {icon}
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a' }}>{titulo}</span>
+      <div className="flex items-center px-5 pt-4" style={{ borderBottom: '1px solid #eef2f6' }}>
+        <span className="inline-flex items-center gap-2.5 pb-3 text-xs font-bold uppercase tracking-widest" style={{ color: '#0f172a', borderBottom: '3px solid #007ad6', marginBottom: '-1px' }}>
+          {icon}{titulo}
+        </span>
       </div>
       {children}
     </div>
