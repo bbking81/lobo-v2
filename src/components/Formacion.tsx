@@ -201,8 +201,10 @@ function JugadorNode({ jugador, x, y }: { jugador: JugadorPlanilla; x: number; y
   )
 
   const cls = `jnode${isTrunc ? ' jtrunc' : ''}`
-  return jugador.jugador_id ? (
-    <a className={cls} href={`/jugador/${jugador.jugador_id}`}>{content}</a>
+  // Link a la ficha: usa el href resuelto (GEC o rival); fallback a jugador_id.
+  const href = jugador.href ?? (jugador.jugador_id ? `/jugador/${jugador.jugador_id}` : undefined)
+  return href ? (
+    <a className={cls} href={href}>{content}</a>
   ) : (
     <g className={cls}>{content}</g>
   )

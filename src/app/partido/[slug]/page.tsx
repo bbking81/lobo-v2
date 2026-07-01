@@ -33,7 +33,7 @@ export async function generateStaticParams() {
   return data.partidos.filter(p => p.publicado).map(p => ({ slug: `partido-${p.id}` }))
 }
 
-interface Goleador { nombre: string; mins: string[]; penales: number }
+interface Goleador { nombre: string; mins: string[]; penales: number; href?: string }
 function goleadores(planilla: JugadorPlanilla[]): Goleador[] {
   const out: Goleador[] = []
   for (const r of planilla ?? []) {
@@ -41,7 +41,7 @@ function goleadores(planilla: JugadorPlanilla[]): Goleador[] {
     const penales = r.penales ?? 0
     const golesN = r.goles ?? 0
     if (!mg && !penales && golesN <= 0) continue
-    out.push({ nombre: r.jugador, mins: mg ? mg.split(/\s+/).filter(Boolean) : [], penales })
+    out.push({ nombre: r.jugador, mins: mg ? mg.split(/\s+/).filter(Boolean) : [], penales, href: r.href })
   }
   return out
 }
@@ -97,17 +97,9 @@ export default async function PartidoPage({ params }: Props) {
   const escudoDe = (nombre: string, esGec: boolean) => esGec ? '/api/escudo-gec' : (eqByNombre(nombre)?.escudoUrl || null)
   const findId = (arr: { id: number; nombre: string }[], name?: string) => name ? arr.find(x => (x.nombre || '').toLowerCase() === name.toLowerCase())?.id : undefined
 
-  const golesLocal = goleadores(gecLocal ? p.planillaGec : p.planillaRival)
-  const golesVisit = goleadores(gecLocal ? p.planillaRival : p.planillaGec)
-
-  // Planillas enriquecidas con foto (para la formación)
-  const fotoMap = new Map(data.jugadores.map(j => [j.id, j.foto]))
-  const enriquecer = (pl: JugadorPlanilla[]) => pl.map(j => ({ ...j, foto: j.jugador_id ? (fotoMap.get(j.jugador_id) ?? null) : null }))
-  const planillaGec = enriquecer(p.planillaGec ?? [])
-  const planillaRival = enriquecer(p.planillaRival ?? [])
-
-  // Mapas nombre("Apellido, Nombres")→id para linkear los nombres del Resumen
-  // a la ficha de cada jugador (GEC o rival).
+  // Mapas nombre("Apellido, Nombres")→id para linkear TODOS los nombres de la
+  // síntesis (goleadores del cabezal, planillas, formación, Resumen) a la ficha
+  // de cada jugador — GEC (/jugador/{id}) o rival (/jugador-rival/{id}).
   const gecIdByNombre = new Map(data.jugadores.map(j => [(j.nombre || '').trim().toLowerCase(), j.id]))
   const rivalIdByNombre = new Map((data.jugadoresRivales as { id: number; nombre: string }[]).map(j => [(j.nombre || '').trim().toLowerCase(), j.id]))
   const hrefDe = (nombre: string | undefined, esGec: boolean): string | undefined => {
@@ -116,6 +108,15 @@ export default async function PartidoPage({ params }: Props) {
     const id = esGec ? gecIdByNombre.get(key) : rivalIdByNombre.get(key)
     return id ? (esGec ? `/jugador/${id}` : `/jugador-rival/${id}`) : undefined
   }
+
+  // Planillas enriquecidas con foto (formación) + href (link a la ficha)
+  const fotoMap = new Map(data.jugadores.map(j => [j.id, j.foto]))
+  const enriquecer = (pl: JugadorPlanilla[], esGec: boolean) => pl.map(j => ({ ...j, foto: j.jugador_id ? (fotoMap.get(j.jugador_id) ?? null) : null, href: hrefDe(j.jugador, esGec) }))
+  const planillaGec = enriquecer(p.planillaGec ?? [], true)
+  const planillaRival = enriquecer(p.planillaRival ?? [], false)
+
+  const golesLocal = goleadores(gecLocal ? planillaGec : planillaRival)
+  const golesVisit = goleadores(gecLocal ? planillaRival : planillaGec)
 
   const eventos = derivarEventos(p, gecLocal, hrefDe)
   const tieneFormacion = !!(p.formacion || p.formacionRival) && (planillaGec.length > 0 || planillaRival.length > 0)
@@ -190,8 +191,8 @@ export default async function PartidoPage({ params }: Props) {
         {/* ── PLANILLAS ── */}
         {(planillaGec.length > 0 || planillaRival.length > 0) && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <PlanillaPartido jugadores={gecLocal ? p.planillaGec : p.planillaRival} esGec={gecLocal} nombreEquipo={gecLocal ? 'Gimnasia y Esgrima' : rival} escudoUrl={escudoDe(p.local, gecLocal)} dtNombre={gecLocal ? p.dtGimnasia : p.dtRival} dtId={gecLocal ? dtGecId : undefined} />
-            <PlanillaPartido jugadores={!gecLocal ? p.planillaGec : p.planillaRival} esGec={!gecLocal} nombreEquipo={!gecLocal ? 'Gimnasia y Esgrima' : rival} escudoUrl={escudoDe(p.visitante, !gecLocal)} dtNombre={!gecLocal ? p.dtGimnasia : p.dtRival} dtId={!gecLocal ? dtGecId : undefined} />
+            <PlanillaPartido jugadores={gecLocal ? planillaGec : planillaRival} esGec={gecLocal} nombreEquipo={gecLocal ? 'Gimnasia y Esgrima' : rival} escudoUrl={escudoDe(p.local, gecLocal)} dtNombre={gecLocal ? p.dtGimnasia : p.dtRival} dtId={gecLocal ? dtGecId : undefined} />
+            <PlanillaPartido jugadores={!gecLocal ? planillaGec : planillaRival} esGec={!gecLocal} nombreEquipo={!gecLocal ? 'Gimnasia y Esgrima' : rival} escudoUrl={escudoDe(p.visitante, !gecLocal)} dtNombre={!gecLocal ? p.dtGimnasia : p.dtRival} dtId={!gecLocal ? dtGecId : undefined} />
           </div>
         )}
 
@@ -260,7 +261,7 @@ function EquipoCol({ nombre, cond, escudo, goles }: { nombre: string; cond: stri
         <div className="flex flex-col gap-0.5 mt-1">
           {goles.map((g, i) => (
             <div key={i} style={{ fontSize: '0.78rem', color: '#334155' }}>
-              ⚽ {g.nombre}
+              ⚽ {g.href ? <Link href={g.href} className="hover:underline hover:text-[#007ad6] transition-colors">{g.nombre}</Link> : g.nombre}
               {g.mins.length > 0 && <span style={{ color: '#475569', fontWeight: 600 }}> {g.mins.map(m => `${m}'`).join(' ')}</span>}
               {g.penales > 0 && <span className="ml-1" style={{ fontSize: '0.6rem', fontWeight: 700, background: '#dbeafe', color: '#1d4ed8', padding: '1px 5px', borderRadius: 4 }}>P</span>}
             </div>

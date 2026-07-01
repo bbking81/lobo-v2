@@ -36,8 +36,8 @@ export default function PlanillaPartido({ jugadores, esGec, nombreEquipo, escudo
         <div className="py-4 text-center text-[#94a3b8] text-[0.83rem]">Sin planilla cargada</div>
       ) : (
         <>
-          {titulares.length > 0 && <><SectionLabel label="Titulares" titular /><div>{titulares.map((r, i) => <Fila key={i} r={r} esTitular esGec={esGec} />)}</div></>}
-          {suplentes.length > 0 && <><SectionLabel label="Suplentes" /><div>{suplentes.map((r, i) => <Fila key={i} r={r} esTitular={false} esGec={esGec} />)}</div></>}
+          {titulares.length > 0 && <><SectionLabel label="Titulares" titular /><div>{titulares.map((r, i) => <Fila key={i} r={r} esTitular />)}</div></>}
+          {suplentes.length > 0 && <><SectionLabel label="Suplentes" /><div>{suplentes.map((r, i) => <Fila key={i} r={r} esTitular={false} />)}</div></>}
           {dtNombre && (
             <div className="flex items-center gap-2.5" style={{ padding: '10px 16px 10px 13px', background: '#f0f6fc', borderLeft: '4px solid #007ad6' }}>
               <div className="flex items-center justify-center shrink-0 text-white font-extrabold text-[0.7rem]" style={{ width: 26, height: 26, borderRadius: 8, background: '#007ad6' }}>DT</div>
@@ -67,7 +67,7 @@ function SectionLabel({ label, titular }: { label: string; titular?: boolean }) 
   )
 }
 
-function Fila({ r, esTitular, esGec }: { r: JugadorPlanilla; esTitular: boolean; esGec: boolean }) {
+function Fila({ r, esTitular }: { r: JugadorPlanilla; esTitular: boolean }) {
   const nGoles = nGolesDe(r)
   const noIngreso = !esTitular && r.titular === false && !r.minE
   const mins = esTitular ? (r.minS ? `${r.minS}'` : "90'") : (r.minE ? `${r.minE}'` : (r.titular === false ? '' : "90'"))
@@ -77,8 +77,8 @@ function Fila({ r, esTitular, esGec }: { r: JugadorPlanilla; esTitular: boolean;
     <div className="flex items-center gap-2.5" style={{ padding: '8px 16px', borderBottom: '1px solid #e2e8f0', background: noIngreso ? '#fafbfc' : undefined }}>
       <div className="flex items-center justify-center shrink-0 text-white font-extrabold text-[0.7rem]" style={{ width: 26, height: 26, borderRadius: '50%', background: numBg }}>{r.camiseta || '·'}</div>
       <div className="flex-1 text-[0.85rem]" style={{ fontWeight: noIngreso ? 400 : 600, color: nameColor }}>
-        {esGec && r.jugador_id
-          ? <Link href={`/jugador/${r.jugador_id}`} className="hover:opacity-60">{r.jugador}</Link>
+        {r.href
+          ? <Link href={r.href} className="hover:underline hover:text-[#007ad6] transition-colors">{r.jugador}</Link>
           : <span>{r.jugador}</span>}
         {!noIngreso && nGoles > 0 && <span className="text-[0.75rem] ml-1">{'⚽'.repeat(nGoles)}</span>}
         {!noIngreso && (r.golEnContra ?? 0) > 0 && <span className="ml-1 text-[0.6rem] font-bold px-1 py-0.5 rounded" style={{ background: '#fee2e2', color: '#b91c1c' }} title="Gol en contra">EC</span>}

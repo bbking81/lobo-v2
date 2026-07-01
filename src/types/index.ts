@@ -14,6 +14,7 @@ export interface JugadorPlanilla {
   camiseta: string | number
   titular: boolean
   jugador_id?: number
+  href?: string           // link a la ficha del jugador (se resuelve en la page)
   goles?: number
   amarillas?: number
   rojas?: number
