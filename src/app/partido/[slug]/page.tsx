@@ -169,7 +169,7 @@ export default async function PartidoPage({ params }: Props) {
             <div className="flex items-start justify-between gap-4">
               <EquipoCol nombre={p.local} cond="Local" escudo={escudoDe(p.local, gecLocal)} goles={golesLocal} />
               <div className="flex flex-col items-center gap-2.5 shrink-0 pt-2">
-                <div className="tabular-nums" style={{ fontSize: '3.8rem', fontWeight: 900, color: '#1e293b', lineHeight: 1, letterSpacing: '0.04em' }}>{p.gl} – {p.gv}</div>
+                <div className="tabular-nums" style={{ fontSize: '4.2rem', fontWeight: 900, color: '#1e293b', lineHeight: 1, letterSpacing: '0.04em' }}>{p.gl} – {p.gv}</div>
                 <div className="text-white" style={{ padding: '5px 18px', borderRadius: 20, background: resBg, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em' }}>{resLabel}</div>
               </div>
               <EquipoCol nombre={p.visitante} cond="Visitante" escudo={escudoDe(p.visitante, !gecLocal)} goles={golesVisit} />
@@ -247,10 +247,10 @@ export default async function PartidoPage({ params }: Props) {
 function EquipoCol({ nombre, cond, escudo, goles }: { nombre: string; cond: string; escudo: string | null; goles: Goleador[] }) {
   return (
     <div className="flex-1 flex flex-col items-center gap-2.5 min-w-0">
-      <div className="flex items-center justify-center overflow-hidden" style={{ width: 91, height: 91, borderRadius: 14, background: escudo ? '#f1f5f9' : '#e2e8f0' }}>
+      <div className="flex items-center justify-center overflow-hidden" style={{ width: 80, height: 80, borderRadius: 14, background: escudo ? '#f1f5f9' : '#e2e8f0' }}>
         {escudo
           // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={escudo} alt="" style={{ width: 81, height: 81, objectFit: 'contain' }} />
+          ? <img src={escudo} alt="" style={{ width: 71, height: 71, objectFit: 'contain' }} />
           : <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#94a3b8' }}>{(nombre || '?').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase()}</span>}
       </div>
       <div className="text-center">
